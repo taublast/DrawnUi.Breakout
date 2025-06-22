@@ -4,8 +4,6 @@ namespace Breakout;
 
 public partial class MainPage : ContentPage
 {
- 
-
     public MainPage()
     {
         try
@@ -16,8 +14,6 @@ public partial class MainPage : ContentPage
         {
             Super.DisplayException(this, e);
         }
-    }
-
- 
+    } 
 }
 

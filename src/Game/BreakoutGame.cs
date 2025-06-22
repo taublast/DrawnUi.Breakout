@@ -4,6 +4,7 @@ using AppoMobi.Specials;
 using SkiaSharp;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using DrawnUi.Draw;
 
 namespace BreakoutGame.Game
 {
@@ -50,6 +51,9 @@ namespace BreakoutGame.Game
             HorizontalOptions = LayoutOptions.Fill;
             VerticalOptions = LayoutOptions.Fill;
             BackgroundColor = Colors.DarkSlateBlue;
+
+            // Setup custom dialog animations (example)
+            SetupDialogAnimations();
 
             Children = new List<SkiaControl>()
             {
@@ -357,23 +361,23 @@ namespace BreakoutGame.Game
             // Store current game state before changing levels
             var wasInDemoMode = State == GameState.DemoPlay;
 
+            // Stop the game loop
+            StopLoop();
+
             if (Level < 5)
             {
                 Level++;
-                StartNewLevel();
+                // Show level complete dialog instead of immediately starting next level
+                ShowLevelCompleteDialog();
             }
             else
             {
                 Level = 1;
-                StartNewLevel();
+                // Show level complete dialog instead of immediately starting next level
+                ShowLevelCompleteDialog();
             }
 
-            // Restore demo mode if that's what we were in before
-            if (wasInDemoMode)
-            {
-                State = GameState.DemoPlay;
-                AIController.ResetTimers();
-            }
+            // Note: Demo mode restoration will be handled in the dialog callback if needed
         }
 
         void StartNewLevel()
@@ -536,14 +540,198 @@ namespace BreakoutGame.Game
 
         void PresentGame()
         {
-            //DialogButton = "okay".ToUpperInvariant();
-            //DialogMessage = message.ToUpperInvariant();
+            // Show welcome dialog
+            var welcomeContent = new SkiaMarkdownLabel()
+            {
+                Text = "Welcome to Breakout!\nUse mouse or touch to move the paddle. Break all the bricks to win!",
+                TextColor = Colors.White,
+                FontSize = 16,
+                HorizontalTextAlignment = DrawTextAlignment.Center,
+                HorizontalOptions = LayoutOptions.Fill,
+                //BackgroundColor = Colors.Pink,
+            };
 
-            //ShowDialog = true;
+            GameDialog.Show(this, welcomeContent, "START GAME", onOk: () =>
+            {
+                StartNewGame();
+            });
+        }
 
+        void ShowGameOverDialog()
+        {
+            // Show game over dialog
+            var gameOverContent = new SkiaLabel()
+            {
+                Text = $"Game Over!\nFinal Score: {Score}\nBetter luck next time!",
+                TextColor = Colors.White,
+                FontSize = 16,
+                HorizontalTextAlignment = DrawTextAlignment.Center,
+                HorizontalOptions = LayoutOptions.Fill,
+            };
+
+            GameDialog.Show(this, gameOverContent, "PLAY AGAIN", "QUIT",
+                onOk: () => ResetGame(),
+                onCancel: () => {
+                    // Could navigate back or close the game
+                });
+        }
+
+        void ResetGame()
+        {
+            // Reset game state
+            Lives = LIVES;
+            Score = 0;
+            Level = 1;
             State = GameState.Ready;
 
-            Update(); //kick draw that would start new game and start loop
+            // Clear all bricks
+            lock (_lockSpritesToBeRemovedLater)
+            {
+                foreach (var control in Views)
+                {
+                    if (control is BrickSprite)
+                    {
+                        _spritesToBeRemovedLater.Enqueue(control);
+                    }
+                }
+            }
+            ProcessSpritesToBeRemoved();
+
+            // Reset ball
+            ResetBall();
+            Ball.IsMoving = false;
+
+            // Start new level
+            StartNewLevel();
+            Update();
+        }
+
+        async void ShowLevelCompleteDialog()
+        {
+            // Show level complete dialog
+            var levelCompleteContent = new SkiaLabel()
+            {
+                Text = $"Level {Level - 1} Complete!\nScore: {Score}\nGet ready for Level {Level}!",
+                TextColor = Colors.White,
+                FontSize = 16,
+                HorizontalTextAlignment = DrawTextAlignment.Center,
+                HorizontalOptions = LayoutOptions.Fill,
+                VerticalOptions = LayoutOptions.Center
+            };
+
+            if (await GameDialog.ShowAsync(this, levelCompleteContent, "CONTINUE")) 
+            {
+                // Start the new level
+                StartNewLevel();
+                State = GameState.Playing;
+                StartLoop();
+            }
+        }
+
+        // Example of using the async dialog method
+        async void ShowExampleAsyncDialog()
+        {
+            var content = new SkiaLabel()
+            {
+                Text = "Do you want to continue?",
+                TextColor = Colors.White,
+                FontSize = 16,
+                HorizontalTextAlignment = DrawTextAlignment.Center,
+                HorizontalOptions = LayoutOptions.Fill,
+            };
+
+            bool result = await GameDialog.ShowAsync(this, content, "YES", "NO");
+
+            if (result)
+            {
+                // User clicked YES
+                // Do something...
+            }
+            else
+            {
+                // User clicked NO
+                // Do something else...
+            }
+        }
+
+        // Example of using the navigation stack
+        void ShowStackedDialogs()
+        {
+            // Push first dialog
+            var content1 = new SkiaLabel()
+            {
+                Text = "This is the first dialog",
+                TextColor = Colors.White,
+                FontSize = 16,
+                HorizontalTextAlignment = DrawTextAlignment.Center,
+                HorizontalOptions = LayoutOptions.Fill,
+            };
+
+            GameDialog.Push(this, content1, "NEXT", "CANCEL",
+                onOk: () => {
+                    // Push second dialog
+                    var content2 = new SkiaLabel()
+                    {
+                        Text = "This is the second dialog",
+                        TextColor = Colors.White,
+                        FontSize = 16,
+                        HorizontalTextAlignment = DrawTextAlignment.Center,
+                        HorizontalOptions = LayoutOptions.Fill,
+                    };
+
+                    GameDialog.Push(this, content2, "FINISH", "BACK",
+                        onOk: () => {
+                            // Pop all dialogs
+                            _ = GameDialog.PopAll(this);
+                        },
+                        onCancel: () => {
+                            // Pop just this dialog (go back to first)
+                            _ = GameDialog.Pop(this);
+                        });
+                },
+                onCancel: () => {
+                    // Cancel everything
+                    _ = GameDialog.PopAll(this);
+                });
+        }
+
+        void SetupDialogAnimations()
+        {
+            // Example: Setup custom dialog animations
+            // You can customize these or remove this method entirely
+
+            GameDialog.DefaultAppearingAnimation = async (parent, dimmer, frame, cancellationToken) =>
+            {
+                // Example: Separate animations for dimmer and frame
+                var cancelSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+
+                // Dimmer: Only fade in
+                dimmer.Opacity = 0.0;
+                var dimmerTask = dimmer.FadeToAsync(1.0, 200, Easing.Linear, cancelSource);
+
+                // Frame: Scale up from center with fade in
+                frame.Scale = 0.5;
+                frame.Opacity = 0.0;
+                var frameScaleTask = frame.ScaleToAsync(1.0, 1.0, 250, Easing.CubicOut, cancelSource);
+                var frameFadeTask = frame.FadeToAsync(1.0, 200, Easing.Linear, cancelSource);
+
+                await Task.WhenAll(dimmerTask, frameScaleTask, frameFadeTask);
+            };
+
+            GameDialog.DefaultDisappearingAnimation = async (parent, dimmer, frame, cancellationToken) =>
+            {
+                // Example: Separate animations for dimmer and frame
+                var cancelSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+
+                // Dimmer: Only fade out
+                var dimmerTask = dimmer.FadeToAsync(0.0, 150, Easing.Linear, cancelSource);
+
+                // Frame: Scale down with fade out
+                var frameScaleTask = frame.ScaleToAsync(0.8, 0.8, 150, Easing.CubicIn, cancelSource);
+                var frameFadeTask = frame.FadeToAsync(0.0, 150, Easing.Linear, cancelSource);
+
+                await Task.WhenAll(dimmerTask, frameScaleTask, frameFadeTask);
+            };
         }
 
         /// <summary>
@@ -826,7 +1014,10 @@ namespace BreakoutGame.Game
                                         if (Lives <= 0)
                                         {
                                             State = GameState.Ended;
-                                            //Task.Delay(1500).ContinueWith(_ => ResetGame(false));
+                                            Task.Delay(1500).ContinueWith(_ =>
+                                            {
+                                                MainThread.BeginInvokeOnMainThread(() => ShowGameOverDialog());
+                                            });
                                         }
                                         else
                                         {
@@ -1287,6 +1478,10 @@ namespace BreakoutGame.Game
                 if (Lives <= 0)
                 {
                     State = GameState.Ended;
+                    Task.Delay(1500).ContinueWith(_ =>
+                    {
+                        MainThread.BeginInvokeOnMainThread(() => ShowGameOverDialog());
+                    });
                 }
                 else
                 {
@@ -1504,6 +1699,13 @@ namespace BreakoutGame.Game
         public override ISkiaGestureListener ProcessGestures(SkiaGesturesParameters args,
             GestureEventProcessingInfo apply)
         {
+            if (GameDialog.IsAnyDialogOpen(this))
+            {
+                var consumed = base.ProcessGestures(args, apply);                
+                return consumed;
+            }
+
+
             if (State == GameState.DemoPlay && args.Type == TouchActionResult.Down)
             {
                 State = GameState.Playing;
