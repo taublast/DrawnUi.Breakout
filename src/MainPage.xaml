@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Breakout.MainPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:game="clr-namespace:BreakoutGame.Game"
+    xmlns:spaceShooter="clr-namespace:Breakout"
+    xmlns:views="http://schemas.appomobi.com/drawnUi/2023/draw">
+
+    <!--<game:Test
+        x:Name="GameCanvas"/>-->
+
+    <views:Canvas
+        x:Name="GameCanvas"
+        Gestures="Enabled"
+        RenderingMode="Accelerated"
+        HorizontalOptions="Fill"
+        VerticalOptions="Fill">
+
+        <views:SkiaLayout HorizontalOptions="Fill" VerticalOptions="Fill">
+
+            <game:BreakoutGame />
+
+            <views:SkiaLabelFps
+                Margin="0,0,4,24"
+                BackgroundColor="DarkRed"
+                HorizontalOptions="End"
+                IsVisible="{x:Static spaceShooter:MauiProgram.IsDebug}"
+                Rotation="-45"
+                TextColor="White"
+                VerticalOptions="End"
+                ZIndex="100" />
+
+        </views:SkiaLayout>
+    </views:Canvas>
+
+</ContentPage>
