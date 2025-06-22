@@ -280,7 +280,7 @@ namespace BreakoutGame.Game
 
                 Tasks.StartDelayed(TimeSpan.FromSeconds(1), () =>
                 {
-                    StartNewGame();
+                    StartNewGameDemo();
                 });
             }
 
@@ -359,25 +359,43 @@ namespace BreakoutGame.Game
         void LevelComplete()
         {
             // Store current game state before changing levels
-            var wasInDemoMode = State == GameState.DemoPlay;
+            // Note: State is already GameState.LevelComplete at this point, so check PreviousState
+            var wasInDemoMode = PreviousState == GameState.DemoPlay;
 
             // Stop the game loop
             StopLoop();
 
-            if (Level < 5)
+            if (wasInDemoMode)
             {
-                Level++;
-                // Show level complete dialog instead of immediately starting next level
-                ShowLevelCompleteDialog();
+                // In demo mode, auto-continue to next level without showing dialog
+                if (Level < 5)
+                {
+                    Level++;
+                }
+                else
+                {
+                    Level = 1; // Loop back to level 1 in demo mode
+                }
+
+                // Auto-continue demo mode
+                StartNewLevel();
+                State = GameState.DemoPlay;
+                StartLoop();
             }
             else
             {
-                Level = 1;
-                // Show level complete dialog instead of immediately starting next level
-                ShowLevelCompleteDialog();
+                // Normal mode - show level complete dialog
+                if (Level < 5)
+                {
+                    Level++;
+                    ShowLevelCompleteDialog();
+                }
+                else
+                {
+                    Level = 1;
+                    ShowLevelCompleteDialog();
+                }
             }
-
-            // Note: Demo mode restoration will be handled in the dialog callback if needed
         }
 
         void StartNewLevel()
@@ -512,15 +530,33 @@ namespace BreakoutGame.Game
             }
 
             levelReady = false;
-            State = GameState.Playing; //???
 
-            if (State == GameState.DemoPlay) //todo
+            // Preserve demo state if we're in demo mode, otherwise set to Playing
+            if (State != GameState.DemoPlay)
+            {
+                State = GameState.Playing;
+            }
+
+            if (State == GameState.DemoPlay)
             {
                 AIController.ResetTimers();
             }
         }
 
         private bool levelReady;
+
+        public void StartNewGameDemo()
+        {
+            StartNewGame();
+            State = GameState.DemoPlay;
+        }
+
+        public void StartNewGamePlayer()
+        {
+            StartNewGame();
+            State = GameState.Playing;
+        }
+
 
         void StartNewGame()
         {
@@ -540,6 +576,9 @@ namespace BreakoutGame.Game
 
         void PresentGame()
         {
+            // Start demo mode - bot plays behind the welcome dialog
+            StartDemoMode();
+
             // Show welcome dialog
             var welcomeContent = new SkiaMarkdownLabel()
             {
@@ -553,8 +592,54 @@ namespace BreakoutGame.Game
 
             GameDialog.Show(this, welcomeContent, "START GAME", onOk: () =>
             {
-                StartNewGame();
+                StartNewGamePlayer();
             });
+        }
+
+        void StartDemoMode()
+        {
+            // Initialize demo mode
+            Score = 0;
+            Lives = LIVES;
+            Level = 1;
+            LevelManager = new LevelManager();
+
+            // Set demo state and start level
+            State = GameState.DemoPlay;
+            StartNewLevel();
+            StartLoop();
+        }
+
+        void RestartDemoMode()
+        {
+            // Restart demo mode from level 1 without showing any dialogs
+            Score = 0;
+            Lives = LIVES;
+            Level = 1;
+
+            // Clear all bricks
+            lock (_lockSpritesToBeRemovedLater)
+            {
+                foreach (var control in Views)
+                {
+                    if (control is BrickSprite)
+                    {
+                        _spritesToBeRemovedLater.Enqueue(control);
+                    }
+                }
+            }
+            ProcessSpritesToBeRemoved();
+
+            // Reset ball and continue demo
+            ResetBall();
+            Ball.IsMoving = false;
+
+            // Set demo state before starting new level
+            State = GameState.DemoPlay;
+
+            // Start new level in demo mode
+            StartNewLevel();
+            Update();
         }
 
         void ShowGameOverDialog()
@@ -1013,11 +1098,19 @@ namespace BreakoutGame.Game
                                         Lives--;
                                         if (Lives <= 0)
                                         {
-                                            State = GameState.Ended;
-                                            Task.Delay(1500).ContinueWith(_ =>
+                                            if (State == GameState.DemoPlay)
                                             {
-                                                MainThread.BeginInvokeOnMainThread(() => ShowGameOverDialog());
-                                            });
+                                                // In demo mode, restart from level 1 without showing dialog
+                                                RestartDemoMode();
+                                            }
+                                            else
+                                            {
+                                                State = GameState.Ended;
+                                                Task.Delay(1500).ContinueWith(_ =>
+                                                {
+                                                    MainThread.BeginInvokeOnMainThread(() => ShowGameOverDialog());
+                                                });
+                                            }
                                         }
                                         else
                                         {
@@ -1477,11 +1570,19 @@ namespace BreakoutGame.Game
                 Lives--;
                 if (Lives <= 0)
                 {
-                    State = GameState.Ended;
-                    Task.Delay(1500).ContinueWith(_ =>
+                    if (State == GameState.DemoPlay)
                     {
-                        MainThread.BeginInvokeOnMainThread(() => ShowGameOverDialog());
-                    });
+                        // In demo mode, restart from level 1 without showing dialog
+                        RestartDemoMode();
+                    }
+                    else
+                    {
+                        State = GameState.Ended;
+                        Task.Delay(1500).ContinueWith(_ =>
+                        {
+                            MainThread.BeginInvokeOnMainThread(() => ShowGameOverDialog());
+                        });
+                    }
                 }
                 else
                 {
