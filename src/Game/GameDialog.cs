@@ -15,8 +15,17 @@ namespace BreakoutGame.Game
         private static readonly Dictionary<SkiaLayout, Stack<GameDialog>> _navigationStacks = new();
 
         // Customizable animation delegates with cancellation token support
-        public static Func<SkiaLayout, SkiaLayout, SkiaLayout, CancellationToken, Task> DefaultAppearingAnimation { get; set; }
-        public static Func<SkiaLayout, SkiaLayout, SkiaLayout, CancellationToken, Task> DefaultDisappearingAnimation { get; set; }
+        public static Func<SkiaLayout, SkiaLayout, SkiaLayout, CancellationToken, Task> DefaultAppearingAnimation
+        {
+            get;
+            set;
+        }
+
+        public static Func<SkiaLayout, SkiaLayout, SkiaLayout, CancellationToken, Task> DefaultDisappearingAnimation
+        {
+            get;
+            set;
+        }
 
         public Action OnOkClicked { get; set; }
         public Action OnCancelClicked { get; set; }
@@ -32,7 +41,8 @@ namespace BreakoutGame.Game
         private SkiaLayout _dimmerLayer;
         private SkiaLayout _dialogFrame;
 
-        private GameDialog(SkiaControl content, string ok = null, string cancel = null, SkiaLayout parentContainer = null)
+        private GameDialog(SkiaControl content, string ok = null, string cancel = null,
+            SkiaLayout parentContainer = null)
         {
             _content = content;
             _okText = ok ?? "OK";
@@ -42,7 +52,8 @@ namespace BreakoutGame.Game
             SetupDialog();
         }
 
-        public override ISkiaGestureListener ProcessGestures(SkiaGesturesParameters args, GestureEventProcessingInfo apply)
+        public override ISkiaGestureListener ProcessGestures(SkiaGesturesParameters args,
+            GestureEventProcessingInfo apply)
         {
             return base.ProcessGestures(args, apply);
         }
@@ -56,7 +67,8 @@ namespace BreakoutGame.Game
         /// <param name="cancel">Cancel button text (null = no cancel button)</param>
         /// <param name="onOk">Action to execute when OK is clicked</param>
         /// <param name="onCancel">Action to execute when Cancel is clicked</param>
-        public static void Show(SkiaLayout parentContainer, SkiaControl content, string ok = null, string cancel = null, Action onOk = null, Action onCancel = null)
+        public static void Show(SkiaLayout parentContainer, SkiaControl content, string ok = null, string cancel = null,
+            Action onOk = null, Action onCancel = null)
         {
             var dialog = new GameDialog(content, ok, cancel, parentContainer);
 
@@ -65,6 +77,7 @@ namespace BreakoutGame.Game
             {
                 _navigationStacks[parentContainer] = new Stack<GameDialog>();
             }
+
             _navigationStacks[parentContainer].Push(dialog);
 
             dialog.OnOkClicked = onOk;
@@ -84,7 +97,8 @@ namespace BreakoutGame.Game
         /// <param name="ok">OK button text (defaults to "OK")</param>
         /// <param name="cancel">Cancel button text (null = no cancel button)</param>
         /// <returns>Task that returns true for OK, false for Cancel</returns>
-        public static Task<bool> ShowAsync(SkiaLayout parentContainer, SkiaControl content, string ok = null, string cancel = null)
+        public static Task<bool> ShowAsync(SkiaLayout parentContainer, SkiaControl content, string ok = null,
+            string cancel = null)
         {
             var dialog = new GameDialog(content, ok, cancel, parentContainer);
             dialog._taskCompletionSource = new TaskCompletionSource<bool>();
@@ -94,6 +108,7 @@ namespace BreakoutGame.Game
             {
                 _navigationStacks[parentContainer] = new Stack<GameDialog>();
             }
+
             _navigationStacks[parentContainer].Push(dialog);
 
             // Note: OnOkClicked and OnCancelClicked will be handled by the CloseAsync method
@@ -175,7 +190,8 @@ namespace BreakoutGame.Game
         /// <param name="dimmer">The dimmer/background layer</param>
         /// <param name="frame">The dialog frame/content</param>
         /// <param name="cancellationToken">Cancellation token for the animation</param>
-        protected virtual async Task PlayAppearingAnimation(SkiaLayout parent, SkiaLayout dimmer, SkiaLayout frame, CancellationToken cancellationToken = default)
+        protected virtual async Task PlayAppearingAnimation(SkiaLayout parent, SkiaLayout dimmer, SkiaLayout frame,
+            CancellationToken cancellationToken = default)
         {
             if (DefaultAppearingAnimation != null)
             {
@@ -189,8 +205,11 @@ namespace BreakoutGame.Game
                 var tasks = new List<Task>();
 
                 // Dimmer: Only fade in
-                dimmer.Opacity = 0.0;
-                tasks.Add( dimmer.FadeToAsync(1.0, 250, Easing.Linear, cancelSource) );
+                if (dimmer != null)
+                {
+                    dimmer.Opacity = 0.0;
+                    tasks.Add(dimmer.FadeToAsync(1.0, 250, Easing.Linear, cancelSource));
+                }
 
                 foreach (var child in frame.Children)
                 {
@@ -213,7 +232,6 @@ namespace BreakoutGame.Game
                 //var frameFadeTask = frame.FadeToAsync(1.0, 5200, Easing.Linear, cancelSource);
 
                 await Task.WhenAll(tasks);
-                //await Task.WhenAll(dimmerTask, frameScaleTask, frameFadeTask);
             }
         }
 
@@ -225,7 +243,8 @@ namespace BreakoutGame.Game
         /// <param name="dimmer">The dimmer/background layer</param>
         /// <param name="frame">The dialog frame/content</param>
         /// <param name="cancellationToken">Cancellation token for the animation</param>
-        protected virtual async Task PlayDisappearingAnimation(SkiaLayout parent, SkiaLayout dimmer, SkiaLayout frame, CancellationToken cancellationToken = default)
+        protected virtual async Task PlayDisappearingAnimation(SkiaLayout parent, SkiaLayout dimmer, SkiaLayout frame,
+            CancellationToken cancellationToken = default)
         {
             if (DefaultDisappearingAnimation != null)
             {
@@ -236,14 +255,20 @@ namespace BreakoutGame.Game
                 // Default disappearing animation: dimmer fades out, frame scales down with fade
                 var cancelSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
+                var tasks = new List<Task>();
+
+
                 // Dimmer: Only fade out
-                var dimmerTask = dimmer.FadeToAsync(0.0, 150, Easing.Linear, cancelSource);
+                if (dimmer != null)
+                {
+                    tasks.Add(dimmer.FadeToAsync(0.0, 150, Easing.Linear, cancelSource));
+                }
 
                 // Frame: Scale down with fade out
-                var frameScaleTask = frame.ScaleToAsync(0.8, 0.8, 150, Easing.CubicIn, cancelSource);
-                var frameFadeTask = frame.FadeToAsync(0.0, 150, Easing.Linear, cancelSource);
+                tasks.Add(frame.ScaleToAsync(0.8, 0.8, 150, Easing.CubicIn, cancelSource));
+                tasks.Add(frame.FadeToAsync(0.0, 150, Easing.Linear, cancelSource));
 
-                await Task.WhenAll(dimmerTask, frameScaleTask, frameFadeTask);
+                await Task.WhenAll(tasks);
             }
         }
 
@@ -268,7 +293,8 @@ namespace BreakoutGame.Game
         /// <summary>
         /// Pushes a dialog onto the navigation stack (equivalent to Show but adds to stack).
         /// </summary>
-        public static void Push(SkiaLayout parentContainer, SkiaControl content, string ok = null, string cancel = null, Action onOk = null, Action onCancel = null)
+        public static void Push(SkiaLayout parentContainer, SkiaControl content, string ok = null, string cancel = null,
+            Action onOk = null, Action onCancel = null)
         {
             var dialog = new GameDialog(content, ok, cancel, parentContainer);
 
@@ -277,6 +303,7 @@ namespace BreakoutGame.Game
             {
                 _navigationStacks[parentContainer] = new Stack<GameDialog>();
             }
+
             _navigationStacks[parentContainer].Push(dialog);
 
             dialog.OnOkClicked = onOk;
@@ -382,14 +409,14 @@ namespace BreakoutGame.Game
             ZIndex = 200;
 
             // Create dimmer layer (background overlay)
-            _dimmerLayer = new SkiaLayout()
-            {
-                HorizontalOptions = LayoutOptions.Fill,
-                VerticalOptions = LayoutOptions.Fill,
-                BackgroundColor = Color.Parse("#33000000"),
-                ZIndex = -1,
-                UseCache = SkiaCacheType.Operations
-            };
+            //_dimmerLayer = new SkiaLayout()
+            //{
+            //    HorizontalOptions = LayoutOptions.Fill,
+            //    VerticalOptions = LayoutOptions.Fill,
+            //    BackgroundColor = Color.Parse("#33000000"),
+            //    ZIndex = -1,
+            //    UseCache = SkiaCacheType.Operations
+            //};
 
             //frame deco
             SkiaControl frameDeco;
@@ -409,37 +436,37 @@ namespace BreakoutGame.Game
                 //WidthRequest = 330,
                 Children = new List<SkiaControl>()
                 {
-
                     //shape A - background texture for frosted effect
                     //plus shadow
                     //cached layer
                     new SkiaShape()
                     {
                         UseCache = SkiaCacheType.Image,
-                        //BackgroundColor=Color.Parse("#11dddddd"),
-                        CornerRadius = 14,
+                        BackgroundColor = Color.Parse("#10ffffff"),
+                        CornerRadius = 8,
                         HorizontalOptions = LayoutOptions.Fill,
                         VerticalOptions = LayoutOptions.Fill,
-                        StrokeColor = Colors.White,
-                        StrokeWidth = 3,
+                        StrokeColor = Colors.Red,
+                        StrokeWidth = 2,
                         StrokeGradient = new SkiaGradient()
                         {
-                            StartXRatio = 0,
-                            EndXRatio = 1,
-                            StartYRatio = 0,
-                            EndYRatio = 1,
-                            Colors = new Color[] 
+                            Opacity = 0.99f,
+                            StartXRatio = 0.2f,
+                            EndXRatio = 0.5f,
+                            StartYRatio = 0.0f,
+                            EndYRatio = 1f,
+                            Colors = new Color[]
                             {
-                                Color.Parse("#99ffffff"),
-                                Color.Parse("#90999999"),
+                                Color.Parse("#ffffff"),
+                                Color.Parse("#999999"),
                             }
                         },
                         Children =
                         {
                             new SkiaImage()
                             {
-                                Opacity = 0.15,
-                                Source="Images/glass2.jpg",
+                                Opacity = 0.25,
+                                Source = "Images/glass.jpg",
                                 HorizontalOptions = LayoutOptions.Fill,
                                 VerticalOptions = LayoutOptions.Fill,
                             }
@@ -456,11 +483,11 @@ namespace BreakoutGame.Game
                     //shape B = backdrop
                     new SkiaShape()
                     {
-                        CornerRadius = 14,
+                        CornerRadius = 13,
                         HorizontalOptions = LayoutOptions.Fill,
                         VerticalOptions = LayoutOptions.Fill,
-                        StrokeColor = Color.Parse("#33ffffff"),
-                        StrokeWidth = -1,
+                        //StrokeColor = Color.Parse("#ffffff"),
+                        //StrokeWidth = -1,
                         Children =
                         {
                             new SkiaBackdrop()
@@ -475,12 +502,12 @@ namespace BreakoutGame.Game
                     // Content layout
                     new SkiaLayout()
                     {
-                        ZIndex=1,
+                        ZIndex = 1,
                         HorizontalOptions = LayoutOptions.Fill, //todo required for some reason here, check why and fix
                         UseCache = SkiaCacheType.Image,
                         Type = LayoutType.Column,
                         Padding = 24,
-                        Spacing = 20,
+                        Spacing = 28,
                         Children = CreateContentChildren()
                     }.Assign(out frameContent)
                 }
@@ -488,12 +515,11 @@ namespace BreakoutGame.Game
 
             Children = new List<SkiaControl>()
             {
-                _dimmerLayer,
+                //_dimmerLayer,
                 _dialogFrame
             };
         }
 
- 
 
         protected virtual List<SkiaControl> CreateContentChildren()
         {
@@ -510,6 +536,7 @@ namespace BreakoutGame.Game
             var buttonsLayout = new SkiaLayout()
             {
                 Type = LayoutType.Row,
+                Margin = new(0, 0, 0, 8),
                 HorizontalOptions = LayoutOptions.Center,
                 Spacing = 16,
                 Children =
@@ -528,23 +555,23 @@ namespace BreakoutGame.Game
             if (!string.IsNullOrEmpty(_cancelText))
             {
                 var cancelButton = new SkiaButton()
-                {
-                    Text = _cancelText,
-                    FontSize = 14,
-                    FontFamily = "FontGame",
-                    TextColor = Colors.White,
-                    BackgroundColor = Colors.DarkRed,
-                    //CornerRadius = 8,
-                    //Padding = new Thickness(24, 12),
-                    WidthRequest = -1,
-                    MinimumWidthRequest = 100,
-                }
-                .OnTapped(async (me) =>
-                {
-                    System.Diagnostics.Debug.WriteLine($"GameDialog: Cancel button tapped, auto-closing dialog");
-                    // Auto-close dialog - user doesn't need to call close methods in their callbacks
-                    await CloseWithCancelAsync();
-                });
+                    {
+                        Text = _cancelText,
+                        FontSize = 14,
+                        FontFamily = "FontGame",
+                        TextColor = Colors.White,
+                        BackgroundColor = Colors.DarkRed,
+                        //CornerRadius = 8,
+                        //Padding = new Thickness(24, 12),
+                        WidthRequest = -1,
+                        MinimumWidthRequest = 100,
+                    }
+                    .OnTapped(async (me) =>
+                    {
+                        System.Diagnostics.Debug.WriteLine($"GameDialog: Cancel button tapped, auto-closing dialog");
+                        // Auto-close dialog - user doesn't need to call close methods in their callbacks
+                        await CloseWithCancelAsync();
+                    });
 
                 buttonsLayout.Add(cancelButton);
             }
@@ -553,7 +580,6 @@ namespace BreakoutGame.Game
 
             return children;
         }
-
     }
 
     static class UiElements
@@ -563,17 +589,21 @@ namespace BreakoutGame.Game
             return new SkiaMarkdownLabel()
             {
                 Text = prompt,
+                UseCache = SkiaCacheType.Image,
                 TextColor = Colors.White,
-                //FontFamily = "FontGame",
+                //FontFamily = "OpenSansRegular",
                 LineHeight = 1.25,
-                FontSize = 16,
+                CharacterSpacing = 1.25,
+                FontSize = 22,
+                DropShadowSize = 1,
+                DropShadowColor = Color.Parse("#222244"),
                 HorizontalTextAlignment = DrawTextAlignment.Center,
                 HorizontalOptions = LayoutOptions.Fill,
                 //BackgroundColor = Colors.Pink,
             };
         }
 
-        static void SetButtonPressed(SkiaShape btn) 
+        static void SetButtonPressed(SkiaShape btn)
         {
             btn.Children[0].TranslationX = 1;
             btn.Children[0].TranslationY = 1;
@@ -594,14 +624,14 @@ namespace BreakoutGame.Game
                 UseCache = SkiaCacheType.Image,
                 CornerRadius = 8,
                 MinimumWidthRequest = 100,
-                BackgroundColor = Colors.HotPink,
+                BackgroundColor = Colors.Black,
                 BevelType = BevelType.Bevel,
                 Bevel = new SkiaBevel()
                 {
                     Depth = 2,
                     LightColor = Colors.White,
                     ShadowColor = Colors.DarkBlue,
-                    Opacity = 0.2,
+                    Opacity = 0.33,
                 },
                 Children =
                 {
@@ -635,20 +665,18 @@ namespace BreakoutGame.Game
                 {
                     action?.Invoke();
                 }
-                else
-                if (args.Type == TouchActionResult.Down)
+                else if (args.Type == TouchActionResult.Down)
                 {
                     SetButtonPressed(me);
                 }
-                else
-                if (args.Type == TouchActionResult.Up)
+                else if (args.Type == TouchActionResult.Up)
                 {
                     SetButtonReleased(me);
                     return null;
                 }
+
                 return me;
             });
-
         }
     }
 }

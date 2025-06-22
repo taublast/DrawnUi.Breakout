@@ -17,6 +17,10 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 fonts.AddFont("amstrad_cpc464.ttf", "FontGame");
+
+                fonts.AddFont("DOM.TTF", "FontDrawn");
+                fonts.AddFont("DOMB.TTF", "FontDrawnBold");
+
             });
 
         builder.UseDrawnUi(new()

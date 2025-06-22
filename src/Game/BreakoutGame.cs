@@ -275,10 +275,10 @@ namespace BreakoutGame.Game
 
                 _needPrerender = false;
 
-                Tasks.StartDelayed(TimeSpan.FromSeconds(1), () =>
-                {
-                    StartNewGameDemo();
-                });
+                //Tasks.StartDelayed(TimeSpan.FromSeconds(1), () =>
+                //{
+                //    StartNewGameDemo();
+                //});
             }
 
             //if (Ball != null)
