@@ -66,6 +66,7 @@
 
   <!--for development-->
   <ItemGroup Condition="'$(UseNuget)' != 'true'">
+    <ProjectReference Include="..\..\DrawnUi.Maui\src\Maui\DrawnUi\DrawnUi.Maui.csproj" />
     <ProjectReference Include="..\..\DrawnUi.Maui\src\Maui\Addons\DrawnUi.Maui.Game\DrawnUi.Maui.Game.csproj" />
   </ItemGroup>
 

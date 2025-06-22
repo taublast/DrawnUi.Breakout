@@ -52,9 +52,6 @@ namespace BreakoutGame.Game
             VerticalOptions = LayoutOptions.Fill;
             BackgroundColor = Colors.DarkSlateBlue;
 
-            // Setup custom dialog animations (example)
-            SetupDialogAnimations();
-
             Children = new List<SkiaControl>()
             {
                 new BallSprite()
@@ -580,17 +577,7 @@ namespace BreakoutGame.Game
             StartDemoMode();
 
             // Show welcome dialog
-            var welcomeContent = new SkiaMarkdownLabel()
-            {
-                Text = "Welcome to Breakout!\nUse mouse or touch to move the paddle. Break all the bricks to win!",
-                TextColor = Colors.White,
-                FontSize = 16,
-                HorizontalTextAlignment = DrawTextAlignment.Center,
-                HorizontalOptions = LayoutOptions.Fill,
-                //BackgroundColor = Colors.Pink,
-            };
-
-            GameDialog.Show(this, welcomeContent, "START GAME", onOk: () =>
+            GameDialog.Show(this, UiElements.DialogPrompt("Welcome to Breakout!\nUse mouse or touch to move the paddle. Break all the bricks to win!"), "START GAME", onOk: () =>
             {
                 StartNewGamePlayer();
             });
@@ -780,45 +767,6 @@ namespace BreakoutGame.Game
                 });
         }
 
-        void SetupDialogAnimations()
-        {
-            // Example: Setup custom dialog animations
-            // You can customize these or remove this method entirely
-
-            GameDialog.DefaultAppearingAnimation = async (parent, dimmer, frame, cancellationToken) =>
-            {
-                // Example: Separate animations for dimmer and frame
-                var cancelSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-
-                // Dimmer: Only fade in
-                dimmer.Opacity = 0.0;
-                var dimmerTask = dimmer.FadeToAsync(1.0, 200, Easing.Linear, cancelSource);
-
-                // Frame: Scale up from center with fade in
-                frame.Scale = 0.5;
-                frame.Opacity = 0.0;
-                var frameScaleTask = frame.ScaleToAsync(1.0, 1.0, 250, Easing.CubicOut, cancelSource);
-                var frameFadeTask = frame.FadeToAsync(1.0, 200, Easing.Linear, cancelSource);
-
-                await Task.WhenAll(dimmerTask, frameScaleTask, frameFadeTask);
-            };
-
-            GameDialog.DefaultDisappearingAnimation = async (parent, dimmer, frame, cancellationToken) =>
-            {
-                // Example: Separate animations for dimmer and frame
-                var cancelSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-
-                // Dimmer: Only fade out
-                var dimmerTask = dimmer.FadeToAsync(0.0, 150, Easing.Linear, cancelSource);
-
-                // Frame: Scale down with fade out
-                var frameScaleTask = frame.ScaleToAsync(0.8, 0.8, 150, Easing.CubicIn, cancelSource);
-                var frameFadeTask = frame.FadeToAsync(0.0, 150, Easing.Linear, cancelSource);
-
-                await Task.WhenAll(dimmerTask, frameScaleTask, frameFadeTask);
-            };
-        }
-
         /// <summary>
         /// Score can change several times per frame
         /// so we dont want bindings to update the score toooften.
@@ -919,6 +867,7 @@ namespace BreakoutGame.Game
                     _lastStateChecked = PreviousState;
                     _state = value;
                     OnPropertyChanged();
+                    Debug.WriteLine($"Game state changed: {value}");
                 }
             }
         }
@@ -1197,23 +1146,14 @@ namespace BreakoutGame.Game
 
         protected override void OnPaused()
         {
-            if (State == GameState.Playing || State == GameState.DemoPlay)
-            {
-                StopLoop();
-                _lastState = this.State;
-                State = GameState.Paused;
-            }
+            StopLoop();
         }
 
         protected override void OnResumed()
         {
-            if (State == GameState.Paused)
+            if (State == GameState.Playing || State == GameState.DemoPlay)
             {
-                State = _lastState;
-                if (State == GameState.Playing || State == GameState.DemoPlay)
-                {
-                    StartLoop();
-                }
+                StartLoop();
             }
         }
 
@@ -1709,11 +1649,15 @@ namespace BreakoutGame.Game
 
         bool TogglePause()
         {
-            if (State == GameState.Playing || State == GameState.DemoPlay)
+            if (State == GameState.Playing)
             {
                 State = GameState.Paused;
                 _moveLeft = false;
                 _moveRight = false;
+                GameDialog.Show(this, null, "PAUSED", null, () =>
+                {
+                    TogglePause();
+                });
                 return true;
             }
 
@@ -1722,6 +1666,7 @@ namespace BreakoutGame.Game
                 State = GameState.Playing;
                 _moveLeft = false;
                 _moveRight = false;
+                _ = GameDialog.PopAllAsync(this);
                 return true;
             }
 
@@ -1938,4 +1883,8 @@ namespace BreakoutGame.Game
 
         #endregion
     }
+
+
+ 
+
 }
