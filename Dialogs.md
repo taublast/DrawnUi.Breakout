@@ -5,11 +5,12 @@ A dialog system for DrawnUI game with navigation stack support, customizable ani
 ## Table of Contents
 
 1. [Basic Usage](#basic-usage)
-2. [Navigation Stack](#navigation-stack)
-3. [API Reference](#api-reference)
-4. [Examples](#examples)
-5. [Best Practices](#best-practices)
-6. [Enhanced Usage](#enhanced-usage)
+2. [Template System](#template-system)
+3. [Navigation Stack](#navigation-stack)
+4. [API Reference](#api-reference)
+5. [Examples](#examples)
+6. [Best Practices](#best-practices)
+7. [Enhanced Usage](#enhanced-usage)
 
 ## Basic Usage
 
@@ -69,6 +70,177 @@ else
 }
 ```
 
+## Template System
+
+The dialog system supports a powerful template-based approach for customizing dialog appearance, animations, and behavior. **By default, dialogs use the original custom design** with glass effects, backdrop blur, and custom buttons. Templates are only applied when explicitly specified.
+
+### Using Predefined Themes
+
+```csharp
+// Apply a theme globally (overrides the original design)
+GameDialog.DefaultTemplate = DialogThemes.Modern;
+
+// Or use a theme for specific dialog (keeps original design for others)
+GameDialog.Show(container, content, "OK", "Cancel", template: DialogThemes.Retro);
+
+// Use original design (default behavior - no template needed)
+GameDialog.Show(container, content, "OK", "Cancel"); // Uses your original design
+```
+
+### Available Themes
+
+#### Game Theme (Default)
+- **Used automatically when no template is specified**
+- Your original custom design recreated as a template
+- Custom glass effects with backdrop blur
+- Gradient borders and custom button styling
+- Game-specific fonts and colors
+- **No dimmer layer** (as per your original design)
+
+```csharp
+// Uses Game theme by default (your original design)
+GameDialog.Show(container, content, "OK", "Cancel");
+```
+
+#### Modern Theme
+- Glass-like appearance with blur effects
+- Smooth scale and fade animations
+- Clean, contemporary styling
+- Drop shadows and rounded corners
+
+```csharp
+GameDialog.Show(container, content, "OK", "Cancel", template: DialogThemes.Modern);
+```
+
+#### Retro Theme
+- Terminal-style appearance
+- Green text on black background
+- Simple fade animations
+- Monospace font styling
+
+```csharp
+GameDialog.Show(container, content, "OK", "Cancel", template: DialogThemes.Retro);
+```
+
+### Creating Custom Templates
+
+```csharp
+var customTemplate = new DialogTemplate
+{
+    CreateBackdrop = () => new SkiaLayout
+    {
+        HorizontalOptions = LayoutOptions.Fill,
+        VerticalOptions = LayoutOptions.Fill,
+        BackgroundColor = Colors.Purple.WithAlpha(0.6f)
+    },
+
+    CreateDialogFrame = (content, okText, cancelText) => new SkiaLayout
+    {
+        Margin = 40,
+        HorizontalOptions = LayoutOptions.Center,
+        VerticalOptions = LayoutOptions.Center,
+        Children = new List<SkiaControl>
+        {
+            // Custom frame design
+            new SkiaShape
+            {
+                CornerRadius = 20,
+                BackgroundColor = Colors.DarkSlateGray,
+                HorizontalOptions = LayoutOptions.Fill,
+                VerticalOptions = LayoutOptions.Fill
+            },
+
+            // Content container with your content and buttons
+            CreateContentLayout(content, okText, cancelText)
+        }
+    },
+
+    CreateButton = (text) => new SkiaButton
+    {
+        Text = text,
+        FontSize = 16,
+        TextColor = Colors.White,
+        BackgroundColor = Colors.Purple,
+        CornerRadius = 10,
+        Padding = new Thickness(20, 10)
+    },
+
+    Animations = new DialogAnimations
+    {
+        BackdropAppearing = async (backdrop, token) =>
+        {
+            var cancelSource = CancellationTokenSource.CreateLinkedTokenSource(token);
+            backdrop.Opacity = 0;
+            await backdrop.FadeToAsync(1.0, 250, Easing.Linear, cancelSource);
+        },
+
+        FrameAppearing = async (frame, token) =>
+        {
+            var cancelSource = CancellationTokenSource.CreateLinkedTokenSource(token);
+            frame.Scale = 0.5;
+            frame.Rotation = 180;
+            await Task.WhenAll(
+                frame.ScaleToAsync(1.0, 1.0, 400, Easing.BounceOut, cancelSource),
+                frame.RotateToAsync(0, 400, Easing.CubicOut, cancelSource)
+            );
+        },
+
+        BackdropDisappearing = async (backdrop, token) =>
+        {
+            var cancelSource = CancellationTokenSource.CreateLinkedTokenSource(token);
+            await backdrop.FadeToAsync(0.0, 200, Easing.Linear, cancelSource);
+        },
+
+        FrameDisappearing = async (frame, token) =>
+        {
+            var cancelSource = CancellationTokenSource.CreateLinkedTokenSource(token);
+            await Task.WhenAll(
+                frame.ScaleToAsync(0.8, 0.8, 200, Easing.CubicIn, cancelSource),
+                frame.FadeToAsync(0.0, 200, Easing.Linear, cancelSource)
+            );
+        }
+    }
+};
+
+// Apply the custom template
+GameDialog.DefaultTemplate = customTemplate;
+```
+
+### Template Components
+
+#### DialogTemplate Properties
+
+- **CreateBackdrop**: Function that creates the background overlay
+- **CreateDialogFrame**: Function that creates the main dialog container
+- **CreateButton**: Function that creates individual buttons
+- **Animations**: Animation definitions for appearance/disappearance
+
+#### DialogAnimations Properties
+
+- **BackdropAppearing**: Animation for backdrop fade-in
+- **BackdropDisappearing**: Animation for backdrop fade-out
+- **FrameAppearing**: Animation for dialog frame appearance
+- **FrameDisappearing**: Animation for dialog frame disappearance
+
+### Migration from Legacy System
+
+The template system is backward compatible. Existing code using `DefaultAppearingAnimation` and `DefaultDisappearingAnimation` will continue to work:
+
+```csharp
+// Legacy approach (still supported)
+GameDialog.DefaultAppearingAnimation = async (parent, dimmer, frame, token) => { /* animation */ };
+
+// New template approach (recommended)
+GameDialog.DefaultTemplate = new DialogTemplate
+{
+    Animations = new DialogAnimations
+    {
+        FrameAppearing = async (frame, token) => { /* animation */ },
+        BackdropAppearing = async (backdrop, token) => { /* animation */ }
+    }
+};
+```
+
 ## Navigation Stack
 
 Dialogs have a navigation stack that tracks dialogs per container.
@@ -126,21 +298,24 @@ bool isOpen = GameDialog.IsAnyDialogOpen(container);
 #### Show Methods
 ```csharp
 // Basic show (adds to stack)
-static void Show(SkiaLayout container, SkiaControl content, 
-                string ok = null, string cancel = null, 
-                Action onOk = null, Action onCancel = null)
+static void Show(SkiaLayout container, SkiaControl content,
+                string ok = null, string cancel = null,
+                Action onOk = null, Action onCancel = null,
+                DialogTemplate template = null)
 
 // Async show (adds to stack, returns result)
-static Task<bool> ShowAsync(SkiaLayout container, SkiaControl content, 
-                           string ok = null, string cancel = null)
+static Task<bool> ShowAsync(SkiaLayout container, SkiaControl content,
+                           string ok = null, string cancel = null,
+                           DialogTemplate template = null)
 ```
 
 #### Navigation Stack Methods
 ```csharp
 // Push dialog (same as Show, but explicit about stack behavior)
-static void Push(SkiaLayout container, SkiaControl content, 
-                string ok = null, string cancel = null, 
-                Action onOk = null, Action onCancel = null)
+static void Push(SkiaLayout container, SkiaControl content,
+                string ok = null, string cancel = null,
+                Action onOk = null, Action onCancel = null,
+                DialogTemplate template = null)
 
 // Pop operations
 static Task Pop(SkiaLayout container, bool animate = true)

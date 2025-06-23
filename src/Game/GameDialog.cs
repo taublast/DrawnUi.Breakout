@@ -6,7 +6,29 @@ using System.Runtime.CompilerServices;
 namespace BreakoutGame.Game
 {
     /// <summary>
-    /// A standalone dialog class with blurred background for the Breakout game.
+    /// Template system for customizing dialog appearance and behavior
+    /// </summary>
+    public class DialogTemplate
+    {
+        public Func<SkiaControl, string, string, SkiaLayout> CreateDialogFrame { get; set; }
+        public Func<SkiaLayout> CreateBackdrop { get; set; }
+        public Func<string, SkiaControl> CreateButton { get; set; }
+        public DialogAnimations Animations { get; set; }
+    }
+
+    /// <summary>
+    /// Animation definitions for dialog appearance and disappearance
+    /// </summary>
+    public class DialogAnimations
+    {
+        public Func<SkiaLayout, CancellationToken, Task> BackdropAppearing { get; set; }
+        public Func<SkiaLayout, CancellationToken, Task> BackdropDisappearing { get; set; }
+        public Func<SkiaLayout, CancellationToken, Task> FrameAppearing { get; set; }
+        public Func<SkiaLayout, CancellationToken, Task> FrameDisappearing { get; set; }
+    }
+
+    /// <summary>
+    /// A standalone dialog class with customizable templates and animations.
     /// Displays content with optional OK and Cancel buttons.
     /// </summary>
     public class GameDialog : SkiaLayout
@@ -14,7 +36,15 @@ namespace BreakoutGame.Game
         // Navigation stack: container -> dialog
         private static readonly Dictionary<SkiaLayout, Stack<GameDialog>> _navigationStacks = new();
 
-        // Customizable animation delegates with cancellation token support
+        // Template system for customizing dialog appearance
+        public static DialogTemplate DefaultTemplate { get; set; }
+
+        static GameDialog()
+        {
+            DefaultTemplate = DialogThemes.Modern;
+        }
+
+        // Legacy animation delegates (kept for backward compatibility)
         public static Func<SkiaLayout, SkiaLayout, SkiaLayout, CancellationToken, Task> DefaultAppearingAnimation
         {
             get;
@@ -26,6 +56,8 @@ namespace BreakoutGame.Game
             get;
             set;
         }
+
+
 
         public Action OnOkClicked { get; set; }
         public Action OnCancelClicked { get; set; }
@@ -41,13 +73,16 @@ namespace BreakoutGame.Game
         private SkiaLayout _dimmerLayer;
         private SkiaLayout _dialogFrame;
 
+        private DialogTemplate _template;
+
         private GameDialog(SkiaControl content, string ok = null, string cancel = null,
-            SkiaLayout parentContainer = null)
+            SkiaLayout parentContainer = null, DialogTemplate template = null)
         {
             _content = content;
             _okText = ok ?? "OK";
             _cancelText = cancel;
             _parentContainer = parentContainer;
+            _template = template ?? DefaultTemplate;
 
             SetupDialog();
         }
@@ -67,10 +102,11 @@ namespace BreakoutGame.Game
         /// <param name="cancel">Cancel button text (null = no cancel button)</param>
         /// <param name="onOk">Action to execute when OK is clicked</param>
         /// <param name="onCancel">Action to execute when Cancel is clicked</param>
+        /// <param name="template">Custom template to use for this dialog (optional)</param>
         public static void Show(SkiaLayout parentContainer, SkiaControl content, string ok = null, string cancel = null,
-            Action onOk = null, Action onCancel = null)
+            Action onOk = null, Action onCancel = null, DialogTemplate template = null)
         {
-            var dialog = new GameDialog(content, ok, cancel, parentContainer);
+            var dialog = new GameDialog(content, ok, cancel, parentContainer, template);
 
             // Add to navigation stack
             if (!_navigationStacks.ContainsKey(parentContainer))
@@ -96,11 +132,12 @@ namespace BreakoutGame.Game
         /// <param name="content">The content to display in the dialog</param>
         /// <param name="ok">OK button text (defaults to "OK")</param>
         /// <param name="cancel">Cancel button text (null = no cancel button)</param>
+        /// <param name="template">Custom template to use for this dialog (optional)</param>
         /// <returns>Task that returns true for OK, false for Cancel</returns>
         public static Task<bool> ShowAsync(SkiaLayout parentContainer, SkiaControl content, string ok = null,
-            string cancel = null)
+            string cancel = null, DialogTemplate template = null)
         {
-            var dialog = new GameDialog(content, ok, cancel, parentContainer);
+            var dialog = new GameDialog(content, ok, cancel, parentContainer, template);
             dialog._taskCompletionSource = new TaskCompletionSource<bool>();
 
             // Add to navigation stack
@@ -193,7 +230,25 @@ namespace BreakoutGame.Game
         protected virtual async Task PlayAppearingAnimation(SkiaLayout parent, SkiaLayout dimmer, SkiaLayout frame,
             CancellationToken cancellationToken = default)
         {
-            if (DefaultAppearingAnimation != null)
+            // Check template animations first
+            if (_template?.Animations?.FrameAppearing != null && _template?.Animations?.BackdropAppearing != null)
+            {
+                var tasks = new List<Task>();
+
+                if (dimmer != null && _template.Animations.BackdropAppearing != null)
+                {
+                    tasks.Add(_template.Animations.BackdropAppearing(dimmer, cancellationToken));
+                }
+
+                if (frame != null && _template.Animations.FrameAppearing != null)
+                {
+                    tasks.Add(_template.Animations.FrameAppearing(frame, cancellationToken));
+                }
+
+                await Task.WhenAll(tasks);
+            }
+            // Fallback to legacy animation system
+            else if (DefaultAppearingAnimation != null)
             {
                 await DefaultAppearingAnimation(parent, dimmer, frame, cancellationToken);
             }
@@ -208,19 +263,19 @@ namespace BreakoutGame.Game
                 if (dimmer != null)
                 {
                     dimmer.Opacity = 0.0;
-                    tasks.Add(dimmer.FadeToAsync(1.0, 250, Easing.Linear, cancelSource));
+                    tasks.Add(dimmer.FadeToAsync(1.0, 150, Easing.Linear, cancelSource));
                 }
 
                 foreach (var child in frame.Children)
                 {
                     child.Scale = 0.8;
-                    var frameScaleTask = child.ScaleToAsync(1.0, 1.0, 150, Easing.CubicOut, cancelSource);
+                    var frameScaleTask = child.ScaleToAsync(1.0, 1.0, 100, Easing.CubicOut, cancelSource);
                     tasks.Add(frameScaleTask);
 
                     if (child is not SkiaBackdrop)
                     {
                         child.Opacity = 0.0;
-                        var frameFadeTask = child.FadeToAsync(1.0, 100, Easing.Linear, cancelSource);
+                        var frameFadeTask = child.FadeToAsync(1.0, 75, Easing.Linear, cancelSource);
                         tasks.Add(frameFadeTask);
                     }
                 }
@@ -246,7 +301,25 @@ namespace BreakoutGame.Game
         protected virtual async Task PlayDisappearingAnimation(SkiaLayout parent, SkiaLayout dimmer, SkiaLayout frame,
             CancellationToken cancellationToken = default)
         {
-            if (DefaultDisappearingAnimation != null)
+            // Check template animations first
+            if (_template?.Animations?.FrameDisappearing != null && _template?.Animations?.BackdropDisappearing != null)
+            {
+                var tasks = new List<Task>();
+
+                if (dimmer != null && _template.Animations.BackdropDisappearing != null)
+                {
+                    tasks.Add(_template.Animations.BackdropDisappearing(dimmer, cancellationToken));
+                }
+
+                if (frame != null && _template.Animations.FrameDisappearing != null)
+                {
+                    tasks.Add(_template.Animations.FrameDisappearing(frame, cancellationToken));
+                }
+
+                await Task.WhenAll(tasks);
+            }
+            // Fallback to legacy animation system
+            else if (DefaultDisappearingAnimation != null)
             {
                 await DefaultDisappearingAnimation(parent, dimmer, frame, cancellationToken);
             }
@@ -294,9 +367,9 @@ namespace BreakoutGame.Game
         /// Pushes a dialog onto the navigation stack (equivalent to Show but adds to stack).
         /// </summary>
         public static void Push(SkiaLayout parentContainer, SkiaControl content, string ok = null, string cancel = null,
-            Action onOk = null, Action onCancel = null)
+            Action onOk = null, Action onCancel = null, DialogTemplate template = null)
         {
-            var dialog = new GameDialog(content, ok, cancel, parentContainer);
+            var dialog = new GameDialog(content, ok, cancel, parentContainer, template);
 
             // Add to navigation stack
             if (!_navigationStacks.ContainsKey(parentContainer))
@@ -408,117 +481,126 @@ namespace BreakoutGame.Game
             VerticalOptions = LayoutOptions.Fill;
             ZIndex = 200;
 
-            // Create dimmer layer (background overlay)
-            //_dimmerLayer = new SkiaLayout()
-            //{
-            //    HorizontalOptions = LayoutOptions.Fill,
-            //    VerticalOptions = LayoutOptions.Fill,
-            //    BackgroundColor = Color.Parse("#33000000"),
-            //    ZIndex = -1,
-            //    UseCache = SkiaCacheType.Operations
-            //};
-
-            //frame deco
-            SkiaControl frameDeco;
-            //backdrop
-            SkiaControl frameBackdrop;
-            //frame content
-            SkiaControl frameContent;
-
-            // Create dialog frame (the actual dialog content)
-            // not cached
-            _dialogFrame = new SkiaLayout()
-            {
-                Margin = 50,
-                HorizontalOptions = LayoutOptions.Center,
-                VerticalOptions = LayoutOptions.Center,
-                MinimumHeightRequest = 50,
-                //WidthRequest = 330,
-                Children = new List<SkiaControl>()
-                {
-                    //shape A - background texture for frosted effect
-                    //plus shadow
-                    //cached layer
-                    new SkiaShape()
-                    {
-                        UseCache = SkiaCacheType.Image,
-                        BackgroundColor = Color.Parse("#10ffffff"),
-                        CornerRadius = 8,
-                        HorizontalOptions = LayoutOptions.Fill,
-                        VerticalOptions = LayoutOptions.Fill,
-                        StrokeColor = Colors.Red,
-                        StrokeWidth = 2,
-                        StrokeGradient = new SkiaGradient()
-                        {
-                            Opacity = 0.99f,
-                            StartXRatio = 0.2f,
-                            EndXRatio = 0.5f,
-                            StartYRatio = 0.0f,
-                            EndYRatio = 1f,
-                            Colors = new Color[]
-                            {
-                                Color.Parse("#ffffff"),
-                                Color.Parse("#999999"),
-                            }
-                        },
-                        Children =
-                        {
-                            new SkiaImage()
-                            {
-                                Opacity = 0.25,
-                                Source = "Images/glass.jpg",
-                                HorizontalOptions = LayoutOptions.Fill,
-                                VerticalOptions = LayoutOptions.Fill,
-                            }
-                        },
-                        //VisualEffects =
-                        //{ 
-                        //    new BlurEffect()
-                        //    {
-                        //        Amount = 3
-                        //    }
-                        //}
-                    },
-
-                    //shape B = backdrop
-                    new SkiaShape()
-                    {
-                        CornerRadius = 13,
-                        HorizontalOptions = LayoutOptions.Fill,
-                        VerticalOptions = LayoutOptions.Fill,
-                        //StrokeColor = Color.Parse("#ffffff"),
-                        //StrokeWidth = -1,
-                        Children =
-                        {
-                            new SkiaBackdrop()
-                            {
-                                Blur = 4,
-                                HorizontalOptions = LayoutOptions.Fill,
-                                VerticalOptions = LayoutOptions.Fill,
-                            }
-                        }
-                    },
-
-                    // Content layout
-                    new SkiaLayout()
-                    {
-                        ZIndex = 1,
-                        HorizontalOptions = LayoutOptions.Fill, //todo required for some reason here, check why and fix
-                        UseCache = SkiaCacheType.Image,
-                        Type = LayoutType.Column,
-                        Padding = 24,
-                        Spacing = 28,
-                        Children = CreateContentChildren()
-                    }.Assign(out frameContent)
-                }
-            };
-
-            Children = new List<SkiaControl>()
-            {
-                //_dimmerLayer,
-                _dialogFrame
-            };
+            // Always use template system (default is Game template which recreates original design)
+            SetupDialogWithTemplate();
         }
+
+        protected virtual void SetupDialogWithTemplate()
+        {
+            // Create backdrop if template provides one
+            if (_template.CreateBackdrop != null)
+            {
+                _dimmerLayer = _template.CreateBackdrop();
+            }
+
+            // Create dialog frame using template
+            if (_template.CreateDialogFrame != null)
+            {
+                _dialogFrame = _template.CreateDialogFrame(_content, _okText, _cancelText);
+
+                // Wire up button callbacks for template-created dialogs
+                WireUpButtonCallbacks(_dialogFrame);
+            }
+            else
+            {
+                throw new InvalidOperationException("Template must provide CreateDialogFrame");
+            }
+
+            // Add children
+            var children = new List<SkiaControl>();
+            if (_dimmerLayer != null)
+            {
+                children.Add(_dimmerLayer);
+            }
+            children.Add(_dialogFrame);
+
+            Children = children;
+        }
+
+        private void WireUpButtonCallbacks(SkiaControl container)
+        {
+            // Recursively find and wire up buttons
+            foreach (var child in container.Views)
+            {
+                if (child is SkiaButton button)
+                {
+                    // Check if this is an OK or Cancel button based on text
+                    if (button.Text == _okText)
+                    {
+                        button.OnTapped(async (me) =>
+                        {
+                            System.Diagnostics.Debug.WriteLine($"GameDialog: OK button tapped, auto-closing dialog");
+                            await CloseWithOkAsync();
+                        });
+                    }
+                    else if (button.Text == _cancelText)
+                    {
+                        button.OnTapped(async (me) =>
+                        {
+                            System.Diagnostics.Debug.WriteLine($"GameDialog: Cancel button tapped, auto-closing dialog");
+                            await CloseWithCancelAsync();
+                        });
+                    }
+                }
+                else if (child is SkiaShape shape && shape.Views.Count > 0)
+                {
+                    // Check if this is a UiElements.Button (SkiaShape with SkiaMarkdownLabel)
+                    var label = shape.Views.FirstOrDefault(v => v is SkiaMarkdownLabel) as SkiaMarkdownLabel;
+                    if (label?.Text == _okText)
+                    {
+                        // Override the gesture handler for OK button
+                        shape.WithGestures((me, args, b) =>
+                        {
+                            if (args.Type == TouchActionResult.Tapped)
+                            {
+                                System.Diagnostics.Debug.WriteLine($"GameDialog: OK button (UiElements.Button) tapped, auto-closing dialog");
+                                _ = CloseWithOkAsync();
+                            }
+                            else if (args.Type == TouchActionResult.Down)
+                            {
+                                UiElements.SetButtonPressed(me);
+                            }
+                            else if (args.Type == TouchActionResult.Up)
+                            {
+                                UiElements.SetButtonReleased(me);
+                            }
+                            return me;
+                        });
+                    }
+                    else if (label?.Text == _cancelText)
+                    {
+                        // Override the gesture handler for Cancel button
+                        shape.WithGestures((me, args, b) =>
+                        {
+                            if (args.Type == TouchActionResult.Tapped)
+                            {
+                                System.Diagnostics.Debug.WriteLine($"GameDialog: Cancel button (UiElements.Button) tapped, auto-closing dialog");
+                                _ = CloseWithCancelAsync();
+                            }
+                            else if (args.Type == TouchActionResult.Down)
+                            {
+                                UiElements.SetButtonPressed(me);
+                            }
+                            else if (args.Type == TouchActionResult.Up)
+                            {
+                                UiElements.SetButtonReleased(me);
+                            }
+                            return me;
+                        });
+                    }
+                }
+
+                // Recursively search child containers
+                if (child.Views.Count > 0)
+                {
+                    WireUpButtonCallbacks(child);
+                }
+            }
+        }
+
+
+
+
 
 
         protected virtual List<SkiaControl> CreateContentChildren()
@@ -603,14 +685,14 @@ namespace BreakoutGame.Game
             };
         }
 
-        static void SetButtonPressed(SkiaShape btn)
+        public static void SetButtonPressed(SkiaShape btn)
         {
             btn.Children[0].TranslationX = 1;
             btn.Children[0].TranslationY = 1;
             btn.BevelType = BevelType.Emboss;
         }
 
-        static void SetButtonReleased(SkiaShape btn)
+        public static void SetButtonReleased(SkiaShape btn)
         {
             btn.Children[0].TranslationX = 0;
             btn.Children[0].TranslationY = 0;

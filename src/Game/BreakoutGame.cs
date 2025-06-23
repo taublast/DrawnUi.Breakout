@@ -48,6 +48,8 @@ namespace BreakoutGame.Game
 
         public BreakoutGame()
         {
+            InitDialogs();
+
             HorizontalOptions = LayoutOptions.Fill;
             VerticalOptions = LayoutOptions.Fill;
             BackgroundColor = Colors.DarkSlateBlue;
@@ -764,6 +766,47 @@ namespace BreakoutGame.Game
                 onCancel: () => {
                     // Cancel everything
                     _ = GameDialog.PopAll(this);
+                });
+        }
+
+        // Example of using different dialog themes
+        void ShowThemeExamples()
+        {
+            var content = new SkiaLabel()
+            {
+                Text = "Choose a dialog theme to preview:",
+                TextColor = Colors.White,
+                FontSize = 16,
+                HorizontalTextAlignment = DrawTextAlignment.Center,
+                HorizontalOptions = LayoutOptions.Fill,
+            };
+
+            // Show theme selection dialog using default Game theme
+            GameDialog.Show(this, content, "MODERN", "RETRO",
+                onOk: () => {
+                    // Show Modern theme example
+                    var modernContent = new SkiaLabel()
+                    {
+                        Text = "This is the Modern theme!\nClean, contemporary styling with smooth animations.",
+                        TextColor = Colors.Black,
+                        FontSize = 16,
+                        HorizontalTextAlignment = DrawTextAlignment.Center,
+                        HorizontalOptions = LayoutOptions.Fill,
+                    };
+                    GameDialog.Show(this, modernContent, "NICE!", template: DialogThemes.Modern);
+                },
+                onCancel: () => {
+                    // Show Retro theme example
+                    var retroContent = new SkiaLabel()
+                    {
+                        Text = "This is the Retro theme!\nTerminal-style green text on black background.",
+                        TextColor = Colors.LimeGreen,
+                        FontSize = 14,
+                        FontFamily = "FontGame",
+                        HorizontalTextAlignment = DrawTextAlignment.Center,
+                        HorizontalOptions = LayoutOptions.Fill,
+                    };
+                    GameDialog.Show(this, retroContent, "COOL!", template: DialogThemes.Retro);
                 });
         }
 
@@ -1882,9 +1925,145 @@ namespace BreakoutGame.Game
         }
 
         #endregion
+
+        #region DIALOGS
+
+        void InitDialogs()
+        {
+            GameDialog.DefaultTemplate = new DialogTemplate
+            {
+                CreateBackdrop = () => null,
+
+                CreateDialogFrame = (content, okText, cancelText) => new SkiaLayout
+                {
+                    Margin = 50,
+                    HorizontalOptions = LayoutOptions.Center,
+                    VerticalOptions = LayoutOptions.Center,
+                    MinimumHeightRequest = 50,
+                    Children = new List<SkiaControl>
+                {
+                    //shape A - background texture for frosted effect plus shadow (cached layer)
+                    new SkiaShape()
+                    {
+                        UseCache = SkiaCacheType.Image,
+                        BackgroundColor = Color.Parse("#10ffffff"),
+                        CornerRadius = 8,
+                        HorizontalOptions = LayoutOptions.Fill,
+                        VerticalOptions = LayoutOptions.Fill,
+                        StrokeColor = Colors.Red,
+                        StrokeWidth = 2,
+                        StrokeGradient = new SkiaGradient()
+                        {
+                            Opacity = 0.99f,
+                            StartXRatio = 0.2f,
+                            EndXRatio = 0.5f,
+                            StartYRatio = 0.0f,
+                            EndYRatio = 1f,
+                            Colors = new Color[]
+                            {
+                                Color.Parse("#ffffff"),
+                                Color.Parse("#999999"),
+                            }
+                        },
+                        Children =
+                        {
+                            new SkiaImage()
+                            {
+                                Opacity = 0.25,
+                                Source = "Images/glass.jpg",
+                                HorizontalOptions = LayoutOptions.Fill,
+                                VerticalOptions = LayoutOptions.Fill,
+                            }
+                        }
+                    },
+
+                    //shape B = backdrop
+                    new SkiaShape()
+                    {
+                        CornerRadius = 13,
+                        HorizontalOptions = LayoutOptions.Fill,
+                        VerticalOptions = LayoutOptions.Fill,
+                        Children =
+                        {
+                            new SkiaBackdrop()
+                            {
+                                Blur = 4,
+                                HorizontalOptions = LayoutOptions.Fill,
+                                VerticalOptions = LayoutOptions.Fill,
+                            }
+                        }
+                    },
+
+                    // Content
+                    new SkiaLayout()
+                    {
+                        ZIndex = 1,
+                        HorizontalOptions = LayoutOptions.Fill,
+                        UseCache = SkiaCacheType.Image,
+                        Type = LayoutType.Column,
+                        Padding = 24,
+                        Spacing = 28,
+                        Children = CreateDialogContent(content, okText, cancelText)
+                    }
+                }
+                }
+            };
+        }
+
+        private static List<SkiaControl> CreateDialogContent(SkiaControl content, string okText, string cancelText)
+        {
+            var children = new List<SkiaControl>();
+
+            // Add the main content
+            if (content != null)
+            {
+                content.VerticalOptions = LayoutOptions.Start;
+                children.Add(content);
+            }
+
+            // Create buttons layout exactly like the original
+            var buttonsLayout = new SkiaLayout()
+            {
+                Type = LayoutType.Row,
+                Margin = new(0, 8, 0, 8),
+                HorizontalOptions = LayoutOptions.Center,
+                Spacing = 16,
+                Children =
+                {
+                    // OK button using UiElements.Button (original design)
+                    // Callbacks will be wired up by WireUpButtonCallbacks method
+                    UiElements.Button(okText, () => { /* Placeholder - will be overridden */ })
+                }
+            };
+
+            // Cancel button (optional) - exactly like original
+            if (!string.IsNullOrEmpty(cancelText))
+            {
+                var cancelButton = new SkiaButton()
+                {
+                    Text = cancelText,
+                    FontSize = 14,
+                    FontFamily = "FontGame",
+                    TextColor = Colors.White,
+                    BackgroundColor = Colors.DarkRed,
+                    WidthRequest = -1,
+                    MinimumWidthRequest = 100,
+                };
+                // Callbacks will be wired up by WireUpButtonCallbacks method
+
+                buttonsLayout.Add(cancelButton);
+            }
+
+            children.Add(buttonsLayout);
+            return children;
+        }
+
+
+        #endregion
+
     }
 
 
- 
+
 
 }
