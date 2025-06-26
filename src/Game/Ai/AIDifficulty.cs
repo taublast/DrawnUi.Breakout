@@ -1,4 +1,4 @@
-namespace BreakoutGame.Game;
+namespace BreakoutGame.Game.Ai;
 
 /// <summary>
 /// Represents AI difficulty levels for demo play

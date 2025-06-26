@@ -5,6 +5,8 @@ using SkiaSharp;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using DrawnUi.Draw;
+using BreakoutGame.Game.Dialogs;
+using BreakoutGame.Game.Ai;
 
 namespace BreakoutGame.Game
 {
@@ -32,7 +34,7 @@ namespace BreakoutGame.Game
         /// Compile-time flag to enable raycasting collision detection instead of AABB intersection
         /// Set to true to use raycasting, false to use traditional AABB collision detection
         /// </summary>
-        public static bool USE_RAYCAST_COLLISION = true;
+        public static bool USE_RAYCAST_COLLISION = false; //todo fix bugs
 
         #endregion
 
@@ -41,61 +43,24 @@ namespace BreakoutGame.Game
         private AIPaddleController _aiController;
         public AIPaddleController AIController => _aiController ??= new AIPaddleController(this, AIDifficulty.Medium);
 
-        public GameAudioService? _audioService;
+        public AudioMixerService? _audioService;
         public BallSprite Ball;
         public PaddleSprite Paddle;
         private SkiaLabel LabelScore;
 
+        protected SkiaLayout GameField;
+
         public BreakoutGame()
         {
-            InitDialogs();
-
-            HorizontalOptions = LayoutOptions.Fill;
-            VerticalOptions = LayoutOptions.Fill;
-            BackgroundColor = Colors.DarkSlateBlue;
-
-            Children = new List<SkiaControl>()
-            {
-                new BallSprite()
-                {
-                    ZIndex = 4
-                }.Assign(out Ball),
-
-                new PaddleSprite()
-                {
-                    ZIndex = 5,
-                    Top = -28
-                }.Assign(out Paddle),
-
-                new SkiaLabel()
-                {
-                    ZIndex = 110,
-                    UseCache = SkiaCacheType.GPU,
-                    Margin = 16,
-                    FontFamily = "FontGame",
-                    FontSize = 19,
-                    StrokeColor = AmstradColors.DarkBlue,
-                    TextColor = AmstradColors.White,
-                    DropShadowColor = Colors.DarkBlue,
-                    DropShadowOffsetX = 2,
-                    DropShadowOffsetY = 2,
-                    DropShadowSize = 2,
-                    FillGradient = new()
-                    {
-                        Colors = new List<Color>()
-                        {
-                            Colors.White,
-                            Colors.CornflowerBlue
-                        }
-                    }
-                }.Assign(out LabelScore)
-            };
+            CreateUi();
 
             BindingContext = this;
 
             Instance = this;
 
-            //_ = InitializeAudioAsync();
+            InitDialogs();
+
+            _ = InitializeAudioAsync();
 
             _aiController = new AIPaddleController(this, AIDifficulty.Hard);
 
@@ -105,6 +70,13 @@ namespace BreakoutGame.Game
         }
 
         #endregion
+
+        public override void OnWillDisposeWithChildren()
+        {
+            _audioService?.Dispose();
+
+            base.OnWillDisposeWithChildren();
+        }
 
         #region AUDIO
 
@@ -131,22 +103,14 @@ namespace BreakoutGame.Game
             switch (sound)
             {
                 case Sound.Board:
-                    _audioService.PlaySpatialSound("board", position, 1f);
-                    break;
                 case Sound.Brick:
-                    //_audioService.PlaySound("brick", 0.66f);
-                    _audioService.PlaySound("brick", 1.2f);
-            break;
+                    _audioService.PlaySpatialSound("collide", position);
+                    break;
                 case Sound.Wall:
-            //_audioService.PlaySpatialSound("board", position, 0.5f);
-            _audioService.PlaySpatialSound("board", position, 0.75f);
-            break;
+                    _audioService.PlaySpatialSound("collide", position, 0.75f);
+                    break;
                 case Sound.Oops:
                     _audioService.PlaySound("oops", 1.0f);
-
-                    //Debug.WriteLine("**********************************");
-                    //Debug.WriteLine($"SOUNDS {_audioService.GetActivePlayerCount()}");
-                    //Debug.WriteLine("**********************************");
 
                     break;
                 case Sound.Start:
@@ -157,16 +121,19 @@ namespace BreakoutGame.Game
 
         private async Task InitializeAudioAsync()
         {
-            var audioService = new GameAudioService(Plugin.Maui.Audio.AudioManager.Current);
+            var audioService = new AudioMixerService(Plugin.Maui.Audio.AudioManager.Current);
 
-            // Preload all game sounds
+            // Preload
+            //will keep
+            await audioService.PreloadSoundAsync("oops", "Fx/ballout.mp3");
+            await audioService.PreloadSoundAsync("collide", "Fx/bricksynth.wav");
+
+            //maybe
             await audioService.PreloadSoundAsync("brick", "Sounds/tik.wav");
-            await audioService.PreloadSoundAsync("board", "Sounds/bricksynth.wav");
             await audioService.PreloadSoundAsync("board2", "Sounds/bricksynth2.wav");
             await audioService.PreloadSoundAsync("board3", "Sounds/bricksynth3.wav");
             await audioService.PreloadSoundAsync("wall", "Sounds/brickglass.wav");
             await audioService.PreloadSoundAsync("start", "Sounds/gamestart.wav");
-            await audioService.PreloadSoundAsync("oops", "Sounds/kill.wav");
             await audioService.PreloadSoundAsync("ball", "Sounds/pong.wav");
             await audioService.PreloadSoundAsync("bip", "Sounds/bip.wav");
             await audioService.PreloadSoundAsync("bip1", "Sounds/bip1.wav");
@@ -175,16 +142,63 @@ namespace BreakoutGame.Game
             await audioService.PreloadSoundAsync("one", "Sounds/one.wav");
             await audioService.PreloadSoundAsync("two", "Sounds/two.wav");
 
+            // Preload background music
+
+            await audioService.PreloadSoundAsync("demo", "Music/demoHypnoticPuzzle4.mp3");
+            await audioService.PreloadSoundAsync("play", "Music/lvl1PixelCityGroovin.mp3");
+
             _audioService = audioService;
 
-            // Start background music
-            //_audioService.PlaySound("background", 0.5f, 0f, true);
+            StartBackgroundMusic(0);
         }
 
         public void ToggleSound()
         {
             _audioService.IsMuted = !_audioService.IsMuted;
         }
+
+        /// <summary>
+        /// Starts the background music loop
+        /// </summary>
+        public void StartBackgroundMusic(int lvl)
+        {
+            if (_audioService == null)
+            {
+                return;
+            }
+
+            _audioService.StopBackgroundMusic();
+            if (lvl > 0)
+            {
+                _audioService?.StartBackgroundMusic("play", 0.5f);
+            }
+            else
+            {
+                _audioService?.StartBackgroundMusic("demo", 0.5f);
+            }
+        }
+
+        /// <summary>
+        /// Stops the background music
+        /// </summary>
+        public void StopBackgroundMusic()
+        {
+            _audioService?.StopBackgroundMusic();
+        }
+
+        /// <summary>
+        /// Sets the background music volume
+        /// </summary>
+        /// <param name="volume">Volume level (0.0 to 1.0)</param>
+        public void SetBackgroundMusicVolume(float volume)
+        {
+            _audioService?.SetSoundVolume("background", volume);
+        }
+
+        /// <summary>
+        /// Gets whether background music is currently playing
+        /// </summary>
+        public bool IsBackgroundMusicPlaying => _audioService?.IsBackgroundMusicPlaying == true;
 
         #endregion
 
@@ -403,7 +417,7 @@ namespace BreakoutGame.Game
 
             lock (_lockSpritesToBeRemovedLater)
             {
-                foreach (var control in Views)
+                foreach (var control in GameField.Views)
                 {
                     if (control is BrickSprite)
                     {
@@ -548,12 +562,14 @@ namespace BreakoutGame.Game
         {
             StartNewGame();
             State = GameState.DemoPlay;
+            StartBackgroundMusic(0);
         }
 
         public void StartNewGamePlayer()
         {
             StartNewGame();
             State = GameState.Playing;
+            StartBackgroundMusic(1);
         }
 
 
@@ -578,11 +594,7 @@ namespace BreakoutGame.Game
             // Start demo mode - bot plays behind the welcome dialog
             StartDemoMode();
 
-            // Show welcome dialog
-            GameDialog.Show(this, UiElements.DialogPrompt("Welcome to Breakout!\nUse mouse or touch to move the paddle. Break all the bricks to win!"), "START GAME", onOk: () =>
-            {
-                StartNewGamePlayer();
-            });
+            ShowWelcomeDialog();
         }
 
         void StartDemoMode()
@@ -609,7 +621,7 @@ namespace BreakoutGame.Game
             // Clear all bricks
             lock (_lockSpritesToBeRemovedLater)
             {
-                foreach (var control in Views)
+                foreach (var control in GameField.Views)
                 {
                     if (control is BrickSprite)
                     {
@@ -617,6 +629,7 @@ namespace BreakoutGame.Game
                     }
                 }
             }
+
             ProcessSpritesToBeRemoved();
 
             // Reset ball and continue demo
@@ -631,25 +644,6 @@ namespace BreakoutGame.Game
             Update();
         }
 
-        void ShowGameOverDialog()
-        {
-            // Show game over dialog
-            var gameOverContent = new SkiaLabel()
-            {
-                Text = $"Game Over!\nFinal Score: {Score}\nBetter luck next time!",
-                TextColor = Colors.White,
-                FontSize = 16,
-                HorizontalTextAlignment = DrawTextAlignment.Center,
-                HorizontalOptions = LayoutOptions.Fill,
-            };
-
-            GameDialog.Show(this, gameOverContent, "PLAY AGAIN", "QUIT",
-                onOk: () => ResetGame(),
-                onCancel: () => {
-                    // Could navigate back or close the game
-                });
-        }
-
         void ResetGame()
         {
             // Reset game state
@@ -661,7 +655,7 @@ namespace BreakoutGame.Game
             // Clear all bricks
             lock (_lockSpritesToBeRemovedLater)
             {
-                foreach (var control in Views)
+                foreach (var control in GameField.Views)
                 {
                     if (control is BrickSprite)
                     {
@@ -669,6 +663,7 @@ namespace BreakoutGame.Game
                     }
                 }
             }
+
             ProcessSpritesToBeRemoved();
 
             // Reset ball
@@ -678,148 +673,6 @@ namespace BreakoutGame.Game
             // Start new level
             StartNewLevel();
             Update();
-        }
-
-        async void ShowLevelCompleteDialog()
-        {
-            // Show level complete dialog
-            var levelCompleteContent = new SkiaLabel()
-            {
-                Text = $"Level {Level - 1} Complete!\nScore: {Score}\nGet ready for Level {Level}!",
-                TextColor = Colors.White,
-                FontSize = 16,
-                HorizontalTextAlignment = DrawTextAlignment.Center,
-                HorizontalOptions = LayoutOptions.Fill,
-                VerticalOptions = LayoutOptions.Center
-            };
-
-            if (await GameDialog.ShowAsync(this, levelCompleteContent, "CONTINUE")) 
-            {
-                // Start the new level
-                StartNewLevel();
-                State = GameState.Playing;
-                StartLoop();
-            }
-        }
-
-        // Example of using the async dialog method
-        async void ShowExampleAsyncDialog()
-        {
-            var content = new SkiaLabel()
-            {
-                Text = "Do you want to continue?",
-                TextColor = Colors.White,
-                FontSize = 16,
-                HorizontalTextAlignment = DrawTextAlignment.Center,
-                HorizontalOptions = LayoutOptions.Fill,
-            };
-
-            bool result = await GameDialog.ShowAsync(this, content, "YES", "NO");
-
-            if (result)
-            {
-                // User clicked YES
-                // Do something...
-            }
-            else
-            {
-                // User clicked NO
-                // Do something else...
-            }
-        }
-
-        // Example of using the navigation stack
-        void ShowStackedDialogs()
-        {
-            // Push first dialog
-            var content1 = new SkiaLabel()
-            {
-                Text = "This is the first dialog",
-                TextColor = Colors.White,
-                FontSize = 16,
-                HorizontalTextAlignment = DrawTextAlignment.Center,
-                HorizontalOptions = LayoutOptions.Fill,
-            };
-
-            GameDialog.Push(this, content1, "NEXT", "CANCEL",
-                onOk: () => {
-                    // Push second dialog
-                    var content2 = new SkiaLabel()
-                    {
-                        Text = "This is the second dialog",
-                        TextColor = Colors.White,
-                        FontSize = 16,
-                        HorizontalTextAlignment = DrawTextAlignment.Center,
-                        HorizontalOptions = LayoutOptions.Fill,
-                    };
-
-                    GameDialog.Push(this, content2, "FINISH", "BACK",
-                        onOk: () => {
-                            // Pop all dialogs
-                            _ = GameDialog.PopAll(this);
-                        },
-                        onCancel: () => {
-                            // Pop just this dialog (go back to first)
-                            _ = GameDialog.Pop(this);
-                        });
-                },
-                onCancel: () => {
-                    // Cancel everything
-                    _ = GameDialog.PopAll(this);
-                });
-        }
-
-        // Example of using different dialog themes
-        void ShowThemeExamples()
-        {
-            var content = new SkiaLabel()
-            {
-                Text = "Choose a dialog theme to preview:",
-                TextColor = Colors.White,
-                FontSize = 16,
-                HorizontalTextAlignment = DrawTextAlignment.Center,
-                HorizontalOptions = LayoutOptions.Fill,
-            };
-
-            // Show theme selection dialog using default Game theme
-            GameDialog.Show(this, content, "MODERN", "RETRO",
-                onOk: () => {
-                    // Show Modern theme example
-                    var modernContent = new SkiaLabel()
-                    {
-                        Text = "This is the Modern theme!\nClean, contemporary styling with smooth animations.",
-                        TextColor = Colors.Black,
-                        FontSize = 16,
-                        HorizontalTextAlignment = DrawTextAlignment.Center,
-                        HorizontalOptions = LayoutOptions.Fill,
-                    };
-                    GameDialog.Show(this, modernContent, "NICE!", template: DialogThemes.Modern);
-                },
-                onCancel: () => {
-                    // Show Retro theme example
-                    var retroContent = new SkiaLabel()
-                    {
-                        Text = "This is the Retro theme!\nTerminal-style green text on black background.",
-                        TextColor = Colors.LimeGreen,
-                        FontSize = 14,
-                        FontFamily = "FontGame",
-                        HorizontalTextAlignment = DrawTextAlignment.Center,
-                        HorizontalOptions = LayoutOptions.Fill,
-                    };
-                    GameDialog.Show(this, retroContent, "COOL!", template: DialogThemes.Retro);
-                });
-        }
-
-        /// <summary>
-        /// Score can change several times per frame
-        /// so we dont want bindings to update the score toooften.
-        /// Instead we update the display manually once after the frame is finalized.
-        /// </summary>
-        void UpdateScore()
-        {
-            var collisionSystem = USE_RAYCAST_COLLISION ? "RAYCAST" : "AABB";
-            LabelScore.Text = $"{ScoreLocalized} | {collisionSystem}";
-            //LabelHiScore.Text = HiScoreLocalized;
         }
 
         #endregion
@@ -931,7 +784,6 @@ namespace BreakoutGame.Game
         {
             base.GameLoop(deltaSeconds);
 
-
             float cappedDelta = deltaSeconds; //Math.Min(deltaSeconds, 0.05f); 
 
             while (GameKeysQueue.Count > 0)
@@ -940,7 +792,7 @@ namespace BreakoutGame.Game
             }
 
 
-            if ((State == GameState.DemoPlay 
+            if ((State == GameState.DemoPlay
                  || State == GameState.Playing) && levelReady)
             {
                 if (CheckStateChanged())
@@ -959,7 +811,7 @@ namespace BreakoutGame.Game
                 //----
 
                 // collision detection
-                foreach (var x in this.Views)
+                foreach (var x in this.GameField.Views)
                 {
                     //collide ball vs everything and update ball position
                     if (x is BallSprite ball && ball.IsActive)
@@ -973,7 +825,7 @@ namespace BreakoutGame.Game
                                 ballCollided = DetectCollisionsWithRaycast(ball, cappedDelta);
 
                                 // Count bricks for level completion check
-                                foreach (var view in Views)
+                                foreach (var view in GameField.Views)
                                 {
                                     if (view is BrickSprite brick && brick.IsActive)
                                     {
@@ -986,7 +838,7 @@ namespace BreakoutGame.Game
                                 // Use traditional AABB collision detection
                                 if (!ballCollided && ball.IsActive)
                                 {
-                                    foreach (var view in Views)
+                                    foreach (var view in GameField.Views)
                                     {
                                         if (view is BrickSprite brick && brick.IsActive)
                                         {
@@ -1017,14 +869,14 @@ namespace BreakoutGame.Game
                             break;
                         }
 
-                        if (State == GameState.Playing || State== GameState.DemoPlay)
+                        if (State == GameState.Playing || State == GameState.DemoPlay)
                         {
                             //paddle(s) - only for traditional collision detection (raycast handles this in DetectCollisionsWithRaycast)
                             if (!USE_RAYCAST_COLLISION && !ballCollided && ball.IsActive)
                             {
                                 if (MathF.Sin(ball.Angle) > 0) //only if ball moves downward
                                 {
-                                    foreach (var view in Views)
+                                    foreach (var view in GameField.Views)
                                     {
                                         if (view is PaddleSprite paddle && paddle.IsActive)
                                         {
@@ -1054,8 +906,7 @@ namespace BreakoutGame.Game
                                     ballCollided = true;
                                 }
                                 // Right wall
-                                else
-                                if (ballRect.Right > Width)
+                                else if (ballRect.Right > Width)
                                 {
                                     var penetration = ballRect.Right - Width;
                                     Ball.MoveOffset(-penetration * 1.1f, 0);
@@ -1122,12 +973,13 @@ namespace BreakoutGame.Game
                     }
                 }
 
-                if (bricksChecked < 1 || BricksLeft == 0)
+                if ((State == GameState.Playing || State == GameState.DemoPlay) &&
+                    (bricksChecked < 1 || BricksLeft == 0))
                 {
                     _levelCompletionPending++;
 
                     //make sure we show few frames after the final collision was detected
-                    if (_levelCompletionPending > 20) 
+                    if (_levelCompletionPending > 20)
                     {
                         State = GameState.LevelComplete;
                         _levelCompletionPending = 0;
@@ -1138,7 +990,7 @@ namespace BreakoutGame.Game
                 {
                     AIController.UpdateAI(cappedDelta);
                 }
-                
+
                 if (State == GameState.Playing || State == GameState.DemoPlay)
                 {
                     // --
@@ -1169,7 +1021,7 @@ namespace BreakoutGame.Game
             {
                 foreach (var add in _spritesToBeAdded)
                 {
-                    AddSubView(add);
+                    GameField.AddSubView(add);
                 }
 
                 _spritesToBeAdded.Clear();
@@ -1444,7 +1296,7 @@ namespace BreakoutGame.Game
             var collisionTargets = new List<IWithHitBox>();
 
             // Add bricks
-            foreach (var view in Views)
+            foreach (var view in GameField.Views)
             {
                 if (view is BrickSprite brick && brick.IsActive)
                 {
@@ -1456,7 +1308,7 @@ namespace BreakoutGame.Game
             // Add paddle (only if ball is moving downward)
             if (MathF.Sin(ball.Angle) > 0)
             {
-                foreach (var view in Views)
+                foreach (var view in GameField.Views)
                 {
                     if (view is PaddleSprite paddle && paddle.IsActive)
                     {
@@ -1467,10 +1319,12 @@ namespace BreakoutGame.Game
             }
 
             // Check for collisions with objects
-            var objectHit = RaycastCollision.CastRay(ballPosition, ballDirection, maxDistance, ballRadius, collisionTargets);
+            var objectHit =
+                RaycastCollision.CastRay(ballPosition, ballDirection, maxDistance, ballRadius, collisionTargets);
 
             // Check for wall collisions
-            var wallHit = RaycastCollision.CheckWallCollision(ballPosition, ballDirection, ballRadius, maxDistance, (float)Width, (float)Height);
+            var wallHit = RaycastCollision.CheckWallCollision(ballPosition, ballDirection, ballRadius, maxDistance,
+                (float)Width, (float)Height);
 
             // Determine which collision happens first
             RaycastCollision.RaycastHit firstHit = RaycastCollision.RaycastHit.None;
@@ -1520,59 +1374,60 @@ namespace BreakoutGame.Game
             // System.Diagnostics.Debug.WriteLine($"Wall collision: {hit.Face}");
             switch (hit.Face)
             {
-            case CollisionFace.Left:
-            // Check for shallow angle and use larger penetration if needed
-            var leftPenetration = MathF.Abs(MathF.Cos(ball.Angle)) < 0.15f ? 6.0f : 2.0f;
-            Ball.MoveOffset(leftPenetration * 1.1f, 0);
-            ball.Angle = MathF.PI - ball.Angle;
-            PlaySound(Sound.Wall, new Vector3(-1.0f, 0f, -1f));
-            break;
-            case CollisionFace.Right:
-            // Check for shallow angle and use larger penetration if needed  
-            var rightPenetration = MathF.Abs(MathF.Cos(ball.Angle)) < 0.15f ? 6.0f : 2.0f;
-            Ball.MoveOffset(-rightPenetration * 1.1f, 0);
-            ball.Angle = MathF.PI - ball.Angle;
-            PlaySound(Sound.Wall, new Vector3(2.0f, 0f, -1f));
-            break;
-            case CollisionFace.Bottom:
-            // Ball hit TOP wall (collision face is bottom of the wall)
-            var topPenetration = 2.0f;
-            Ball.MoveOffset(0, topPenetration * 1.1f);
-            ball.Angle = -ball.Angle;
-            PlaySound(Sound.Wall);
-            break;
-            case CollisionFace.Top:
-            // Ball hit BOTTOM wall (collision face is top of the wall) - game over logic
-            PlaySound(Sound.Oops);
-            if (CHEAT_INVULNERABLE)
-            {
-                ResetBall();
-            }
-            else
-            {
-                Lives--;
-                if (Lives <= 0)
-                {
-                    if (State == GameState.DemoPlay)
+                case CollisionFace.Left:
+                    // Check for shallow angle and use larger penetration if needed
+                    var leftPenetration = MathF.Abs(MathF.Cos(ball.Angle)) < 0.15f ? 6.0f : 2.0f;
+                    Ball.MoveOffset(leftPenetration * 1.1f, 0);
+                    ball.Angle = MathF.PI - ball.Angle;
+                    PlaySound(Sound.Wall, new Vector3(-1.0f, 0f, -1f));
+                    break;
+                case CollisionFace.Right:
+                    // Check for shallow angle and use larger penetration if needed  
+                    var rightPenetration = MathF.Abs(MathF.Cos(ball.Angle)) < 0.15f ? 6.0f : 2.0f;
+                    Ball.MoveOffset(-rightPenetration * 1.1f, 0);
+                    ball.Angle = MathF.PI - ball.Angle;
+                    PlaySound(Sound.Wall, new Vector3(2.0f, 0f, -1f));
+                    break;
+                case CollisionFace.Bottom:
+                    // Ball hit TOP wall (collision face is bottom of the wall)
+                    var topPenetration = 2.0f;
+                    Ball.MoveOffset(0, topPenetration * 1.1f);
+                    ball.Angle = -ball.Angle;
+                    PlaySound(Sound.Wall);
+                    break;
+                case CollisionFace.Top:
+                    // Ball hit BOTTOM wall (collision face is top of the wall) - game over logic
+                    PlaySound(Sound.Oops);
+                    if (CHEAT_INVULNERABLE)
                     {
-                        // In demo mode, restart from level 1 without showing dialog
-                        RestartDemoMode();
+                        ResetBall();
                     }
                     else
                     {
-                        State = GameState.Ended;
-                        Task.Delay(1500).ContinueWith(_ =>
+                        Lives--;
+                        if (Lives <= 0)
                         {
-                            MainThread.BeginInvokeOnMainThread(() => ShowGameOverDialog());
-                        });
+                            if (State == GameState.DemoPlay)
+                            {
+                                // In demo mode, restart from level 1 without showing dialog
+                                RestartDemoMode();
+                            }
+                            else
+                            {
+                                State = GameState.Ended;
+                                Task.Delay(1500).ContinueWith(_ =>
+                                {
+                                    MainThread.BeginInvokeOnMainThread(() => ShowGameOverDialog());
+                                });
+                            }
+                        }
+                        else
+                        {
+                            ResetBall();
+                        }
                     }
-                }
-                else
-                {
-                    ResetBall();
-                }
-            }
-            break;
+
+                    break;
             }
         }
 
@@ -1594,8 +1449,6 @@ namespace BreakoutGame.Game
                 CollideBallAndPaddle(paddle, ball);
             }
         }
-
-
 
         #endregion
 
@@ -1627,15 +1480,14 @@ namespace BreakoutGame.Game
         public void ApplyGameKey(GameKey gameKey)
         {
             // For playing state, set movement flags
-            if (State == GameState.Playing || State== GameState.DemoPlay)
+            if (State == GameState.Playing || State == GameState.DemoPlay)
             {
                 if (gameKey == GameKey.Stop)
                 {
                     _moveLeft = false;
                     _moveRight = false;
                 }
-                else
-                if (gameKey == GameKey.Left)
+                else if (gameKey == GameKey.Left)
                 {
                     _moveLeft = true;
                     _moveRight = false;
@@ -1697,10 +1549,7 @@ namespace BreakoutGame.Game
                 State = GameState.Paused;
                 _moveLeft = false;
                 _moveRight = false;
-                GameDialog.Show(this, null, "PAUSED", null, () =>
-                {
-                    TogglePause();
-                });
+                GameDialog.Show(this, null, "PAUSED", null, () => { TogglePause(); });
                 return true;
             }
 
@@ -1752,7 +1601,7 @@ namespace BreakoutGame.Game
                     return;
             }
 
-  
+
             if (mauiKey == MauiKey.KeyN)
             {
                 StartNewLevel();
@@ -1763,7 +1612,8 @@ namespace BreakoutGame.Game
             {
                 // Toggle collision detection system
                 USE_RAYCAST_COLLISION = !USE_RAYCAST_COLLISION;
-                System.Diagnostics.Debug.WriteLine($"Collision system switched to: {(USE_RAYCAST_COLLISION ? "RAYCAST" : "AABB")}");
+                System.Diagnostics.Debug.WriteLine(
+                    $"Collision system switched to: {(USE_RAYCAST_COLLISION ? "RAYCAST" : "AABB")}");
                 return;
             }
 
@@ -1790,7 +1640,7 @@ namespace BreakoutGame.Game
         {
             if (GameDialog.IsAnyDialogOpen(this))
             {
-                var consumed = base.ProcessGestures(args, apply);                
+                var consumed = base.ProcessGestures(args, apply);
                 return consumed;
             }
 
@@ -1906,7 +1756,7 @@ namespace BreakoutGame.Game
                 BricksPool.TryAdd(enemy.Uid, enemy);
             }
 
-            RemoveSubView(sprite);
+            GameField.RemoveSubView(sprite);
         }
 
         void ProcessSpritesToBeRemoved()
@@ -1930,140 +1780,353 @@ namespace BreakoutGame.Game
 
         void InitDialogs()
         {
-            GameDialog.DefaultTemplate = new DialogTemplate
-            {
-                CreateBackdrop = () => null,
-
-                CreateDialogFrame = (content, okText, cancelText) => new SkiaLayout
-                {
-                    Margin = 50,
-                    HorizontalOptions = LayoutOptions.Center,
-                    VerticalOptions = LayoutOptions.Center,
-                    MinimumHeightRequest = 50,
-                    Children = new List<SkiaControl>
-                {
-                    //shape A - background texture for frosted effect plus shadow (cached layer)
-                    new SkiaShape()
-                    {
-                        UseCache = SkiaCacheType.Image,
-                        BackgroundColor = Color.Parse("#10ffffff"),
-                        CornerRadius = 8,
-                        HorizontalOptions = LayoutOptions.Fill,
-                        VerticalOptions = LayoutOptions.Fill,
-                        StrokeColor = Colors.Red,
-                        StrokeWidth = 2,
-                        StrokeGradient = new SkiaGradient()
-                        {
-                            Opacity = 0.99f,
-                            StartXRatio = 0.2f,
-                            EndXRatio = 0.5f,
-                            StartYRatio = 0.0f,
-                            EndYRatio = 1f,
-                            Colors = new Color[]
-                            {
-                                Color.Parse("#ffffff"),
-                                Color.Parse("#999999"),
-                            }
-                        },
-                        Children =
-                        {
-                            new SkiaImage()
-                            {
-                                Opacity = 0.25,
-                                Source = "Images/glass.jpg",
-                                HorizontalOptions = LayoutOptions.Fill,
-                                VerticalOptions = LayoutOptions.Fill,
-                            }
-                        }
-                    },
-
-                    //shape B = backdrop
-                    new SkiaShape()
-                    {
-                        CornerRadius = 13,
-                        HorizontalOptions = LayoutOptions.Fill,
-                        VerticalOptions = LayoutOptions.Fill,
-                        Children =
-                        {
-                            new SkiaBackdrop()
-                            {
-                                Blur = 4,
-                                HorizontalOptions = LayoutOptions.Fill,
-                                VerticalOptions = LayoutOptions.Fill,
-                            }
-                        }
-                    },
-
-                    // Content
-                    new SkiaLayout()
-                    {
-                        ZIndex = 1,
-                        HorizontalOptions = LayoutOptions.Fill,
-                        UseCache = SkiaCacheType.Image,
-                        Type = LayoutType.Column,
-                        Padding = 24,
-                        Spacing = 28,
-                        Children = CreateDialogContent(content, okText, cancelText)
-                    }
-                }
-                }
-            };
+            GameDialog.DefaultTemplate = DialogThemes.Game;
         }
 
-        private static List<SkiaControl> CreateDialogContent(SkiaControl content, string okText, string cancelText)
+        void ShowWelcomeDialog()
         {
-            var children = new List<SkiaControl>();
-
-            // Add the main content
-            if (content != null)
-            {
-                content.VerticalOptions = LayoutOptions.Start;
-                children.Add(content);
-            }
-
-            // Create buttons layout exactly like the original
-            var buttonsLayout = new SkiaLayout()
-            {
-                Type = LayoutType.Row,
-                Margin = new(0, 8, 0, 8),
-                HorizontalOptions = LayoutOptions.Center,
-                Spacing = 16,
-                Children =
-                {
-                    // OK button using UiElements.Button (original design)
-                    // Callbacks will be wired up by WireUpButtonCallbacks method
-                    UiElements.Button(okText, () => { /* Placeholder - will be overridden */ })
-                }
-            };
-
-            // Cancel button (optional) - exactly like original
-            if (!string.IsNullOrEmpty(cancelText))
-            {
-                var cancelButton = new SkiaButton()
-                {
-                    Text = cancelText,
-                    FontSize = 14,
-                    FontFamily = "FontGame",
-                    TextColor = Colors.White,
-                    BackgroundColor = Colors.DarkRed,
-                    WidthRequest = -1,
-                    MinimumWidthRequest = 100,
-                };
-                // Callbacks will be wired up by WireUpButtonCallbacks method
-
-                buttonsLayout.Add(cancelButton);
-            }
-
-            children.Add(buttonsLayout);
-            return children;
+            GameDialog.Show(this,
+                UiElements.DialogPrompt(
+                    "Welcome to Breakout!\nUse mouse or touch to move the paddle. Break all the bricks to win!"),
+                "START GAME", onOk: () => { StartNewGamePlayer(); });
         }
 
+        void ShowGameOverDialog()
+        {
+            // Show game over dialog
+            var gameOverContent = UiElements.DialogPrompt($"Game Over!\nFinal Score: {Score}\nBetter luck next time!");
+
+            GameDialog.Show(this, gameOverContent, "PLAY AGAIN", "QUIT",
+                onOk: () => ResetGame(),
+                onCancel: () =>
+                {
+                    // Could navigate back or close the game
+                });
+        }
+
+        async void ShowLevelCompleteDialog()
+        {
+            // Show level complete dialog
+            var levelCompleteContent =
+                UiElements.DialogPrompt($"Level {Level - 1} Complete!\nScore: {Score}\nGet ready for Level {Level}!");
+            if (await GameDialog.ShowAsync(this, levelCompleteContent, "CONTINUE"))
+            {
+                // Start the new level
+                StartNewLevel();
+                State = GameState.Playing;
+                StartLoop();
+            }
+        }
+
+        // Example of using the async dialog method
+        async void ShowExampleAsyncDialog()
+        {
+            var content = UiElements.DialogPrompt("Do you want to continue?");
+
+            bool result = await GameDialog.ShowAsync(this, content, "YES", "NO");
+
+            if (result)
+            {
+                // User clicked YES
+                // Do something...
+            }
+            else
+            {
+                // User clicked NO
+                // Do something else...
+            }
+        }
+
+        // Example of using the navigation stack
+        void ShowStackedDialogs()
+        {
+            // Push first dialog
+            var content1 = UiElements.DialogPrompt("This is the first dialog");
+
+            GameDialog.Push(this, content1, "NEXT", "CANCEL",
+                onOk: () =>
+                {
+                    // Push second dialog
+                    var content2 = new SkiaLabel()
+                    {
+                        Text = "This is the second dialog",
+                        TextColor = Colors.White,
+                        FontSize = 16,
+                        HorizontalTextAlignment = DrawTextAlignment.Center,
+                        HorizontalOptions = LayoutOptions.Fill,
+                    };
+
+                    GameDialog.Push(this, content2, "FINISH", "BACK",
+                        onOk: () =>
+                        {
+                            // Pop all dialogs
+                            _ = GameDialog.PopAll(this);
+                        },
+                        onCancel: () =>
+                        {
+                            // Pop just this dialog (go back to first)
+                            _ = GameDialog.Pop(this);
+                        });
+                },
+                onCancel: () =>
+                {
+                    // Cancel everything
+                    _ = GameDialog.PopAll(this);
+                });
+        }
+
+        // Example of using different dialog themes
+        void ShowThemeExamples()
+        {
+            var content = new SkiaLabel()
+            {
+                Text = "Choose a dialog theme to preview:",
+                TextColor = Colors.White,
+                FontSize = 16,
+                HorizontalTextAlignment = DrawTextAlignment.Center,
+                HorizontalOptions = LayoutOptions.Fill,
+            };
+
+            // Show theme selection dialog using default Game theme
+            GameDialog.Show(this, content, "MODERN", "RETRO",
+                onOk: () =>
+                {
+                    // Show Modern theme example
+                    var modernContent = new SkiaLabel()
+                    {
+                        Text = "This is the Modern theme!\nClean, contemporary styling with smooth animations.",
+                        TextColor = Colors.Black,
+                        FontSize = 16,
+                        HorizontalTextAlignment = DrawTextAlignment.Center,
+                        HorizontalOptions = LayoutOptions.Fill,
+                    };
+                    GameDialog.Show(this, modernContent, "NICE!", template: DialogThemes.Modern);
+                },
+                onCancel: () =>
+                {
+                    // Show Retro theme example
+                    var retroContent = new SkiaLabel()
+                    {
+                        Text = "This is the Retro theme!\nTerminal-style green text on black background.",
+                        TextColor = Colors.LimeGreen,
+                        FontSize = 14,
+                        FontFamily = "FontGame",
+                        HorizontalTextAlignment = DrawTextAlignment.Center,
+                        HorizontalOptions = LayoutOptions.Fill,
+                    };
+                    GameDialog.Show(this, retroContent, "COOL!", template: DialogThemes.Retro);
+                });
+        }
 
         #endregion
 
+        #region UI
+
+        /// <summary>
+        /// Score can change several times per frame
+        /// so we dont want bindings to update the score toooften.
+        /// Instead we update the display manually once after the frame is finalized.
+        /// </summary>
+        void UpdateScore()
+        {
+            if (State == GameState.DemoPlay)
+            {
+                LabelScore.Text = $"DEMO PLAY";
+            }
+            else
+            {
+                //var collisionSystem = USE_RAYCAST_COLLISION ? "RAYCAST" : "AABB";
+                LabelScore.Text = $"{ScoreLocalized}"; // | {collisionSystem}";
+                //LabelHiScore.Text = HiScoreLocalized; //todo?
+            }
+        }
+
+        void CreateUi()
+        {
+            HorizontalOptions = LayoutOptions.Fill;
+            VerticalOptions = LayoutOptions.Fill;
+            BackgroundColor = Colors.DarkBlue;
+
+            Children = new List<SkiaControl>()
+            {
+                //background image for different window size
+                //can place background image..
+                new SkiaLayer()
+                {
+                    UseCache = SkiaCacheType.Operations,
+                    VerticalOptions = LayoutOptions.Fill,
+                },
+
+                //game and controls below
+                new SkiaStack()
+                {
+                    Tag = "GameStack",
+                    VerticalOptions = LayoutOptions.Fill,
+                    Spacing = 0,
+                    Children =
+                    {
+                        //GAME FIELD
+                        new SkiaLayer()
+                        {
+                            VerticalOptions = LayoutOptions.Fill,
+                            //HeightRequest = 500,
+                            BackgroundColor = Colors.DarkSlateBlue,
+                            Children =
+                            {
+                                new BallSprite()
+                                {
+                                    ZIndex = 4
+                                }.Assign(out Ball),
+
+                                new PaddleSprite()
+                                {
+                                    ZIndex = 5,
+                                    Top = -28
+                                }.Assign(out Paddle),
+
+                                //SCORE top bar
+                                new SkiaLayer()
+                                {
+                                    ZIndex = 110,
+                                    UseCache = SkiaCacheType.GPU,
+                                    Children =
+                                    {
+                                        new SkiaLabel()
+                                        {
+                                            Margin = 16,
+                                            FontFamily = "FontGame",
+                                            FontSize = 17,
+                                            StrokeColor = AmstradColors.DarkBlue,
+                                            TextColor = AmstradColors.White,
+                                            DropShadowColor = Colors.DarkBlue,
+                                            DropShadowOffsetX = 2,
+                                            DropShadowOffsetY = 2,
+                                            DropShadowSize = 2,
+                                            FillGradient = new()
+                                            {
+                                                Colors = new List<Color>()
+                                                {
+                                                    Colors.White,
+                                                    Colors.CornflowerBlue
+                                                }
+                                            }
+                                        }.Assign(out LabelScore)
+                                    }
+                                }
+                            }
+                        }.Assign(out GameField),
+
+                        //CONTROLS
+                        new SkiaLayer()
+                        {
+                            HeightRequest = 80,
+                            BackgroundColor = Color.Parse("#66000000")
+                        }
+                    }
+                },
+            };
+        }
+
+        #endregion
+
+        public static class UiElements
+        {
+            public static SkiaControl DialogPrompt(string prompt)
+            {
+                return new SkiaMarkdownLabel()
+                {
+                    Text = prompt,
+                    UseCache = SkiaCacheType.Image,
+                    TextColor = Colors.White,
+                    //FontFamily = "FontText",
+                    LineHeight = 1.25,
+                    CharacterSpacing = 1.33,
+                    FontSize = 26,
+                    //StrokeWidth = 2,
+                    //StrokeColor = Color.Parse("#999999"),
+                    //DropShadowSize = 0,
+                    //DropShadowColor = Color.Parse("#666666"),
+                    HorizontalTextAlignment = DrawTextAlignment.Center,
+                    HorizontalOptions = LayoutOptions.Fill,
+                    //BackgroundColor = Colors.Pink,
+                };
+            }
+
+            public static void SetButtonPressed(SkiaShape btn)
+            {
+                btn.Children[0].TranslationX = 1;
+                btn.Children[0].TranslationY = 1;
+                btn.BevelType = BevelType.Emboss;
+            }
+
+            public static void SetButtonReleased(SkiaShape btn)
+            {
+                btn.Children[0].TranslationX = 0;
+                btn.Children[0].TranslationY = 0;
+                btn.BevelType = BevelType.Bevel;
+            }
+
+            public static SkiaShape Button(string caption, Action action)
+            {
+                return new SkiaShape()
+                {
+                    UseCache = SkiaCacheType.Image,
+                    CornerRadius = 8,
+                    MinimumWidthRequest = 100,
+                    BackgroundColor = Colors.Black,
+                    BevelType = BevelType.Bevel,
+                    Bevel = new SkiaBevel()
+                    {
+                        Depth = 2,
+                        LightColor = Colors.White,
+                        ShadowColor = Colors.DarkBlue,
+                        Opacity = 0.33,
+                    },
+                    Children =
+                    {
+                        new SkiaMarkdownLabel()
+                        {
+                            Text = caption,
+                            Margin = new Thickness(16, 10),
+                            UseCache = SkiaCacheType.Operations,
+                            HorizontalOptions = LayoutOptions.Center,
+                            VerticalOptions = LayoutOptions.Center,
+                            FontSize = 14,
+                            FontFamily = "FontGame",
+                            TextColor = Colors.White,
+                        }
+                    },
+                    FillGradient = new SkiaGradient()
+                    {
+                        StartXRatio = 0,
+                        EndXRatio = 1,
+                        StartYRatio = 0,
+                        EndYRatio = 0.5f,
+                        Colors = new Color[]
+                        {
+                            Colors.HotPink,
+                            Colors.DeepPink,
+                        }
+                    },
+                }.WithGestures((me, args, b) =>
+                {
+                    if (args.Type == TouchActionResult.Tapped)
+                    {
+                        action?.Invoke();
+                    }
+                    else if (args.Type == TouchActionResult.Down)
+                    {
+                        SetButtonPressed(me);
+                    }
+                    else if (args.Type == TouchActionResult.Up)
+                    {
+                        SetButtonReleased(me);
+                        return null;
+                    }
+
+                    return me;
+                });
+            }
+        }
     }
-
-
-
-
 }

@@ -14,13 +14,8 @@ public static class MauiProgram
             .UseMauiApp<App>()
             .ConfigureFonts(fonts =>
             {
-                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-                fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+                fonts.AddFont("Chewy-Regular.ttf", "FontText");
                 fonts.AddFont("amstrad_cpc464.ttf", "FontGame");
-
-                fonts.AddFont("DOM.TTF", "FontDrawn");
-                fonts.AddFont("DOMB.TTF", "FontDrawnBold");
-
             });
 
         builder.UseDrawnUi(new()
@@ -28,8 +23,8 @@ public static class MauiProgram
                 UseDesktopKeyboard = true, 
                 DesktopWindow = new()
                 {
-                    Width = 550,
-                    Height = 750,
+                    Width = 375,
+                    Height = 800,
                     IsFixedSize = true 
                     //todo disable maximize btn 
                 }

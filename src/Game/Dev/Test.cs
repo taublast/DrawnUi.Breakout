@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BreakoutGame.Game
+namespace BreakoutGame.Game.Dev
 {
     //public class Test : Canvas
     //{
@@ -26,6 +26,9 @@ namespace BreakoutGame.Game
     //    }
     //}
 
+    /// <summary>
+    /// Just testing retained here. Could rewrite game to use retained rendering at some point.
+    /// </summary>
     public class TouchLayout : SkiaLayout
     {
         private PointF? _tapped;

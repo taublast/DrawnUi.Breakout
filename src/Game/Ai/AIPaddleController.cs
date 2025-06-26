@@ -1,7 +1,7 @@
 using System;
 using System.Numerics;
 
-namespace BreakoutGame.Game
+namespace BreakoutGame.Game.Ai
 {
     /// <summary>
     /// Controls the paddle in demo mode, simulating a human player with variable skill
@@ -273,7 +273,7 @@ namespace BreakoutGame.Game
                     if (Math.Abs(_game.Paddle.Left) > _game.Paddle.Width && _random.NextDouble() < 0.2)
                     {
                         // Ease back toward center if far from center
-                        _targetX = (_game.Paddle.Left > 0) ? -_game.Paddle.Width : _game.Paddle.Width;
+                        _targetX = _game.Paddle.Left > 0 ? -_game.Paddle.Width : _game.Paddle.Width;
                         MovePaddleTowardTarget();
                     }
                     else if (_isMoving && _random.NextDouble() < 0.3)

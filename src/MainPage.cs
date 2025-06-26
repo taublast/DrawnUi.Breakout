@@ -30,6 +30,7 @@ namespace BreakoutGame
                             VerticalOptions = LayoutOptions.End,
                             HorizontalOptions = LayoutOptions.End,
                             Rotation = -45,
+                            FontSize = 11,
                             BackgroundColor = Colors.DarkRed,
                             TextColor = Colors.White,
                             ZIndex = 110,

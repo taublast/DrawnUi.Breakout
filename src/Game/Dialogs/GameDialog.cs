@@ -3,14 +3,14 @@ using DrawnUi.Draw;
 using Microsoft.Maui.Graphics;
 using System.Runtime.CompilerServices;
 
-namespace BreakoutGame.Game
+namespace BreakoutGame.Game.Dialogs
 {
     /// <summary>
     /// Template system for customizing dialog appearance and behavior
     /// </summary>
     public class DialogTemplate
     {
-        public Func<SkiaControl, string, string, SkiaLayout> CreateDialogFrame { get; set; }
+        public Func<GameDialog, SkiaControl, string, string, SkiaLayout> CreateDialogFrame { get; set; }
         public Func<SkiaLayout> CreateBackdrop { get; set; }
         public Func<string, SkiaControl> CreateButton { get; set; }
         public DialogAnimations Animations { get; set; }
@@ -493,13 +493,10 @@ namespace BreakoutGame.Game
                 _dimmerLayer = _template.CreateBackdrop();
             }
 
-            // Create dialog frame using template
+            // Create dialog frame using template - pass dialog instance for callbacks
             if (_template.CreateDialogFrame != null)
             {
-                _dialogFrame = _template.CreateDialogFrame(_content, _okText, _cancelText);
-
-                // Wire up button callbacks for template-created dialogs
-                WireUpButtonCallbacks(_dialogFrame);
+                _dialogFrame = _template.CreateDialogFrame(this, _content, _okText, _cancelText);
             }
             else
             {
@@ -517,90 +514,21 @@ namespace BreakoutGame.Game
             Children = children;
         }
 
-        private void WireUpButtonCallbacks(SkiaControl container)
+        /// <summary>
+        /// Public method for templates to close dialog with OK result
+        /// </summary>
+        public async Task CloseWithOkAsync()
         {
-            // Recursively find and wire up buttons
-            foreach (var child in container.Views)
-            {
-                if (child is SkiaButton button)
-                {
-                    // Check if this is an OK or Cancel button based on text
-                    if (button.Text == _okText)
-                    {
-                        button.OnTapped(async (me) =>
-                        {
-                            System.Diagnostics.Debug.WriteLine($"GameDialog: OK button tapped, auto-closing dialog");
-                            await CloseWithOkAsync();
-                        });
-                    }
-                    else if (button.Text == _cancelText)
-                    {
-                        button.OnTapped(async (me) =>
-                        {
-                            System.Diagnostics.Debug.WriteLine($"GameDialog: Cancel button tapped, auto-closing dialog");
-                            await CloseWithCancelAsync();
-                        });
-                    }
-                }
-                else if (child is SkiaShape shape && shape.Views.Count > 0)
-                {
-                    // Check if this is a UiElements.Button (SkiaShape with SkiaMarkdownLabel)
-                    var label = shape.Views.FirstOrDefault(v => v is SkiaMarkdownLabel) as SkiaMarkdownLabel;
-                    if (label?.Text == _okText)
-                    {
-                        // Override the gesture handler for OK button
-                        shape.WithGestures((me, args, b) =>
-                        {
-                            if (args.Type == TouchActionResult.Tapped)
-                            {
-                                System.Diagnostics.Debug.WriteLine($"GameDialog: OK button (UiElements.Button) tapped, auto-closing dialog");
-                                _ = CloseWithOkAsync();
-                            }
-                            else if (args.Type == TouchActionResult.Down)
-                            {
-                                UiElements.SetButtonPressed(me);
-                            }
-                            else if (args.Type == TouchActionResult.Up)
-                            {
-                                UiElements.SetButtonReleased(me);
-                            }
-                            return me;
-                        });
-                    }
-                    else if (label?.Text == _cancelText)
-                    {
-                        // Override the gesture handler for Cancel button
-                        shape.WithGestures((me, args, b) =>
-                        {
-                            if (args.Type == TouchActionResult.Tapped)
-                            {
-                                System.Diagnostics.Debug.WriteLine($"GameDialog: Cancel button (UiElements.Button) tapped, auto-closing dialog");
-                                _ = CloseWithCancelAsync();
-                            }
-                            else if (args.Type == TouchActionResult.Down)
-                            {
-                                UiElements.SetButtonPressed(me);
-                            }
-                            else if (args.Type == TouchActionResult.Up)
-                            {
-                                UiElements.SetButtonReleased(me);
-                            }
-                            return me;
-                        });
-                    }
-                }
-
-                // Recursively search child containers
-                if (child.Views.Count > 0)
-                {
-                    WireUpButtonCallbacks(child);
-                }
-            }
+            await CloseWithOkAsync(animate: true);
         }
 
-
-
-
+        /// <summary>
+        /// Public method for templates to close dialog with Cancel result
+        /// </summary>
+        public async Task CloseWithCancelAsync()
+        {
+            await CloseWithCancelAsync(animate: true);
+        }
 
 
         protected virtual List<SkiaControl> CreateContentChildren()
@@ -624,7 +552,7 @@ namespace BreakoutGame.Game
                 Children =
                 {
                     // OK button (always present)
-                    UiElements.Button(_okText, async () =>
+                    BreakoutGame.UiElements.Button(_okText, async () =>
                     {
                         System.Diagnostics.Debug.WriteLine($"GameDialog: OK button tapped, auto-closing dialog");
                         // Auto-close dialog - user doesn't need to call close methods in their callbacks
@@ -664,101 +592,4 @@ namespace BreakoutGame.Game
         }
     }
 
-    static class UiElements
-    {
-        public static SkiaControl DialogPrompt(string prompt)
-        {
-            return new SkiaMarkdownLabel()
-            {
-                Text = prompt,
-                UseCache = SkiaCacheType.Image,
-                TextColor = Colors.White,
-                //FontFamily = "OpenSansRegular",
-                LineHeight = 1.25,
-                CharacterSpacing = 1.25,
-                FontSize = 22,
-                DropShadowSize = 1,
-                DropShadowColor = Color.Parse("#222244"),
-                HorizontalTextAlignment = DrawTextAlignment.Center,
-                HorizontalOptions = LayoutOptions.Fill,
-                //BackgroundColor = Colors.Pink,
-            };
-        }
-
-        public static void SetButtonPressed(SkiaShape btn)
-        {
-            btn.Children[0].TranslationX = 1;
-            btn.Children[0].TranslationY = 1;
-            btn.BevelType = BevelType.Emboss;
-        }
-
-        public static void SetButtonReleased(SkiaShape btn)
-        {
-            btn.Children[0].TranslationX = 0;
-            btn.Children[0].TranslationY = 0;
-            btn.BevelType = BevelType.Bevel;
-        }
-
-        public static SkiaShape Button(string caption, Action action)
-        {
-            return new SkiaShape()
-            {
-                UseCache = SkiaCacheType.Image,
-                CornerRadius = 8,
-                MinimumWidthRequest = 100,
-                BackgroundColor = Colors.Black,
-                BevelType = BevelType.Bevel,
-                Bevel = new SkiaBevel()
-                {
-                    Depth = 2,
-                    LightColor = Colors.White,
-                    ShadowColor = Colors.DarkBlue,
-                    Opacity = 0.33,
-                },
-                Children =
-                {
-                    new SkiaMarkdownLabel()
-                    {
-                        Text = caption,
-                        Margin = new Thickness(16, 10),
-                        UseCache = SkiaCacheType.Operations,
-                        HorizontalOptions = LayoutOptions.Center,
-                        VerticalOptions = LayoutOptions.Center,
-                        FontSize = 14,
-                        FontFamily = "FontGame",
-                        TextColor = Colors.White,
-                    }
-                },
-                FillGradient = new SkiaGradient()
-                {
-                    StartXRatio = 0,
-                    EndXRatio = 1,
-                    StartYRatio = 0,
-                    EndYRatio = 0.5f,
-                    Colors = new Color[]
-                    {
-                        Colors.HotPink,
-                        Colors.DeepPink,
-                    }
-                },
-            }.WithGestures((me, args, b) =>
-            {
-                if (args.Type == TouchActionResult.Tapped)
-                {
-                    action?.Invoke();
-                }
-                else if (args.Type == TouchActionResult.Down)
-                {
-                    SetButtonPressed(me);
-                }
-                else if (args.Type == TouchActionResult.Up)
-                {
-                    SetButtonReleased(me);
-                    return null;
-                }
-
-                return me;
-            });
-        }
-    }
 }
