@@ -12,7 +12,7 @@
     <!-- Display name -->
     <ApplicationTitle>Breakout</ApplicationTitle>
 
-    <UseNuget>false</UseNuget>
+    <UseNuget>true</UseNuget>
     
     <!-- App Identifier -->
     <ApplicationId>com.mauigame.breakout</ApplicationId>
@@ -54,6 +54,10 @@
     <Compile Remove="Game\Internals\MauiGame.cs" />
   </ItemGroup>
 
+  <PropertyGroup Condition="$(TargetFramework.Contains('ios')) == true">
+    <ProvisioningType>manual</ProvisioningType>
+  </PropertyGroup>
+
 	<ItemGroup>
 
     <!--can replace this with usual plugin if PR is merged-->
@@ -72,7 +76,7 @@
 
   <!--production-->
   <ItemGroup Condition="'$(UseNuget)' == 'true'">
-    <PackageReference Include="DrawnUi.Maui.Game" Version="1.5.1.2" />
+    <PackageReference Include="DrawnUi.Maui.Game" Version="1.5.1.6-pre" />
   </ItemGroup>
 
   

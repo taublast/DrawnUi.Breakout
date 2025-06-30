@@ -18,9 +18,9 @@ namespace BreakoutGame.Game
         public const float PADDLE_SPEED = 550;
         public const float PADDLE_WIDTH = 90;
         public const int MAX_BRICKS = 100;
-        public const int MAX_BRICKS_COLUMNS = 9;
+        public const int MAX_BRICKS_COLUMNS = 8;
         public const int MIN_BRICKS_ROWS = 3;
-        public const float SPACING_BRICKS = 4f;
+        public const float SPACING_BRICKS = 3f;
         public const float BRICKS_SIDE_MARGIN = 16f;
         public const float BRICKS_TOP_MARGIN = 110f;
         public const int LIVES = 3;
@@ -33,8 +33,11 @@ namespace BreakoutGame.Game
         /// <summary>
         /// Compile-time flag to enable raycasting collision detection instead of AABB intersection
         /// Set to true to use raycasting, false to use traditional AABB collision detection
+        /// AABB work ok on desktops, while on mobile with frame drops better use raycasting.
         /// </summary>
-        public static bool USE_RAYCAST_COLLISION = false; //todo fix bugs
+        public static bool USE_RAYCAST_COLLISION = true; //todo fix bugs on low angles
+
+        public static bool USE_SOUND = false; 
 
         #endregion
 
@@ -60,7 +63,10 @@ namespace BreakoutGame.Game
 
             InitDialogs();
 
-            _ = InitializeAudioAsync();
+            if (USE_SOUND)
+            {
+                _ = InitializeAudioAsync();
+            }
 
             _aiController = new AIPaddleController(this, AIDifficulty.Hard);
 
@@ -154,6 +160,11 @@ namespace BreakoutGame.Game
 
         public void ToggleSound()
         {
+            if (_audioService == null)
+            {
+                return;
+            }
+
             _audioService.IsMuted = !_audioService.IsMuted;
         }
 
@@ -1039,11 +1050,18 @@ namespace BreakoutGame.Game
             }
         }
 
+        /// <summary>
+        /// Engine was paused maybe app went to background
+        /// </summary>
         protected override void OnPaused()
         {
+            PauseGame();
             StopLoop();
         }
 
+        /// <summary>
+        /// Engine was paused maybe app went to foreground
+        /// </summary>
         protected override void OnResumed()
         {
             if (State == GameState.Playing || State == GameState.DemoPlay)
@@ -1542,7 +1560,7 @@ namespace BreakoutGame.Game
             ApplyGameKey(gameKey);
         }
 
-        bool TogglePause()
+        void PauseGame()
         {
             if (State == GameState.Playing)
             {
@@ -1550,6 +1568,14 @@ namespace BreakoutGame.Game
                 _moveLeft = false;
                 _moveRight = false;
                 GameDialog.Show(this, null, "PAUSED", null, () => { TogglePause(); });
+            }
+        }
+
+        bool TogglePause()
+        {
+            if (State == GameState.Playing)
+            {
+                PauseGame();
                 return true;
             }
 
