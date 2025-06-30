@@ -32,10 +32,9 @@ namespace BreakoutGame.Game
 
         /// <summary>
         /// Compile-time flag to enable raycasting collision detection instead of AABB intersection
-        /// Set to true to use raycasting, false to use traditional AABB collision detection
-        /// AABB work ok on desktops, while on mobile with frame drops better use raycasting.
+        /// AABB works ok on desktops, but on mobile with frame drops better to use raycasting.
         /// </summary>
-        public static bool USE_RAYCAST_COLLISION = true; //todo fix bugs on low angles
+        public static bool USE_RAYCAST_COLLISION = true; 
 
         public static bool USE_SOUND = false; 
 
@@ -801,7 +800,6 @@ namespace BreakoutGame.Game
             {
                 ApplyGameKey(GameKeysQueue.Dequeue());
             }
-
 
             if ((State == GameState.DemoPlay
                  || State == GameState.Playing) && levelReady)
