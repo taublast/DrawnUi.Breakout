@@ -15,14 +15,14 @@ namespace BreakoutGame.Game
         #region CONSTANTS
 
         public const float BALL_SPEED = 375f;
-        public const float PADDLE_SPEED = 550;
-        public const float PADDLE_WIDTH = 90;
+        public const float PADDLE_SPEED = 475;
+        public const float PADDLE_WIDTH = 80;
         public const int MAX_BRICKS = 100;
         public const int MAX_BRICKS_COLUMNS = 8;
         public const int MIN_BRICKS_ROWS = 3;
         public const float SPACING_BRICKS = 3f;
         public const float BRICKS_SIDE_MARGIN = 16f;
-        public const float BRICKS_TOP_MARGIN = 110f;
+        public const float BRICKS_TOP_MARGIN = 90f;
         public const int LIVES = 3;
 
         /// <summary>
@@ -34,9 +34,9 @@ namespace BreakoutGame.Game
         /// Compile-time flag to enable raycasting collision detection instead of AABB intersection
         /// AABB works ok on desktops, but on mobile with frame drops better to use raycasting.
         /// </summary>
-        public static bool USE_RAYCAST_COLLISION = true; 
+        public static bool USE_RAYCAST_COLLISION = true;
 
-        public static bool USE_SOUND = false; 
+        public static bool USE_SOUND = true;
 
         #endregion
 
@@ -108,15 +108,20 @@ namespace BreakoutGame.Game
             switch (sound)
             {
                 case Sound.Board:
+                    if (State != GameState.DemoPlay)
+                        _audioService.PlaySpatialSound("ball", position, 0.5f);
+                    break;
                 case Sound.Brick:
-                    _audioService.PlaySpatialSound("collide", position);
+                    if (State != GameState.DemoPlay)
+                        _audioService.PlaySpatialSound("board2", position);
                     break;
                 case Sound.Wall:
-                    _audioService.PlaySpatialSound("collide", position, 0.75f);
+                    if (State != GameState.DemoPlay)
+                        _audioService.PlaySpatialSound("board3", position, 0.5f);
                     break;
                 case Sound.Oops:
-                    _audioService.PlaySound("oops", 1.0f);
-
+                    if (State != GameState.DemoPlay)
+                        _audioService.PlaySound("oops", 0.75f);
                     break;
                 case Sound.Start:
                     _audioService.PlaySound("start", 0.75f);
