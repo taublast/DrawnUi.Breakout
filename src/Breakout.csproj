@@ -76,7 +76,7 @@
 
   <!--production-->
   <ItemGroup Condition="'$(UseNuget)' == 'true'">
-    <PackageReference Include="DrawnUi.Maui.Game" Version="1.5.1.6-pre" />
+    <PackageReference Include="DrawnUi.Maui.Game" Version="1.5.1.7-pre" />
   </ItemGroup>
 
   
