@@ -8,6 +8,9 @@ namespace BreakoutGame.Game
     /// </summary>
     public static class RaycastCollision
     {
+        // Minimum threshold for direction components to avoid division by very small numbers
+        private const float MIN_DIRECTION_THRESHOLD = 0.001f;
+
         /// <summary>
         /// Represents the result of a raycast collision
         /// </summary>
@@ -133,10 +136,10 @@ namespace BreakoutGame.Game
             Vector2 hitNormal = Vector2.Zero;
             CollisionFace hitFace = CollisionFace.None;
 
-            // Check X axis intersection
-            if (Math.Abs(direction.X) < 0.0001f)
+            // Check X axis intersection - FIXED threshold for shallow angles
+            if (Math.Abs(direction.X) < MIN_DIRECTION_THRESHOLD)
             {
-                // Ray is parallel to X axis
+                // Ray is nearly parallel to X axis
                 if (origin.X < rectMin.X || origin.X > rectMax.X)
                     return RaycastHit.None;
             }
@@ -170,10 +173,10 @@ namespace BreakoutGame.Game
                     return RaycastHit.None;
             }
 
-            // Check Y axis intersection
-            if (Math.Abs(direction.Y) < 0.0001f)
+            // Check Y axis intersection - FIXED threshold for shallow angles
+            if (Math.Abs(direction.Y) < MIN_DIRECTION_THRESHOLD)
             {
-                // Ray is parallel to Y axis
+                // Ray is nearly parallel to Y axis
                 if (origin.Y < rectMin.Y || origin.Y > rectMax.Y)
                     return RaycastHit.None;
             }
@@ -231,7 +234,7 @@ namespace BreakoutGame.Game
         }
 
         /// <summary>
-        /// Checks if a moving object (ball) would collide with walls
+        /// Checks if a moving object (ball) would collide with walls - FIXED for shallow angles
         /// </summary>
         public static RaycastHit CheckWallCollision(Vector2 position, Vector2 direction, float radius,
             float distance, float screenWidth, float screenHeight)
@@ -239,67 +242,99 @@ namespace BreakoutGame.Game
             RaycastHit hit = RaycastHit.None;
             hit.Distance = float.MaxValue;
 
-            // Left wall
-            if (direction.X < 0)
+            // Left wall - FIXED for shallow angles
+            if (direction.X < -MIN_DIRECTION_THRESHOLD) // Only check if moving meaningfully left
             {
                 float distanceToWall = position.X - radius;
-                float timeToHit = distanceToWall / -direction.X;
-
-                if (timeToHit >= 0 && timeToHit <= distance && timeToHit < hit.Distance)
+                if (distanceToWall > 0) // Only if we're not already past the wall
                 {
-                    hit.Collided = true;
-                    hit.Distance = timeToHit;
-                    hit.Normal = new Vector2(1, 0);
-                    hit.Face = CollisionFace.Right;
-                    hit.Point = new Vector2(0, position.Y + direction.Y * timeToHit);
+                    float timeToHit = distanceToWall / -direction.X;
+
+                    if (timeToHit >= 0 && timeToHit <= distance && timeToHit < hit.Distance)
+                    {
+                        Vector2 hitPoint = position + direction * timeToHit;
+                        // Verify the hit point is within screen bounds
+                        if (hitPoint.Y >= 0 && hitPoint.Y <= screenHeight)
+                        {
+                            hit.Collided = true;
+                            hit.Distance = timeToHit;
+                            hit.Normal = new Vector2(1, 0);
+                            hit.Face = CollisionFace.Right;
+                            hit.Point = new Vector2(0, hitPoint.Y);
+                        }
+                    }
                 }
             }
 
-            // Right wall
-            if (direction.X > 0)
+            // Right wall - FIXED for shallow angles
+            if (direction.X > MIN_DIRECTION_THRESHOLD) // Only check if moving meaningfully right
             {
                 float distanceToWall = screenWidth - position.X - radius;
-                float timeToHit = distanceToWall / direction.X;
-
-                if (timeToHit >= 0 && timeToHit <= distance && timeToHit < hit.Distance)
+                if (distanceToWall > 0) // Only if we're not already past the wall
                 {
-                    hit.Collided = true;
-                    hit.Distance = timeToHit;
-                    hit.Normal = new Vector2(-1, 0);
-                    hit.Face = CollisionFace.Left;
-                    hit.Point = new Vector2(screenWidth, position.Y + direction.Y * timeToHit);
+                    float timeToHit = distanceToWall / direction.X;
+
+                    if (timeToHit >= 0 && timeToHit <= distance && timeToHit < hit.Distance)
+                    {
+                        Vector2 hitPoint = position + direction * timeToHit;
+                        // Verify the hit point is within screen bounds
+                        if (hitPoint.Y >= 0 && hitPoint.Y <= screenHeight)
+                        {
+                            hit.Collided = true;
+                            hit.Distance = timeToHit;
+                            hit.Normal = new Vector2(-1, 0);
+                            hit.Face = CollisionFace.Left;
+                            hit.Point = new Vector2(screenWidth, hitPoint.Y);
+                        }
+                    }
                 }
             }
 
-            // Top wall
-            if (direction.Y < 0)
+            // Top wall - FIXED for shallow angles
+            if (direction.Y < -MIN_DIRECTION_THRESHOLD) // Only check if moving meaningfully up
             {
                 float distanceToWall = position.Y - radius;
-                float timeToHit = distanceToWall / -direction.Y;
-
-                if (timeToHit >= 0 && timeToHit <= distance && timeToHit < hit.Distance)
+                if (distanceToWall > 0) // Only if we're not already past the wall
                 {
-                    hit.Collided = true;
-                    hit.Distance = timeToHit;
-                    hit.Normal = new Vector2(0, 1);
-                    hit.Face = CollisionFace.Bottom;
-                    hit.Point = new Vector2(position.X + direction.X * timeToHit, 0);
+                    float timeToHit = distanceToWall / -direction.Y;
+
+                    if (timeToHit >= 0 && timeToHit <= distance && timeToHit < hit.Distance)
+                    {
+                        Vector2 hitPoint = position + direction * timeToHit;
+                        // Verify the hit point is within screen bounds
+                        if (hitPoint.X >= 0 && hitPoint.X <= screenWidth)
+                        {
+                            hit.Collided = true;
+                            hit.Distance = timeToHit;
+                            hit.Normal = new Vector2(0, 1);
+                            hit.Face = CollisionFace.Bottom;
+                            hit.Point = new Vector2(hitPoint.X, 0);
+                        }
+                    }
                 }
             }
 
-            // Bottom wall (maybe don't check this to let the ball fall out)
-            if (direction.Y > 0)
+            // Bottom wall - FIXED for shallow angles  
+            if (direction.Y > MIN_DIRECTION_THRESHOLD) // Only check if moving meaningfully down
             {
                 float distanceToWall = screenHeight - position.Y - radius;
-                float timeToHit = distanceToWall / direction.Y;
-
-                if (timeToHit >= 0 && timeToHit <= distance && timeToHit < hit.Distance)
+                if (distanceToWall > 0) // Only if we're not already past the wall
                 {
-                    hit.Collided = true;
-                    hit.Distance = timeToHit;
-                    hit.Normal = new Vector2(0, -1);
-                    hit.Face = CollisionFace.Top;
-                    hit.Point = new Vector2(position.X + direction.X * timeToHit, screenHeight);
+                    float timeToHit = distanceToWall / direction.Y;
+
+                    if (timeToHit >= 0 && timeToHit <= distance && timeToHit < hit.Distance)
+                    {
+                        Vector2 hitPoint = position + direction * timeToHit;
+                        // Verify the hit point is within screen bounds
+                        if (hitPoint.X >= 0 && hitPoint.X <= screenWidth)
+                        {
+                            hit.Collided = true;
+                            hit.Distance = timeToHit;
+                            hit.Normal = new Vector2(0, -1);
+                            hit.Face = CollisionFace.Top;
+                            hit.Point = new Vector2(hitPoint.X, screenHeight);
+                        }
+                    }
                 }
             }
 

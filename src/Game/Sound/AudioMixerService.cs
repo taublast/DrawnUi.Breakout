@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Numerics;
 using System.Threading.Tasks;
+using AppoMobi.Specials;
 using Plugin.Maui.Audio;
 
 namespace BreakoutGame.Game;
@@ -144,32 +145,38 @@ public class AudioMixerService : IDisposable
     /// <param name="loop">Whether to loop the sound</param>
     public void PlaySound(string soundId, float volume = 1.0f, float balance = 0.0f, bool loop = false)
     {
-        if (IsMuted)
-            volume = 0f;
-        else
-            volume *= MasterVolume;
-
-        if (!_soundSources.TryGetValue(soundId, out var audioSource))
-        {
-            Debug.WriteLine($"Sound '{soundId}' not preloaded");
+        if (_audioMixer == null)
             return;
-        }
 
-        try
+        Tasks.StartDelayed(TimeSpan.FromMicroseconds(1), () =>
         {
-            // Get next available channel (round-robin)
-            int channelIndex = _currentSoundChannel;
-            _currentSoundChannel = (_currentSoundChannel + 1) % SOUND_EFFECT_CHANNELS;
+            if (IsMuted)
+                volume = 0f;
+            else
+                volume *= MasterVolume;
 
-            // Play sound on the selected channel
-            _audioMixer.Play(channelIndex, audioSource, loop);
-            _audioMixer.SetVolume(channelIndex, volume);
-            _audioMixer.SetBalance(channelIndex, balance);
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Error playing sound '{soundId}': {ex}");
-        }
+            if (!_soundSources.TryGetValue(soundId, out var audioSource))
+            {
+                Debug.WriteLine($"Sound '{soundId}' not preloaded");
+                return;
+            }
+
+            try
+            {
+                // Get next available channel (round-robin)
+                int channelIndex = _currentSoundChannel;
+                _currentSoundChannel = (_currentSoundChannel + 1) % SOUND_EFFECT_CHANNELS;
+
+                // Play sound on the selected channel
+                _audioMixer.Play(channelIndex, audioSource, loop);
+                _audioMixer.SetVolume(channelIndex, volume);
+                _audioMixer.SetBalance(channelIndex, balance);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error playing sound '{soundId}': {ex}");
+            }
+        });
     }
 
     /// <summary>
@@ -262,7 +269,8 @@ public class AudioMixerService : IDisposable
         // Note: For sound effects, we can't easily adjust volume for specific sound IDs
         // since the AudioMixer manages channels independently. This would require tracking
         // which sounds are playing on which channels, which adds complexity.
-        Debug.WriteLine($"SetSoundVolume for '{soundId}' - individual sound volume control not supported with AudioMixer");
+        Debug.WriteLine(
+            $"SetSoundVolume for '{soundId}' - individual sound volume control not supported with AudioMixer");
     }
 
     /// <summary>
@@ -336,27 +344,4 @@ public class AudioMixerService : IDisposable
     }
 
     #endregion
-}
-
-/// <summary>
-/// Simple audio source implementation for memory-based audio data
-/// </summary>
-internal class MemoryAudioSource : IAudioSource, IDisposable
-{
-    private readonly byte[] _audioData;
-
-    public MemoryAudioSource(byte[] audioData)
-    {
-        _audioData = audioData ?? throw new ArgumentNullException(nameof(audioData));
-    }
-
-    public Stream GetAudioStream()
-    {
-        return new MemoryStream(_audioData);
-    }
-
-    public void Dispose()
-    {
-        // Nothing to dispose for byte array
-    }
 }
