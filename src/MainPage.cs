@@ -75,15 +75,6 @@ namespace BreakoutGame
         [Preview]
         public static void Level5() => ApplyPreviewState(PreviewAppState.BeginningOfLevel(5));
 
-        [Preview]
-        public static void Level6() => ApplyPreviewState(PreviewAppState.BeginningOfLevel(6));
-
-        [Preview]
-        public static void Level7() => ApplyPreviewState(PreviewAppState.BeginningOfLevel(7));
-
-        [Preview]
-        public static void Level8() => ApplyPreviewState(PreviewAppState.BeginningOfLevel(8));
-
         private static void ApplyPreviewState(PreviewAppState previewAppState)
         {
             var breakoutGame = Game.BreakoutGame.Instance ??
