@@ -1387,5 +1387,50 @@ namespace BreakoutGame.Game
 
         #endregion
 
+#if PREVIEWS
+        public void ApplyPreviewState(PreviewAppState previewAppState)
+        {
+            ResetGame();
+
+            var newState = previewAppState.GameState;
+            if (newState == GameState.Ready)
+            {
+                StartDemoMode();
+                ShowWelcomeDialog();
+            }
+            else if (newState == GameState.DemoPlay)
+            {
+                StartDemoMode();
+            }
+            else if (newState == GameState.Playing)
+            {
+                StartNewGamePlayer();
+
+                Lives = previewAppState.Lives;
+                Score = previewAppState.Score;
+            }
+            else if (newState == GameState.Paused)
+            {
+                StartNewGamePlayer();
+
+                Lives = previewAppState.Lives;
+                Score = previewAppState.Score;
+
+                PauseGame();
+            }
+            else if (newState == GameState.LevelComplete)
+            {
+                StartNewGamePlayer();
+                State = GameState.LevelComplete;
+                Level = previewAppState.Level;
+
+                Lives = previewAppState.Lives;
+                Score = previewAppState.Score;
+
+                LevelComplete();
+            }
+        }
+#endif        
+
     }
 }
