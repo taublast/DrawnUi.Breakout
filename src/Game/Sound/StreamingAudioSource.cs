@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
-using Plugin.Maui.Audio;
 
-namespace BreakoutGame.Game;
+namespace Breakout.Game;
 
 /// <summary>
 /// Streaming IAudioSource for background music (large files, loaded on-demand)

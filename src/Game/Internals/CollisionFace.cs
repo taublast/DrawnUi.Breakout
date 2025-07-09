@@ -1,4 +1,4 @@
-﻿namespace BreakoutGame.Game;
+﻿namespace Breakout.Game;
 
 /// <summary>
 /// Enum representing the face of collision

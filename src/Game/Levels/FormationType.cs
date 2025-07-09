@@ -1,7 +1,4 @@
-﻿using SkiaSharp;
-using System.Numerics;
-
-namespace BreakoutGame.Game
+﻿namespace Breakout.Game
 {
     /// <summary>
     /// Represents a formation type for brick layouts

@@ -1,5 +1,5 @@
 ﻿using AppoMobi.Specials;
-using BreakoutGame;
+
 
 namespace Breakout;
 
@@ -8,11 +8,13 @@ public partial class App : Application
     public App()
     {
         InitializeComponent();
+
+        PreviewService.Initialize();
     }
 
     protected override Window CreateWindow(IActivationState? activationState)
     {
-        return new Window(new MainPage());
+        return new Window(new NavigationPage(new MainPage()));
     }
 
     protected override void OnStart()
@@ -29,7 +31,7 @@ public partial class App : Application
 
         Dispatcher.Dispatch(() => { DeviceDisplay.Current.KeepScreenOn = false; });
 
-        BreakoutGame.Game.BreakoutGame.Instance?.Pause();
+        Breakout.Game.BreakoutGame.Instance?.Pause();
     }
 
     protected override void OnResume()
@@ -38,6 +40,6 @@ public partial class App : Application
 
         Dispatcher.Dispatch(() => { DeviceDisplay.Current.KeepScreenOn = true; });
 
-        BreakoutGame.Game.BreakoutGame.Instance?.Resume();
+        Breakout.Game.BreakoutGame.Instance?.Resume();
     }
 }

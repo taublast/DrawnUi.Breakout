@@ -1,13 +1,7 @@
 ﻿using AppoMobi.Maui.Gestures;
-using DrawnUi.Views;
 using SkiaSharp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace BreakoutGame.Game.Dev
+namespace Breakout.Game.Dev
 {
     //public class Test : Canvas
     //{

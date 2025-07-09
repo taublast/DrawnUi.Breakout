@@ -57,14 +57,17 @@
     <ProvisioningType>manual</ProvisioningType>
   </PropertyGroup>
 
+  <ItemGroup Condition="$(Configuration) == 'Debug'">
+    <!--https://github.com/BretJohnson/ui-preview-framework-->
+    <PackageReference Include="PreviewFramework.App.Maui" Version="0.10.26" />
+  </ItemGroup>
+  
 	<ItemGroup>
 
     <!--can replace this with usual plugin if PR is merged-->
     <PackageReference Include="AppoMobi.Preview.Plugin.Maui.Audio" Version="3.0.2.1-pre1" />
-
-    <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.30" />
+    <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.70" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
-		<PackageReference Include="PreviewFramework.App.Maui" Version="0.10.26" />
     <!--<PackageReference Include="AppoMobi.Maui.DrawnUi" Version="1.3.60.1" />-->
 	</ItemGroup>
 
@@ -76,7 +79,21 @@
 
   <!--production-->
   <ItemGroup Condition="'$(UseNuget)' == 'true'">
-    <PackageReference Include="DrawnUi.Maui.Game" Version="1.5.1.7-pre" />
+    <PackageReference Include="DrawnUi.Maui.Game" Version="1.6.1.1-pre" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Resources\Strings\ResStrings.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ResStrings.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Strings\ResStrings.resx">
+      <LastGenOutput>ResStrings.Designer.cs</LastGenOutput>
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
   </ItemGroup>
 
   

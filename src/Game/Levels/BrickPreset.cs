@@ -1,7 +1,4 @@
-﻿using BreakoutGame.Game;
-using Microsoft.Maui.Graphics;
-
-namespace BreakoutGame.Game
+﻿namespace Breakout.Game
 {
     /// <summary>
     /// Defines the properties of a brick preset

@@ -1,9 +1,4 @@
-using AppoMobi.Maui.Gestures;
-using DrawnUi.Draw;
-using Microsoft.Maui.Graphics;
-using System.Runtime.CompilerServices;
-
-namespace BreakoutGame.Game.Dialogs
+namespace Breakout.Game.Dialogs
 {
     /// <summary>
     /// Template system for customizing dialog appearance and behavior
@@ -58,7 +53,6 @@ namespace BreakoutGame.Game.Dialogs
         }
 
 
-
         public Action OnOkClicked { get; set; }
         public Action OnCancelClicked { get; set; }
 
@@ -79,7 +73,7 @@ namespace BreakoutGame.Game.Dialogs
             SkiaLayout parentContainer = null, DialogTemplate template = null)
         {
             _content = content;
-            _okText = ok ?? "OK";
+            _okText = ok ?? ResStrings.BtnOk;
             _cancelText = cancel;
             _parentContainer = parentContainer;
             _template = template ?? DefaultTemplate;
@@ -474,7 +468,7 @@ namespace BreakoutGame.Game.Dialogs
 
         #endregion
 
-        protected virtual void SetupDialog()
+        protected void SetupDialog()
         {
             // Main dialog container
             HorizontalOptions = LayoutOptions.Fill;
@@ -509,6 +503,7 @@ namespace BreakoutGame.Game.Dialogs
             {
                 children.Add(_dimmerLayer);
             }
+
             children.Add(_dialogFrame);
 
             Children = children;
@@ -530,66 +525,5 @@ namespace BreakoutGame.Game.Dialogs
             await CloseWithCancelAsync(animate: true);
         }
 
-
-        protected virtual List<SkiaControl> CreateContentChildren()
-        {
-            var children = new List<SkiaControl>();
-
-            // Add the main content
-            if (_content != null)
-            {
-                _content.VerticalOptions = LayoutOptions.Start;
-                children.Add(_content);
-            }
-
-            // Create buttons layout
-            var buttonsLayout = new SkiaLayout()
-            {
-                Type = LayoutType.Row,
-                Margin = new(0, 0, 0, 8),
-                HorizontalOptions = LayoutOptions.Center,
-                Spacing = 16,
-                Children =
-                {
-                    // OK button (always present)
-                    BreakoutGame.UiElements.Button(_okText, async () =>
-                    {
-                        System.Diagnostics.Debug.WriteLine($"GameDialog: OK button tapped, auto-closing dialog");
-                        // Auto-close dialog - user doesn't need to call close methods in their callbacks
-                        await CloseWithOkAsync();
-                    })
-                }
-            };
-
-            // Cancel button (optional)
-            if (!string.IsNullOrEmpty(_cancelText))
-            {
-                var cancelButton = new SkiaButton()
-                    {
-                        Text = _cancelText,
-                        FontSize = 14,
-                        FontFamily = "FontGame",
-                        TextColor = Colors.White,
-                        BackgroundColor = Colors.DarkRed,
-                        //CornerRadius = 8,
-                        //Padding = new Thickness(24, 12),
-                        WidthRequest = -1,
-                        MinimumWidthRequest = 100,
-                    }
-                    .OnTapped(async (me) =>
-                    {
-                        System.Diagnostics.Debug.WriteLine($"GameDialog: Cancel button tapped, auto-closing dialog");
-                        // Auto-close dialog - user doesn't need to call close methods in their callbacks
-                        await CloseWithCancelAsync();
-                    });
-
-                buttonsLayout.Add(cancelButton);
-            }
-
-            children.Add(buttonsLayout);
-
-            return children;
-        }
     }
-
 }

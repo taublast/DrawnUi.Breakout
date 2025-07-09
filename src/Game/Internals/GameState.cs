@@ -1,6 +1,6 @@
 using SkiaSharp;
 
-namespace BreakoutGame.Game;
+namespace Breakout.Game;
 
 public enum GameState
 {

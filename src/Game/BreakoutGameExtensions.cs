@@ -1,6 +1,6 @@
 using SkiaSharp;
 
-namespace BreakoutGame.Game;
+namespace Breakout.Game;
 
 /// <summary>
 /// Extension methods for the Breakout game
@@ -37,7 +37,4 @@ public static class BreakoutGameExtensions
         else
             return CollisionFace.Bottom;
     }
-
- 
-     
 }

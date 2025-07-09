@@ -1,7 +1,4 @@
-using System;
-using System.Numerics;
-
-namespace BreakoutGame.Game.Ai
+namespace Breakout.Game.Ai
 {
     /// <summary>
     /// Controls the paddle in demo mode, simulating a human player with variable skill

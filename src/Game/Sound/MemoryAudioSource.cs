@@ -1,4 +1,4 @@
-namespace BreakoutGame.Game;
+namespace Breakout.Game;
 
 /// <summary>
 /// Simple audio source implementation for memory-based audio data, reuses stream

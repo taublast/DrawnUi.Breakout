@@ -1,4 +1,4 @@
-﻿namespace BreakoutGame.Game;
+﻿namespace Breakout.Game;
 
 /// <summary>
 /// Types of power-ups that can be dropped by special bricks

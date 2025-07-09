@@ -1,14 +1,13 @@
 using System.Diagnostics;
-using AppoMobi.Maui.Gestures;
-using AppoMobi.Specials;
-using SkiaSharp;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using DrawnUi.Draw;
-using BreakoutGame.Game.Dialogs;
-using BreakoutGame.Game.Ai;
+using AppoMobi.Maui.Gestures;
+using AppoMobi.Specials;
+using Breakout.Game.Ai;
+using Breakout.Game.Dialogs;
+using SkiaSharp;
 
-namespace BreakoutGame.Game
+namespace Breakout.Game
 {
     public partial class BreakoutGame : MauiGame
     {
@@ -25,10 +24,15 @@ namespace BreakoutGame.Game
         public const float BRICKS_TOP_MARGIN = 90f;
         public const int LIVES = 3;
 
+        public const int MAXLVL = 12;
+        public const int DEMO_MAXLVL = 3;
+
         /// <summary>
         /// For long running profiling
         /// </summary>
         const bool CHEAT_INVULNERABLE = true;
+
+        public static bool USE_SOUND = false;
 
         /// <summary>
         /// Compile-time flag to enable raycasting collision detection instead of AABB intersection
@@ -36,7 +40,7 @@ namespace BreakoutGame.Game
         /// </summary>
         public static bool USE_RAYCAST_COLLISION = true;
 
-        public static bool USE_SOUND = true;
+
 
         #endregion
 
@@ -262,7 +266,7 @@ namespace BreakoutGame.Game
             if (wasInDemoMode)
             {
                 // In demo mode, auto-continue to next level without showing dialog
-                if (Level < 5)
+                if (Level < DEMO_MAXLVL)
                 {
                     Level++;
                 }
@@ -279,21 +283,66 @@ namespace BreakoutGame.Game
             else
             {
                 // Normal mode - show level complete dialog
-                if (Level < 5)
+                if (Level < MAXLVL)
                 {
                     Level++;
                     ShowLevelCompleteDialog();
                 }
                 else
                 {
-                    Level = 1;
-                    ShowLevelCompleteDialog();
+                    GameComplete();
                 }
             }
         }
 
+        public async void GameComplete()
+        {
+            var levelCompleteContent =
+                UiElements.DialogPrompt(string.Format(ResStrings.MessageGameComplete, Score));
+
+            if (await GameDialog.ShowAsync(this, levelCompleteContent, ResStrings.BtnOk.ToUpperInvariant()))
+            {
+                //todo can show credits or something
+
+                StartDemoMode();
+                ShowWelcomeDialog();
+            }
+
+        }
+
+        /// <summary>
+        /// Called when out of lives
+        /// </summary>
+        public void GameLost()
+        {
+            State = GameState.Ended;
+    
+            Tasks.StartDelayed(TimeSpan.FromMilliseconds(150), () =>
+            {
+                //PlaySound(Sound.SomethingTerrible);
+                ShowGameOverDialog();
+            });
+        }
+
+        /// <summary>
+        /// Start a precise level number in player mode
+        /// </summary>
+        /// <param name="level"></param>
+        public void StartNewLevel(int level)
+        {
+            _ = GameDialog.PopAllAsync(this);
+            Level = level;
+            State = GameState.Unset;
+            StartNewLevel();
+        }
+
         void StartNewLevel()
         {
+            if (LevelManager == null)
+            {
+                return;
+            }
+
             _levelCompletionPending = 0;
 
             lock (_lockSpritesToBeRemovedLater)
@@ -611,12 +660,10 @@ namespace BreakoutGame.Game
                 {
                     _score = value;
                     OnPropertyChanged();
-                    OnPropertyChanged(nameof(ScoreLocalized));
                 }
             }
         }
 
-        public string ScoreLocalized => $"SCORE: {_score:0}";
         private bool _initialized;
         private bool _needPrerender;
 
@@ -1152,7 +1199,7 @@ namespace BreakoutGame.Game
                 State = GameState.Paused;
                 _moveLeft = false;
                 _moveRight = false;
-                GameDialog.Show(this, null, "PAUSED", null, () => { TogglePause(); });
+                GameDialog.Show(this, null, ResStrings.StatePaused.ToUpperInvariant(), null, () => { TogglePause(); });
             }
         }
 
@@ -1386,51 +1433,5 @@ namespace BreakoutGame.Game
         }
 
         #endregion
-
-#if PREVIEWS
-        public void ApplyPreviewState(PreviewAppState previewAppState)
-        {
-            ResetGame();
-
-            var newState = previewAppState.GameState;
-            if (newState == GameState.Ready)
-            {
-                StartDemoMode();
-                ShowWelcomeDialog();
-            }
-            else if (newState == GameState.DemoPlay)
-            {
-                StartDemoMode();
-            }
-            else if (newState == GameState.Playing)
-            {
-                StartNewGamePlayer();
-
-                Lives = previewAppState.Lives;
-                Score = previewAppState.Score;
-            }
-            else if (newState == GameState.Paused)
-            {
-                StartNewGamePlayer();
-
-                Lives = previewAppState.Lives;
-                Score = previewAppState.Score;
-
-                PauseGame();
-            }
-            else if (newState == GameState.LevelComplete)
-            {
-                StartNewGamePlayer();
-                State = GameState.LevelComplete;
-                Level = previewAppState.Level;
-
-                Lives = previewAppState.Lives;
-                Score = previewAppState.Score;
-
-                LevelComplete();
-            }
-        }
-#endif        
-
     }
 }

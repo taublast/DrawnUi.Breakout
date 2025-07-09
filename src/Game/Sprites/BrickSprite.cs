@@ -1,8 +1,6 @@
-﻿using System.Runtime.CompilerServices;
-using SkiaSharp;
-using BreakoutGame.Game;
+﻿using SkiaSharp;
 
-namespace BreakoutGame.Game;
+namespace Breakout.Game;
 
 public class BrickSprite : SkiaShape, IWithHitBox, IReusableSprite
 {

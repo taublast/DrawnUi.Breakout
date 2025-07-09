@@ -1,7 +1,7 @@
-﻿using SkiaSharp;
-using System.Numerics;
+﻿using System.Numerics;
+using SkiaSharp;
 
-namespace BreakoutGame.Game
+namespace Breakout.Game
 {
     /// <summary>
     /// Implements raycasting collision detection for more accurate collision handling

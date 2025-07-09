@@ -1,0 +1,558 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="BtnSave" xml:space="preserve">
+    <value>保存</value>
+  </data>
+  <data name="BtnCancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="BtnClose" xml:space="preserve">
+    <value>关闭</value>
+  </data>
+  <data name="BtnApply" xml:space="preserve">
+    <value>应用</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>是</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>否</value>
+  </data>
+  <data name="Options" xml:space="preserve">
+    <value>选项</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>错误</value>
+  </data>
+  <data name="BtnStart" xml:space="preserve">
+    <value>开始</value>
+  </data>
+  <data name="BtnStop" xml:space="preserve">
+    <value>停止</value>
+  </data>
+  <data name="BtnConnect" xml:space="preserve">
+    <value>连接</value>
+  </data>
+  <data name="BtnDisconnect" xml:space="preserve">
+    <value>断开连接</value>
+  </data>
+  <data name="On" xml:space="preserve">
+    <value>开</value>
+  </data>
+  <data name="Off" xml:space="preserve">
+    <value>关</value>
+  </data>
+  <data name="VendorTitle" xml:space="preserve">
+    <value>演示</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>仪表板</value>
+  </data>
+  <data name="History" xml:space="preserve">
+    <value>历史记录</value>
+  </data>
+  <data name="Filtered" xml:space="preserve">
+    <value>已过滤</value>
+  </data>
+  <data name="Filter" xml:space="preserve">
+    <value>过滤器</value>
+  </data>
+  <data name="All" xml:space="preserve">
+    <value>全部</value>
+  </data>
+  <data name="Select" xml:space="preserve">
+    <value>选择</value>
+  </data>
+  <data name="Order" xml:space="preserve">
+    <value>订单</value>
+  </data>
+  <data name="User" xml:space="preserve">
+    <value>用户</value>
+  </data>
+  <data name="EditList" xml:space="preserve">
+    <value>编辑列表</value>
+  </data>
+  <data name="Users" xml:space="preserve">
+    <value>用户</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>名称</value>
+  </data>
+  <data name="Deleting" xml:space="preserve">
+    <value>删除</value>
+  </data>
+  <data name="AreYouSure" xml:space="preserve">
+    <value>您确定吗？</value>
+  </data>
+  <data name="Europe" xml:space="preserve">
+    <value>欧洲</value>
+  </data>
+  <data name="OrderOldFirst" xml:space="preserve">
+    <value>旧的优先</value>
+  </data>
+  <data name="OrderNewFirst" xml:space="preserve">
+    <value>新的优先</value>
+  </data>
+  <data name="Start" xml:space="preserve">
+    <value>开始</value>
+  </data>
+  <data name="End" xml:space="preserve">
+    <value>结束</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>语言</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>编辑</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>删除</value>
+  </data>
+  <data name="HoursShort" xml:space="preserve">
+    <value>小时</value>
+  </data>
+  <data name="BtnReset" xml:space="preserve">
+    <value>重置</value>
+  </data>
+  <data name="BtnCreate" xml:space="preserve">
+    <value>创建</value>
+  </data>
+  <data name="SystemSettings" xml:space="preserve">
+    <value>系统设置</value>
+  </data>
+  <data name="AboutApp" xml:space="preserve">
+    <value>关于</value>
+  </data>
+  <data name="BtnQuestion" xml:space="preserve">
+    <value>提问</value>
+  </data>
+  <data name="DemoMode" xml:space="preserve">
+    <value>演示</value>
+  </data>
+  <data name="ValidationFieldRequired" xml:space="preserve">
+    <value>{0}字段未填写</value>
+  </data>
+  <data name="AuthForgotPasswordQuestion" xml:space="preserve">
+    <value>忘记密码？</value>
+  </data>
+  <data name="AuthLogin" xml:space="preserve">
+    <value>登录</value>
+  </data>
+  <data name="AuthRememberMe" xml:space="preserve">
+    <value>记住我</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>密码</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>添加</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>搜索</value>
+  </data>
+  <data name="FullName" xml:space="preserve">
+    <value>全名</value>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>日期</value>
+  </data>
+  <data name="Manager" xml:space="preserve">
+    <value>经理</value>
+  </data>
+  <data name="Managers" xml:space="preserve">
+    <value>经理</value>
+  </data>
+  <data name="Teacher" xml:space="preserve">
+    <value>老师</value>
+  </data>
+  <data name="Teachers" xml:space="preserve">
+    <value>老师</value>
+  </data>
+  <data name="Leads" xml:space="preserve">
+    <value>潜在客户</value>
+  </data>
+  <data name="Words" xml:space="preserve">
+    <value>词汇</value>
+  </data>
+  <data name="Word" xml:space="preserve">
+    <value>词</value>
+  </data>
+  <data name="Group" xml:space="preserve">
+    <value>组</value>
+  </data>
+  <data name="Groups" xml:space="preserve">
+    <value>组</value>
+  </data>
+  <data name="Offices" xml:space="preserve">
+    <value>办公室</value>
+  </data>
+  <data name="Office" xml:space="preserve">
+    <value>办公室</value>
+  </data>
+  <data name="Translation" xml:space="preserve">
+    <value>翻译</value>
+  </data>
+  <data name="Difficulty" xml:space="preserve">
+    <value>难度</value>
+  </data>
+  <data name="Region" xml:space="preserve">
+    <value>地区</value>
+  </data>
+  <data name="Regions" xml:space="preserve">
+    <value>地区</value>
+  </data>
+  <data name="Interaction" xml:space="preserve">
+    <value>交互</value>
+  </data>
+  <data name="Shop" xml:space="preserve">
+    <value>商店</value>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>主页</value>
+  </data>
+  <data name="Events" xml:space="preserve">
+    <value>事件</value>
+  </data>
+  <data name="Event" xml:space="preserve">
+    <value>事件</value>
+  </data>
+  <data name="Pushes" xml:space="preserve">
+    <value>推送</value>
+  </data>
+  <data name="Push" xml:space="preserve">
+    <value>推送</value>
+  </data>
+  <data name="Orders" xml:space="preserve">
+    <value>订单</value>
+  </data>
+  <data name="OrderBy" xml:space="preserve">
+    <value>排序</value>
+  </data>
+  <data name="Products" xml:space="preserve">
+    <value>产品</value>
+  </data>
+  <data name="Product" xml:space="preserve">
+    <value>产品</value>
+  </data>
+  <data name="LogOut" xml:space="preserve">
+    <value>注销</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>标题</value>
+  </data>
+  <data name="Quantity" xml:space="preserve">
+    <value>数量</value>
+  </data>
+  <data name="Price" xml:space="preserve">
+    <value>价格</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>状态</value>
+  </data>
+  <data name="PhoneNumber" xml:space="preserve">
+    <value>电话号码</value>
+  </data>
+  <data name="Birthday" xml:space="preserve">
+    <value>生日</value>
+  </data>
+  <data name="Balance" xml:space="preserve">
+    <value>余额</value>
+  </data>
+  <data name="LastName" xml:space="preserve">
+    <value>姓氏</value>
+  </data>
+  <data name="FirstName" xml:space="preserve">
+    <value>名字</value>
+  </data>
+  <data name="PastDue" xml:space="preserve">
+    <value>过期</value>
+  </data>
+  <data name="Address" xml:space="preserve">
+    <value>地址</value>
+  </data>
+  <data name="Notes" xml:space="preserve">
+    <value>备注</value>
+  </data>
+  <data name="Days" xml:space="preserve">
+    <value>天</value>
+  </data>
+  <data name="Time" xml:space="preserve">
+    <value>时间</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>邮箱</value>
+  </data>
+  <data name="Messenger" xml:space="preserve">
+    <value>消息</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>描述</value>
+  </data>
+  <data name="ValidationRequired" xml:space="preserve">
+    <value>必填字段</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>类型</value>
+  </data>
+  <data name="Text" xml:space="preserve">
+    <value>文本</value>
+  </data>
+  <data name="MiddleName" xml:space="preserve">
+    <value>中间名</value>
+  </data>
+  <data name="Success" xml:space="preserve">
+    <value>成功！</value>
+  </data>
+  <data name="Request" xml:space="preserve">
+    <value>请求</value>
+  </data>
+  <data name="Requests" xml:space="preserve">
+    <value>请求</value>
+  </data>
+  <data name="Edited" xml:space="preserve">
+    <value>已编辑</value>
+  </data>
+  <data name="TitleDesk" xml:space="preserve">
+    <value>管理面板</value>
+  </data>
+  <data name="Camera" xml:space="preserve">
+    <value>相机</value>
+  </data>
+  <data name="Cameras" xml:space="preserve">
+    <value>相机</value>
+  </data>
+  <data name="ConfirmationNeeded" xml:space="preserve">
+    <value>需要确认</value>
+  </data>
+  <data name="ConfirmDelete" xml:space="preserve">
+    <value>您确定要删除此条目吗？</value>
+  </data>
+  <data name="ConfirmAction" xml:space="preserve">
+    <value>请确认此操作！</value>
+  </data>
+  <data name="Unset" xml:space="preserve">
+    <value>未设置</value>
+  </data>
+  <data name="None" xml:space="preserve">
+    <value>无</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>版本</value>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>移除</value>
+  </data>
+  <data name="StudyPlanType_Other" xml:space="preserve">
+    <value>其他</value>
+  </data>
+  <data name="Welcome" xml:space="preserve">
+    <value>欢迎</value>
+  </data>
+  <data name="RowsPerPage" xml:space="preserve">
+    <value>每页行数</value>
+  </data>
+  <data name="NoRights" xml:space="preserve">
+    <value>权限不足</value>
+  </data>
+  <data name="OrderStatus_Received" xml:space="preserve">
+    <value>处理中</value>
+  </data>
+  <data name="OrderStatus_Issued" xml:space="preserve">
+    <value>已发送给客户</value>
+  </data>
+  <data name="OrderStatus_Sent" xml:space="preserve">
+    <value>已发送到办公室</value>
+  </data>
+  <data name="Amount" xml:space="preserve">
+    <value>金额</value>
+  </data>
+  <data name="Info" xml:space="preserve">
+    <value>信息</value>
+  </data>
+  <data name="ChangeBalance" xml:space="preserve">
+    <value>更改余额</value>
+  </data>
+  <data name="MyProfile" xml:space="preserve">
+    <value>我的资料</value>
+  </data>
+  <data name="ResetPassword" xml:space="preserve">
+    <value>重置密码</value>
+  </data>
+  <data name="UserName" xml:space="preserve">
+    <value>用户名</value>
+  </data>
+  <data name="WrongPassword" xml:space="preserve">
+    <value>用户名或密码错误</value>
+  </data>
+  <data name="PressBACKOnceAgain" xml:space="preserve">
+    <value>再按一次返回键退出...</value>
+  </data>
+  <data name="BtnShare" xml:space="preserve">
+    <value>分享</value>
+  </data>
+  <data name="BtnGoBack" xml:space="preserve">
+    <value>返回</value>
+  </data>
+  <data name="StatePaused" xml:space="preserve">
+    <value>暂停</value>
+  </data>
+  <data name="BtnOk" xml:space="preserve">
+    <value>确定</value>
+  </data>
+  <data name="BtnQuit" xml:space="preserve">
+    <value>退出</value>
+  </data>
+  <data name="BtnContinue" xml:space="preserve">
+    <value>继续</value>
+  </data>
+  <data name="BtnPlayAgain" xml:space="preserve">
+    <value>再玩一次</value>
+  </data>
+  <data name="StartGame" xml:space="preserve">
+    <value>开始游戏</value>
+  </data>
+  <data name="Score" xml:space="preserve">
+    <value>分数</value>
+  </data>
+  <data name="MessageGameOver" xml:space="preserve">
+    <value>😔 游戏结束！💔
+最终得分：{0}
+准备好再来一局了吗？</value>
+  </data>
+  <data name="MessageLevelComplete" xml:space="preserve">
+    <value>🎯 第{0}关完成！🎉
+得分：{1}
+准备迎接第{2}关！</value>
+  </data>
+  <data name="MessageWelcome" xml:space="preserve">
+    <value>💥 欢迎来到破砖游戏！🏓
+🏆 打破所有砖块，胜利等待着你！</value>
+  </data>
+  <data name="MessageWelcomeDesktop" xml:space="preserve">
+    <value>💥 欢迎来到破砖游戏！🏓
+使用鼠标/键盘进行控制。
+🏆 打破所有砖块，胜利等待着你！</value>
+  </data>
+  <data name="MessageGameComplete" xml:space="preserve">
+    <value>🎉 了不起！你征服了所有关卡！🎉
+最终得分：{0}
+你是破砖大师！</value>
+  </data>
+</root>

@@ -1,9 +1,7 @@
-﻿using BreakoutGame.Game;
+﻿using System.Numerics;
 using SkiaSharp;
-using System.Numerics;
-using System.Runtime.CompilerServices;
 
-namespace BreakoutGame.Game;
+namespace Breakout.Game;
 
 public class BallSprite : SkiaShape, IWithHitBox, IReusableSprite
 {
