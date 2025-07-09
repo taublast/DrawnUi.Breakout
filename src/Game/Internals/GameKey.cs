@@ -1,4 +1,4 @@
-﻿namespace BreakoutGame.Game;
+﻿namespace Breakout.Game;
 
 /// <summary>
 /// Game-dependent action keys

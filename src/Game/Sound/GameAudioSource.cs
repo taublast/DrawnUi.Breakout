@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.IO;
-using System.Numerics;
-using System.Threading.Tasks;
-using Plugin.Maui.Audio;
+﻿using Plugin.Maui.Audio;
 
-namespace BreakoutGame.Game;
+namespace Breakout.Game;
 
 public interface IGameAudioSource : IAudioSource, IDisposable
 {
-
 }
 
 /// <summary>

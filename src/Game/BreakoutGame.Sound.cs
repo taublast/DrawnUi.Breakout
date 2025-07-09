@@ -1,14 +1,6 @@
-using System.Diagnostics;
-using AppoMobi.Maui.Gestures;
-using AppoMobi.Specials;
-using SkiaSharp;
 using System.Numerics;
-using System.Runtime.CompilerServices;
-using DrawnUi.Draw;
-using BreakoutGame.Game.Dialogs;
-using BreakoutGame.Game.Ai;
 
-namespace BreakoutGame.Game
+namespace Breakout.Game
 {
     public partial class BreakoutGame : MauiGame
     {

@@ -1,7 +1,4 @@
-using DrawnUi.Draw;
-using Microsoft.Maui.Graphics;
-
-namespace BreakoutGame.Game.Dialogs
+namespace Breakout.Game.Dialogs
 {
     /// <summary>
     /// Predefined dialog themes for easy customization
@@ -21,7 +18,7 @@ namespace BreakoutGame.Game.Dialogs
                 VerticalOptions = LayoutOptions.Fill,
                 BackgroundColor = Colors.Black.WithAlpha(0.5f)
             },
-            
+
             CreateDialogFrame = (dialog, content, okText, cancelText) => new SkiaLayout
             {
                 Margin = 40,
@@ -44,7 +41,7 @@ namespace BreakoutGame.Game.Dialogs
                         //    OffsetY = 8
                         //}
                     },
-                    
+
                     // Content container
                     new SkiaLayout
                     {
@@ -56,7 +53,7 @@ namespace BreakoutGame.Game.Dialogs
                     }
                 }
             },
-            
+
             CreateButton = (text) => new SkiaButton
             {
                 Text = text,
@@ -67,7 +64,7 @@ namespace BreakoutGame.Game.Dialogs
                 Padding = new Thickness(24, 12),
                 MinimumWidthRequest = 100
             },
-            
+
             Animations = new DialogAnimations
             {
                 BackdropAppearing = async (backdrop, token) =>
@@ -106,7 +103,8 @@ namespace BreakoutGame.Game.Dialogs
         };
 
 
-        private static List<SkiaControl> CreateModernContentChildren(GameDialog dialog, SkiaControl content, string okText, string cancelText)
+        private static List<SkiaControl> CreateModernContentChildren(GameDialog dialog, SkiaControl content,
+            string okText, string cancelText)
         {
             var children = new List<SkiaControl>();
 
@@ -158,8 +156,6 @@ namespace BreakoutGame.Game.Dialogs
             };
         }
 
-
-
         #endregion
 
         #region RETRO
@@ -175,7 +171,7 @@ namespace BreakoutGame.Game.Dialogs
                 VerticalOptions = LayoutOptions.Fill,
                 BackgroundColor = Colors.Black.WithAlpha(0.8f)
             },
-            
+
             CreateDialogFrame = (dialog, content, okText, cancelText) => new SkiaLayout
             {
                 Margin = 60,
@@ -193,7 +189,7 @@ namespace BreakoutGame.Game.Dialogs
                         StrokeColor = Colors.LimeGreen,
                         StrokeWidth = 2
                     },
-                    
+
                     // Content container
                     new SkiaLayout
                     {
@@ -205,12 +201,12 @@ namespace BreakoutGame.Game.Dialogs
                     }
                 }
             },
-            
+
             CreateButton = (text) => new SkiaButton
             {
                 Text = text,
                 FontSize = 14,
-                FontFamily = "FontGame",
+                FontFamily = AppFonts.Game,
                 TextColor = Colors.LimeGreen,
                 BackgroundColor = Colors.Black,
                 StrokeColor = Colors.LimeGreen,
@@ -218,7 +214,7 @@ namespace BreakoutGame.Game.Dialogs
                 Padding = new Thickness(16, 8),
                 MinimumWidthRequest = 80
             },
-            
+
             Animations = new DialogAnimations
             {
                 BackdropAppearing = async (backdrop, token) =>
@@ -249,7 +245,8 @@ namespace BreakoutGame.Game.Dialogs
             }
         };
 
-        private static List<SkiaControl> CreateRetroContentChildren(GameDialog dialog, SkiaControl content, string okText, string cancelText)
+        private static List<SkiaControl> CreateRetroContentChildren(GameDialog dialog, SkiaControl content,
+            string okText, string cancelText)
         {
             var children = new List<SkiaControl>();
 
@@ -260,8 +257,9 @@ namespace BreakoutGame.Game.Dialogs
                 if (content is SkiaLabel label)
                 {
                     label.TextColor = Colors.LimeGreen;
-                    label.FontFamily = "FontGame";
+                    label.FontFamily = AppFonts.Game;
                 }
+
                 children.Add(content);
             }
 
@@ -298,7 +296,7 @@ namespace BreakoutGame.Game.Dialogs
             {
                 Text = text,
                 FontSize = 14,
-                FontFamily = "FontGame",
+                FontFamily = AppFonts.Game,
                 TextColor = Colors.LimeGreen,
                 BackgroundColor = Colors.Black,
                 StrokeColor = Colors.LimeGreen,
@@ -313,6 +311,7 @@ namespace BreakoutGame.Game.Dialogs
         #region GAME
 
         private static float gameRadius = 8;
+
         /// <summary>
         /// Game-specific dialog theme (recreates the original design exactly)
         /// </summary>
@@ -396,7 +395,8 @@ namespace BreakoutGame.Game.Dialogs
             }
         };
 
-        private static List<SkiaControl> CreateGameContentChildren(GameDialog dialog, SkiaControl content, string okText, string cancelText)
+        private static List<SkiaControl> CreateGameContentChildren(GameDialog dialog, SkiaControl content,
+            string okText, string cancelText)
         {
             var children = new List<SkiaControl>();
 
@@ -410,7 +410,7 @@ namespace BreakoutGame.Game.Dialogs
             // Create buttons layout exactly like the original
             var buttonsLayout = new SkiaLayout()
             {
-                Type = LayoutType.Row,
+                Type = LayoutType.Wrap,
                 Margin = new(0, 8, 0, 8),
                 HorizontalOptions = LayoutOptions.Center,
                 Spacing = 16,
@@ -428,7 +428,7 @@ namespace BreakoutGame.Game.Dialogs
                 {
                     Text = cancelText,
                     FontSize = 14,
-                    FontFamily = "FontGame",
+                    FontFamily = AppFonts.Game,
                     TextColor = Colors.White,
                     BackgroundColor = Colors.DarkRed,
                     WidthRequest = -1,

@@ -17,9 +17,6 @@
 **/Android/**/[Rr]esource.[Dd]esigner.cs
 **/Droid/**/[Rr]esource.[Dd]esigner.cs
 
-# Xamarin Components
-Components/
-
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/

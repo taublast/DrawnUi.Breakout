@@ -1,7 +1,6 @@
 using SkiaSharp;
-using BreakoutGame.Game;
 
-namespace BreakoutGame.Game;
+namespace Breakout.Game;
 
 public class PaddleSprite : SkiaShape, IWithHitBox, IReusableSprite
 {

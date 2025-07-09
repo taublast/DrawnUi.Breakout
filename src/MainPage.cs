@@ -1,11 +1,59 @@
-﻿using BreakoutGame.Game;
+﻿using Breakout.Game;
+
+using DrawnUi.Controls;
 using DrawnUi.Views;
 using PreviewFramework;
+using System.Globalization;
+using Breakout;
 
-namespace BreakoutGame
+namespace Breakout.Game
 {
-    public class MainPage : BasePageReloadable
+    public partial class MainPage : BasePageReloadable
     {
+        public MainPage()
+        {
+            ApplySelectedLanguage();
+        }
+
+        public void ApplySelectedLanguage()
+        {
+            if (Preferences.Get("FirstStart", true))
+            {
+                if (!MauiProgram.Languages.Contains(Preferences.Get("DeviceLang", "")))
+                {
+                    var fallback = MauiProgram.Languages.First();
+                    ApplyLanguage(fallback); // will set SelectedLang
+                }
+            }
+
+            ApplyLanguage(Preferences.Get("SelectedLang", ""));
+        }
+
+        public void ApplyLanguage(string lang)
+        {
+            ResStrings.Culture = CultureInfo.CreateSpecificCulture(lang);
+            Thread.CurrentThread.CurrentCulture = ResStrings.Culture;
+            Thread.CurrentThread.CurrentUICulture = ResStrings.Culture;
+            Preferences.Set("DeviceLang", lang);
+            Preferences.Set("SelectedLang", lang);
+        }
+
+        public static void RestartWithLanguage(string lang)
+        {
+            ResStrings.Culture = CultureInfo.CreateSpecificCulture(lang);
+
+            //whatever thread we are in
+            Thread.CurrentThread.CurrentCulture = ResStrings.Culture;
+            Thread.CurrentThread.CurrentUICulture = ResStrings.Culture;
+            Preferences.Set("DeviceLang", lang);
+            Preferences.Set("SelectedLang", lang);
+
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                App.Current.MainPage = new NavigationPage(new MainPage());
+            });
+        }
+
         Canvas Canvas;
 
         public override void Build()
@@ -24,7 +72,16 @@ namespace BreakoutGame
                 {
                     Children =
                     {
-                        new Game.BreakoutGame(),
+                        new SkiaViewSwitcher()
+                        {
+                            HorizontalOptions = LayoutOptions.Fill,
+                            VerticalOptions = LayoutOptions.Fill,
+                            SelectedIndex = 0,
+                            Children =
+                            {
+                                new Game.BreakoutGame(),
+                            }
+                        }.Assign(out ViewsContainer),
 
                         new SkiaLabelFps()
                         {
@@ -44,44 +101,9 @@ namespace BreakoutGame
             this.Content = Canvas;
         }
 
-#if PREVIEWS
-        [Preview]
-        public static void Welcome() => ApplyPreviewState(new PreviewAppState() { GameState = GameState.Ready });
 
-        [Preview]
-        public static void Playing() => ApplyPreviewState(new PreviewAppState() { GameState = GameState.Playing });
-
-        [Preview]
-        public static void Paused() => ApplyPreviewState(new PreviewAppState() { GameState = GameState.Paused });
-
-        [Preview]
-        public static void Ended() => ApplyPreviewState(new PreviewAppState() { GameState = GameState.Ended });
-
-        [Preview]
-        public static void LevelComplete() => ApplyPreviewState(new PreviewAppState() { GameState = GameState.LevelComplete });
-
-        [Preview]
-        public static void DemoPlay() => ApplyPreviewState(new PreviewAppState() { GameState = GameState.DemoPlay });
-
-        [Preview]
-        public static void Level2() => ApplyPreviewState(PreviewAppState.BeginningOfLevel(2));
-
-        [Preview]
-        public static void Level3() => ApplyPreviewState(PreviewAppState.BeginningOfLevel(3));
-
-        [Preview]
-        public static void Level4() => ApplyPreviewState(PreviewAppState.BeginningOfLevel(4));
-
-        [Preview]
-        public static void Level5() => ApplyPreviewState(PreviewAppState.BeginningOfLevel(5));
-
-        private static void ApplyPreviewState(PreviewAppState previewAppState)
-        {
-            var breakoutGame = Game.BreakoutGame.Instance ??
-                throw new InvalidOperationException("BreakoutGame isn't initialized");
-
-            breakoutGame.ApplyPreviewState(previewAppState);
-        }
-#endif
     }
+
+
+
 }

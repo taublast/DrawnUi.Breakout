@@ -1,5 +1,7 @@
 ﻿global using DrawnUi.Draw;
 global using DrawnUi.Gaming;
+global using Breakout.Game;
+global using BreakoutGame.Resources.Strings;
 using Microsoft.Extensions.Logging;
 using Plugin.Maui.Audio;
 
@@ -7,6 +9,22 @@ namespace Breakout;
 
 public static class MauiProgram
 {
+    /// <summary>
+    /// Enabled languages
+    /// </summary>
+    public static IEnumerable<string> Languages = new List<string>
+    {
+        "en", //FIRST is fallback
+        "de",
+        "es",
+        "fr",
+        "it",
+        "ru",
+        "ja",
+        "ko",
+        "zh",
+    };
+
     public static MauiApp CreateMauiApp()
     {
         var builder = MauiApp.CreateBuilder();
@@ -14,18 +32,20 @@ public static class MauiProgram
             .UseMauiApp<App>()
             .ConfigureFonts(fonts =>
             {
-                fonts.AddFont("Chewy-Regular.ttf", "FontText");
-                fonts.AddFont("amstrad_cpc464.ttf", "FontGame");
+                fonts.AddFont("ZenMaruGothic-Bold.ttf", AppFonts.Default);
+                fonts.AddFont("DelaGothicOne-Regular.ttf", AppFonts.Game);
+                //fonts.AddFont("GothicA1-ExtraBold.ttf", AppFonts.Default);
+                fonts.AddFont("amstrad_cpc464.ttf", "FontSystem");
             });
 
         builder.UseDrawnUi(new()
             {
-                UseDesktopKeyboard = true, 
+                UseDesktopKeyboard = true,
                 DesktopWindow = new()
                 {
                     Width = 375,
                     Height = 800,
-                    IsFixedSize = true 
+                    IsFixedSize = true
                     //todo disable maximize btn 
                 }
             })
@@ -33,11 +53,6 @@ public static class MauiProgram
 
         //to avoid returning many copies of same sprite bitmap for different images
         SkiaImageManager.ReuseBitmaps = true;
-
-//#if WINDOWS
-//            // game mode !!!
-//            Thread.CurrentThread.Priority = ThreadPriority.Highest;
-//#endif
 
 #if DEBUG
         builder.Logging.AddDebug();
