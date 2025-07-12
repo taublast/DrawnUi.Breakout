@@ -1,6 +1,4 @@
-﻿using AppoMobi.Maui.Gestures;
-using Breakout.Game.Dialogs;
-
+﻿using Breakout.Game.Dialogs;
 
 namespace Breakout.Game
 {

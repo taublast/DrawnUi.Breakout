@@ -13,6 +13,9 @@ namespace Breakout.Game
     {
         #region CONSTANTS
 
+        public const int WIDTH = 360;
+        public const int HEIGHT = 760;
+
         public const float BALL_SPEED = 375f;
         public const float PADDLE_SPEED = 475;
         public const float PADDLE_WIDTH = 80;
@@ -39,8 +42,6 @@ namespace Breakout.Game
         /// AABB works ok on desktops, but on mobile with frame drops better to use raycasting.
         /// </summary>
         public static bool USE_RAYCAST_COLLISION = true;
-
-
 
         #endregion
 
@@ -302,7 +303,6 @@ namespace Breakout.Game
                 StartDemoMode();
                 ShowWelcomeDialog();
             }
-
         }
 
         /// <summary>
@@ -311,7 +311,7 @@ namespace Breakout.Game
         public void GameLost()
         {
             State = GameState.Ended;
-    
+
             Tasks.StartDelayed(TimeSpan.FromMilliseconds(150), () =>
             {
                 //PlaySound(Sound.SomethingTerrible);
@@ -609,7 +609,6 @@ namespace Breakout.Game
             BricksPool.Add(brick.Uid, brick);
         }
 
-        // Gameplay state
         private int _level = 1;
 
         public int Level
@@ -625,8 +624,8 @@ namespace Breakout.Game
             }
         }
 
- 
         private int _lives = LIVES;
+
         public int Lives
         {
             get => _lives;
@@ -640,7 +639,6 @@ namespace Breakout.Game
             }
         }
 
- 
         private int _score;
 
         public int Score
@@ -966,7 +964,7 @@ namespace Breakout.Game
 
             // Check for wall collisions
             var wallHit = RaycastCollision.CheckWallCollision(ballPosition, ballDirection, ballRadius, maxDistance,
-                (float)GameField.Width, (float)GameField.Height);
+                GameField.VisualLayer.HitBoxWithTransforms.Units);
 
             // Determine which collision happens first
             RaycastCollision.RaycastHit firstHit = RaycastCollision.RaycastHit.None;

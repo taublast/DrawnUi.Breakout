@@ -1,7 +1,8 @@
 ﻿global using DrawnUi.Draw;
 global using DrawnUi.Gaming;
 global using Breakout.Game;
-global using BreakoutGame.Resources.Strings;
+global using Breakout.Resources.Fonts;
+global using Breakout.Resources.Strings;
 using Microsoft.Extensions.Logging;
 using Plugin.Maui.Audio;
 
@@ -30,26 +31,22 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
-            .ConfigureFonts(fonts =>
-            {
-                fonts.AddFont("ZenMaruGothic-Bold.ttf", AppFonts.Default);
-                fonts.AddFont("DelaGothicOne-Regular.ttf", AppFonts.Game);
-                //fonts.AddFont("GothicA1-ExtraBold.ttf", AppFonts.Default);
-                fonts.AddFont("amstrad_cpc464.ttf", "FontSystem");
-            });
-
-        builder.UseDrawnUi(new()
+            .AddAudio()
+            .AddAppFonts()
+            .UseDrawnUi(new()
             {
                 UseDesktopKeyboard = true,
                 DesktopWindow = new()
                 {
-                    Width = 375,
-                    Height = 800,
-                    IsFixedSize = true
-                    //todo disable maximize btn 
+#if WINDOWS
+                    Width = BreakoutGame.WIDTH + 15,
+                    Height = BreakoutGame.HEIGHT + 40,
+#else
+                    Width = BreakoutGame.WIDTH,
+                    Height = BreakoutGame.HEIGHT,
+#endif
                 }
-            })
-            .AddAudio();
+            });
 
         //to avoid returning many copies of same sprite bitmap for different images
         SkiaImageManager.ReuseBitmaps = true;

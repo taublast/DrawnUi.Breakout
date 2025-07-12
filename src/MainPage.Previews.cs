@@ -9,6 +9,7 @@ namespace Breakout.Game
 
     public partial class MainPage : BasePageReloadable
     {
+
         [Preview]
         public static void State_Welcome() => ApplyPreviewState(new PreviewAppState() { GameState = GameState.Ready });
 

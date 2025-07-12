@@ -1,7 +1,5 @@
-﻿using AppoMobi.Maui.Gestures;
-using Breakout.Game.Dialogs;
-using BreakoutGame.Resources.Strings;
-
+﻿using System.Diagnostics;
+using AppoMobi.Maui.Gestures;
 
 namespace Breakout.Game
 {
@@ -17,7 +15,7 @@ namespace Breakout.Game
         {
             HorizontalOptions = LayoutOptions.Fill;
             VerticalOptions = LayoutOptions.Fill;
-            BackgroundColor = Colors.DarkBlue;
+            BackgroundColor = Colors.DarkSlateBlue.WithAlpha(0.975f);
 
             Children = new List<SkiaControl>()
             {
@@ -42,7 +40,6 @@ namespace Breakout.Game
                         {
                             VerticalOptions = LayoutOptions.Fill,
                             //HeightRequest = 500,
-                            BackgroundColor = Colors.DarkSlateBlue,
                             Children =
                             {
                                 new BallSprite()
@@ -66,6 +63,7 @@ namespace Breakout.Game
                                         //SCORE/DEMO
                                         new SkiaRichLabel()
                                         {
+                                            UseCache = SkiaCacheType.Operations,
                                             Margin = 16,
                                             FontFamily = AppFonts.Game,
                                             FontSize = 17,
@@ -96,9 +94,10 @@ namespace Breakout.Game
                                             }
                                         }),
 
-                                        //LIVES
+                                        //LEVEL
                                         new SkiaRichLabel()
                                         {
+                                            UseCache = SkiaCacheType.Operations,
                                             Margin = 16,
                                             HorizontalOptions = LayoutOptions.End,
                                             FontFamily = AppFonts.Game,
@@ -118,9 +117,33 @@ namespace Breakout.Game
                                                 }
                                             }
                                         }
+                                        .ObserveProperty(this, nameof(Level), me =>
+                                        {
+                                            me.Text = $"{ResStrings.Lev.ToUpperInvariant()}: {Level}";
+                                        }),
+
+                                        //LIVES
+                                        new SkiaLayout()
+                                        {
+                                            UseCache = SkiaCacheType.Image,
+                                            HorizontalOptions = LayoutOptions.Start,
+                                            Type = LayoutType.Row,
+                                            Spacing = 4,
+                                            Margin = new (16,60,16,0),
+                                            ItemTemplateType = typeof(LifeSprite)
+                                        }
                                         .ObserveProperties(this, [nameof(Lives), nameof(State)], me =>
                                         {
-                                            me.Text = $"{ResStrings.Lives.ToUpperInvariant()}: {Lives}";
+                                            //if (State == GameState.DemoPlay)
+                                            //{
+                                            //    me.IsVisible = false;
+                                            //}
+                                            //else
+                                            {
+                                                me.IsVisible = true;
+                                                me.ItemsSource = Enumerable.Repeat(1, Lives).ToArray();
+                                            }
+                                            Debug.WriteLine($"LIVES: {Lives}");
                                         }),
                                     }
                                 }
@@ -200,7 +223,7 @@ namespace Breakout.Game
                         new SkiaRichLabel()
                         {
                             Text = caption,
-                            Margin = new Thickness(16, 10),
+                            Margin = new Thickness(16, 8,16,10),
                             UseCache = SkiaCacheType.Operations,
                             HorizontalOptions = LayoutOptions.Center,
                             VerticalOptions = LayoutOptions.Center,

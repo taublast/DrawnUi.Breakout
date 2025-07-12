@@ -1,57 +1,31 @@
-﻿using Breakout.Game;
-
+﻿using Breakout.Game.Dialogs;
 using DrawnUi.Controls;
 using DrawnUi.Views;
 using PreviewFramework;
-using System.Globalization;
-using Breakout;
 
 namespace Breakout.Game
 {
-    public partial class MainPage : BasePageReloadable
+    public partial class MainPage
     {
-        public MainPage()
-        {
-            ApplySelectedLanguage();
-        }
 
-        public void ApplySelectedLanguage()
+        public class RescalingCanvas : Canvas
         {
-            if (Preferences.Get("FirstStart", true))
+            public float GameScale { get; set; } = 1;
+
+            protected override void Draw(DrawingContext context)
             {
-                if (!MauiProgram.Languages.Contains(Preferences.Get("DeviceLang", "")))
-                {
-                    var fallback = MauiProgram.Languages.First();
-                    ApplyLanguage(fallback); // will set SelectedLang
-                }
+                var wantedHeight = Breakout.Game.BreakoutGame.HEIGHT * context.Scale;
+                var wantedWidth = Breakout.Game.BreakoutGame.WIDTH * context.Scale;
+
+                var scaleWidth = this.DrawingRect.Width / wantedWidth;
+                var scaleHeight = this.DrawingRect.Height / wantedHeight;
+
+                GameScale = Math.Min(scaleWidth, scaleHeight);
+
+                context.Scale *= GameScale;
+
+                base.Draw(context);
             }
-
-            ApplyLanguage(Preferences.Get("SelectedLang", ""));
-        }
-
-        public void ApplyLanguage(string lang)
-        {
-            ResStrings.Culture = CultureInfo.CreateSpecificCulture(lang);
-            Thread.CurrentThread.CurrentCulture = ResStrings.Culture;
-            Thread.CurrentThread.CurrentUICulture = ResStrings.Culture;
-            Preferences.Set("DeviceLang", lang);
-            Preferences.Set("SelectedLang", lang);
-        }
-
-        public static void RestartWithLanguage(string lang)
-        {
-            ResStrings.Culture = CultureInfo.CreateSpecificCulture(lang);
-
-            //whatever thread we are in
-            Thread.CurrentThread.CurrentCulture = ResStrings.Culture;
-            Thread.CurrentThread.CurrentUICulture = ResStrings.Culture;
-            Preferences.Set("DeviceLang", lang);
-            Preferences.Set("SelectedLang", lang);
-
-            MainThread.BeginInvokeOnMainThread(() =>
-            {
-                App.Current.MainPage = new NavigationPage(new MainPage());
-            });
         }
 
         Canvas Canvas;
@@ -60,7 +34,7 @@ namespace Breakout.Game
         {
             Canvas?.Dispose();
 
-            Canvas = new Canvas()
+            Canvas = new RescalingCanvas()
             {
                 HorizontalOptions = LayoutOptions.Fill,
                 VerticalOptions = LayoutOptions.Fill,
@@ -72,17 +46,28 @@ namespace Breakout.Game
                 {
                     Children =
                     {
+                        //WALLPAPER
+                        new SkiaImage(@"Images/back.jpg")
+                        {
+                            UseCache = SkiaCacheType.Image,
+                            AddEffect = SkiaImageEffect.Darken,
+                            Darken = 0.85
+                        }.Fill(),
+
+                        //MAIN VIEW
                         new SkiaViewSwitcher()
                         {
-                            HorizontalOptions = LayoutOptions.Fill,
-                            VerticalOptions = LayoutOptions.Fill,
+                            HorizontalOptions = LayoutOptions.Center,
+                            WidthRequest = 360,
+                            HeightRequest = 760,
+                            VerticalOptions = LayoutOptions.Center,
                             SelectedIndex = 0,
                             Children =
                             {
                                 new Game.BreakoutGame(),
                             }
                         }.Assign(out ViewsContainer),
-
+#if DEBUG
                         new SkiaLabelFps()
                         {
                             Margin = new(0, 0, 4, 24),
@@ -94,16 +79,12 @@ namespace Breakout.Game
                             TextColor = Colors.White,
                             ZIndex = 110,
                         }
+#endif
                     }
                 }.Fill()
             };
 
             this.Content = Canvas;
         }
-
-
     }
-
-
-
 }

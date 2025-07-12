@@ -1,3 +1,4 @@
+
 namespace Breakout.Game.Dialogs
 {
     /// <summary>

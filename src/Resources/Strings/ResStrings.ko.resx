@@ -558,4 +558,10 @@
   <data name="Lives" xml:space="preserve">
     <value>생명</value>
   </data>
+  <data name="Level" xml:space="preserve">
+    <value>레벨</value>
+  </data>
+  <data name="Lev" xml:space="preserve">
+    <value>레벨</value>
+  </data>
 </root>

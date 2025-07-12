@@ -237,7 +237,7 @@ namespace Breakout.Game
         /// Checks if a moving object (ball) would collide with walls using proper distance calculations
         /// </summary>
         public static RaycastHit CheckWallCollision(Vector2 position, Vector2 direction, float radius,
-            float maxDistance, float screenWidth, float screenHeight)
+            float maxDistance, SKRect gameField)
         {
             RaycastHit closestHit = RaycastHit.None;
             closestHit.Distance = float.MaxValue;
@@ -248,7 +248,7 @@ namespace Breakout.Game
             // Left wall collision
             if (normalizedDirection.X < -MIN_DIRECTION_THRESHOLD) // Moving left
             {
-                float wallPosition = radius; // Ball edge should not go below this X position
+                float wallPosition = gameField.Left + radius; // Ball edge should not go below this X position
                 float distanceToWall = position.X - wallPosition;
 
                 if (distanceToWall > 0) // Not already past the wall
@@ -261,13 +261,13 @@ namespace Breakout.Game
                         Vector2 hitPoint = position + normalizedDirection * rayDistance;
 
                         // Verify Y coordinate is within bounds
-                        if (hitPoint.Y >= radius && hitPoint.Y <= screenHeight - radius)
+                        if (hitPoint.Y >= gameField.Top + radius && hitPoint.Y <= gameField.Bottom - radius)
                         {
                             closestHit.Collided = true;
                             closestHit.Distance = rayDistance;
                             closestHit.Normal = new Vector2(1, 0);
                             closestHit.Face = CollisionFace.Left;
-                            closestHit.Point = new Vector2(0, hitPoint.Y);
+                            closestHit.Point = new Vector2(gameField.Left, hitPoint.Y);
                         }
                     }
                 }
@@ -276,7 +276,7 @@ namespace Breakout.Game
             // Right wall collision
             if (normalizedDirection.X > MIN_DIRECTION_THRESHOLD) // Moving right
             {
-                float wallPosition = screenWidth - radius; // Ball edge should not go above this X position
+                float wallPosition = gameField.Right - radius; // Ball edge should not go above this X position
                 float distanceToWall = wallPosition - position.X;
 
                 if (distanceToWall > 0) // Not already past the wall
@@ -287,13 +287,13 @@ namespace Breakout.Game
                     {
                         Vector2 hitPoint = position + normalizedDirection * rayDistance;
 
-                        if (hitPoint.Y >= radius && hitPoint.Y <= screenHeight - radius)
+                        if (hitPoint.Y >= gameField.Top + radius && hitPoint.Y <= gameField.Bottom - radius)
                         {
                             closestHit.Collided = true;
                             closestHit.Distance = rayDistance;
                             closestHit.Normal = new Vector2(-1, 0);
                             closestHit.Face = CollisionFace.Right;
-                            closestHit.Point = new Vector2(screenWidth, hitPoint.Y);
+                            closestHit.Point = new Vector2(gameField.Right, hitPoint.Y);
                         }
                     }
                 }
@@ -302,7 +302,7 @@ namespace Breakout.Game
             // Top wall collision (ball hits top of screen - should bounce)
             if (normalizedDirection.Y < -MIN_DIRECTION_THRESHOLD) // Moving up
             {
-                float wallPosition = radius; // Ball edge should not go above this Y position
+                float wallPosition = gameField.Top + radius; // Ball edge should not go above this Y position
                 float distanceToWall = position.Y - wallPosition;
 
                 if (distanceToWall > 0) // Not already past the wall
@@ -313,13 +313,13 @@ namespace Breakout.Game
                     {
                         Vector2 hitPoint = position + normalizedDirection * rayDistance;
 
-                        if (hitPoint.X >= radius && hitPoint.X <= screenWidth - radius)
+                        if (hitPoint.X >= gameField.Left + radius && hitPoint.X <= gameField.Right - radius)
                         {
                             closestHit.Collided = true;
                             closestHit.Distance = rayDistance;
                             closestHit.Normal = new Vector2(0, 1);
                             closestHit.Face = CollisionFace.Bottom; // Ball hits bottom face of top wall
-                            closestHit.Point = new Vector2(hitPoint.X, 0);
+                            closestHit.Point = new Vector2(hitPoint.X, gameField.Top);
                         }
                     }
                 }
@@ -328,7 +328,7 @@ namespace Breakout.Game
             // Bottom wall collision (ball hits bottom of screen - should lose life)
             if (normalizedDirection.Y > MIN_DIRECTION_THRESHOLD) // Moving down
             {
-                float wallPosition = screenHeight - radius; // Ball edge should not go below this Y position
+                float wallPosition = gameField.Bottom - radius; // Ball edge should not go below this Y position
                 float distanceToWall = wallPosition - position.Y;
 
                 if (distanceToWall > 0) // Not already past the wall
@@ -339,13 +339,13 @@ namespace Breakout.Game
                     {
                         Vector2 hitPoint = position + normalizedDirection * rayDistance;
 
-                        if (hitPoint.X >= radius && hitPoint.X <= screenWidth - radius)
+                        if (hitPoint.X >= gameField.Left + radius && hitPoint.X <= gameField.Right - radius)
                         {
                             closestHit.Collided = true;
                             closestHit.Distance = rayDistance;
                             closestHit.Normal = new Vector2(0, -1);
                             closestHit.Face = CollisionFace.Top; // Ball hits top face of bottom wall
-                            closestHit.Point = new Vector2(hitPoint.X, screenHeight);
+                            closestHit.Point = new Vector2(hitPoint.X, gameField.Bottom);
                         }
                     }
                 }

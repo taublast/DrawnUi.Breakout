@@ -558,4 +558,10 @@ Vous êtes un maître de Breakout !</value>
   <data name="Lives" xml:space="preserve">
     <value>Vies</value>
   </data>
+  <data name="Level" xml:space="preserve">
+    <value>Niveau</value>
+  </data>
+  <data name="Lev" xml:space="preserve">
+    <value>Niv</value>
+  </data>
 </root>
