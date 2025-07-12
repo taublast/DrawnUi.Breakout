@@ -646,6 +646,15 @@ namespace BreakoutGame.Resources.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Lives.
+        /// </summary>
+        public static string Lives {
+            get {
+                return ResourceManager.GetString("Lives", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Log Out.
         /// </summary>
         public static string LogOut {

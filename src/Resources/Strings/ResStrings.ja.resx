@@ -555,4 +555,7 @@
 最終スコア: {0}
 あなたはブレイクアウトマスターです！</value>
   </data>
+  <data name="Lives" xml:space="preserve">
+    <value>ライフ</value>
+  </data>
 </root>

@@ -555,4 +555,7 @@ Use mouse/keyboard to control.
 Final Score: {0}
 You're a Breakout Master!</value>
   </data>
+  <data name="Lives" xml:space="preserve">
+    <value>Lives</value>
+  </data>
 </root>

@@ -555,4 +555,7 @@
 Итоговый счёт: {0}
 Вы мастер Breakout!</value>
   </data>
+  <data name="Lives" xml:space="preserve">
+    <value>Жизни</value>
+  </data>
 </root>

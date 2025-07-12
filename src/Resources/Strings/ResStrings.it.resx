@@ -555,4 +555,7 @@ Usa mouse/tastiera per controllare.
 Punteggio finale: {0}
 Sei un maestro di Breakout!</value>
   </data>
+  <data name="Lives" xml:space="preserve">
+    <value>Vite</value>
+  </data>
 </root>
