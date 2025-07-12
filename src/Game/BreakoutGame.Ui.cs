@@ -9,22 +9,9 @@ namespace Breakout.Game
     {
         #region UI
 
-        /// <summary>
-        /// Score can change several times per frame
-        /// so we dont want bindings to update the score toooften.
-        /// Instead we update the display manually once after the frame is finalized.
-        /// </summary>
-        void UpdateScore()
-        {
-            if (State == GameState.DemoPlay)
-            {
-                LabelScore.Text = ResStrings.DemoMode.ToUpperInvariant();
-            }
-            else
-            {
-                LabelScore.Text = $"{ResStrings.Score.ToUpperInvariant()}: {_score:0}";  
-            }
-        }
+        public BallSprite Ball;
+        public PaddleSprite Paddle;
+        protected SkiaLayout GameField;
 
         void CreateUi()
         {
@@ -69,13 +56,14 @@ namespace Breakout.Game
                                     Top = -28
                                 }.Assign(out Paddle),
 
-                                //SCORE top bar
+                                //SCORE TOP BAR
                                 new SkiaLayer()
                                 {
                                     ZIndex = 110,
                                     UseCache = SkiaCacheType.GPU,
                                     Children =
                                     {
+                                        //SCORE/DEMO
                                         new SkiaRichLabel()
                                         {
                                             Margin = 16,
@@ -95,7 +83,45 @@ namespace Breakout.Game
                                                     Colors.CornflowerBlue
                                                 }
                                             }
-                                        }.Assign(out LabelScore)
+                                        }
+                                        .ObserveProperties(this, [nameof(Score), nameof(State)], me =>
+                                        {
+                                            if (State == GameState.DemoPlay)
+                                            {
+                                                me.Text = ResStrings.DemoMode.ToUpperInvariant();
+                                            }
+                                            else
+                                            {
+                                                me.Text = $"{ResStrings.Score.ToUpperInvariant()}: {Score:0}";
+                                            }
+                                        }),
+
+                                        //LIVES
+                                        new SkiaRichLabel()
+                                        {
+                                            Margin = 16,
+                                            HorizontalOptions = LayoutOptions.End,
+                                            FontFamily = AppFonts.Game,
+                                            FontSize = 17,
+                                            StrokeColor = AmstradColors.DarkBlue,
+                                            TextColor = AmstradColors.White,
+                                            DropShadowColor = Colors.DarkBlue,
+                                            DropShadowOffsetX = 2,
+                                            DropShadowOffsetY = 2,
+                                            DropShadowSize = 2,
+                                            FillGradient = new()
+                                            {
+                                                Colors = new List<Color>()
+                                                {
+                                                    Colors.White,
+                                                    Colors.CornflowerBlue
+                                                }
+                                            }
+                                        }
+                                        .ObserveProperties(this, [nameof(Lives), nameof(State)], me =>
+                                        {
+                                            me.Text = $"{ResStrings.Lives.ToUpperInvariant()}: {Lives}";
+                                        }),
                                     }
                                 }
                             }

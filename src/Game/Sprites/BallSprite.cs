@@ -90,7 +90,17 @@ public class BallSprite : SkiaShape, IWithHitBox, IReusableSprite
     }
 
     public float SpeedRatio { get; set; }
-    public bool IsMoving { get; set; }
+
+    public bool IsMoving
+    {
+        get => _isMoving;
+        set
+        {
+            if (value == _isMoving) return;
+            _isMoving = value;
+            OnPropertyChanged();
+        }
+    }
 
     //BackgroundColor="#dddddd"
     public BallSprite()
@@ -148,6 +158,7 @@ public class BallSprite : SkiaShape, IWithHitBox, IReusableSprite
     private float _lastMoveY;
     private float _interpolationFactor = 0.5f; // Smoothing factor
     private float _angle;
+    private bool _isMoving;
 
     /// <summary>
     /// Change the current position offset by the provided amount in points
