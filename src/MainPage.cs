@@ -1,7 +1,9 @@
-﻿using Breakout.Game.Dialogs;
+﻿﻿using Breakout.Game.Dialogs;
 using DrawnUi.Controls;
 using DrawnUi.Views;
-using PreviewFramework;
+using HotPreview;
+using System.Globalization;
+using Breakout;
 
 namespace Breakout.Game
 {
@@ -87,4 +89,7 @@ namespace Breakout.Game
             this.Content = Canvas;
         }
     }
+
+
+
 }

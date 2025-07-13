@@ -1,15 +1,15 @@
 ﻿using Breakout.Game;
 using DrawnUi.Views;
 
-namespace DrawnUi.Draw
-{
 #if PREVIEWS
 
+namespace DrawnUi.Draw
+{
     using Microsoft.Maui.ApplicationModel;
-    using PreviewFramework;
-    using PreviewFramework.App.Maui;
-    using PreviewFramework.SharedModel;
-    using PreviewFramework.SharedModel.App;
+    using HotPreview;
+    using HotPreview.App.Maui;
+    using HotPreview.SharedModel;
+    using HotPreview.SharedModel.App;
     using System;
     using System.Threading.Tasks;
 
@@ -68,9 +68,7 @@ namespace DrawnUi.Draw
                 }
             });
         }
-
-
     }
+}
 
 #endif
-}

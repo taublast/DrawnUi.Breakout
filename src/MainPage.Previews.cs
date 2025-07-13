@@ -1,7 +1,7 @@
 ﻿using Breakout.Game.Dialogs;
 using DrawnUi.Controls;
 using DrawnUi.Views;
-using PreviewFramework;
+using HotPreview;
 
 namespace Breakout.Game
 {
@@ -9,7 +9,6 @@ namespace Breakout.Game
 
     public partial class MainPage : BasePageReloadable
     {
-
         [Preview]
         public static void State_Welcome() => ApplyPreviewState(new PreviewAppState() { GameState = GameState.Ready });
 
