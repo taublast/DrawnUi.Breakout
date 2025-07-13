@@ -1,9 +1,5 @@
-﻿using Breakout.Game;
-using DrawnUi.Controls;
-using DrawnUi.Views;
-using PreviewFramework;
+﻿using DrawnUi.Views;
 using System.Globalization;
-using Breakout;
 
 namespace Breakout.Game
 {
@@ -33,7 +29,6 @@ namespace Breakout.Game
                 {
                     ApplyLanguage(deviceLanguage);
                 }
-
                 Preferences.Set("FirstStart", false);
             }
             else
