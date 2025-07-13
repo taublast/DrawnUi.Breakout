@@ -62,11 +62,11 @@
   </PropertyGroup>
 
   <ItemGroup Condition="$(Configuration) == 'Debug'">
-    <!--https://github.com/BretJohnson/ui-preview-framework-->
-    <PackageReference Include="PreviewFramework.App.Maui" Version="0.10.26" />
+    <!--https://github.com/BretJohnson/hot-preview-->
+    <PackageReference Include="HotPreview.App.Maui" Version="0.12.6" />
   </ItemGroup>
-  
-	<ItemGroup>
+
+  <ItemGroup>
 
     <!--can replace this with usual plugin if PR is merged-->
     <PackageReference Include="AppoMobi.Preview.Plugin.Maui.Audio" Version="3.0.2.1-pre1" />
@@ -99,7 +99,5 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
     </EmbeddedResource>
   </ItemGroup>
-
-  
 
 </Project>

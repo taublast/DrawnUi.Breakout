@@ -1,7 +1,7 @@
 ﻿﻿using Breakout.Game.Dialogs;
 using DrawnUi.Controls;
 using DrawnUi.Views;
-using PreviewFramework;
+using HotPreview;
 using System.Globalization;
 using Breakout;
 
