@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BreakoutGame.Resources.Strings {
+namespace Breakout.Resources.Strings {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace BreakoutGame.Resources.Strings {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("BreakoutGame.Resources.Strings.ResStrings", typeof(ResStrings).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Breakout.Resources.Strings.ResStrings", typeof(ResStrings).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -642,6 +642,33 @@ namespace BreakoutGame.Resources.Strings {
         public static string Leads {
             get {
                 return ResourceManager.GetString("Leads", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lvl.
+        /// </summary>
+        public static string Lev {
+            get {
+                return ResourceManager.GetString("Lev", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Level.
+        /// </summary>
+        public static string Level {
+            get {
+                return ResourceManager.GetString("Level", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lives.
+        /// </summary>
+        public static string Lives {
+            get {
+                return ResourceManager.GetString("Lives", resourceCulture);
             }
         }
         

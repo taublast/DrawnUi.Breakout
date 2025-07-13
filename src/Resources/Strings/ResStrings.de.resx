@@ -555,4 +555,13 @@ Verwende Maus/Tastatur zur Steuerung.
 Endpunktzahl: {0}
 Du bist ein Breakout-Meister!</value>
   </data>
+  <data name="Lives" xml:space="preserve">
+    <value>Leben</value>
+  </data>
+  <data name="Level" xml:space="preserve">
+    <value>Level</value>
+  </data>
+  <data name="Lev" xml:space="preserve">
+    <value>Lvl</value>
+  </data>
 </root>

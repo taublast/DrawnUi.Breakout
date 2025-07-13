@@ -555,4 +555,13 @@
 최종 점수: {0}
 당신은 브레이크아웃 마스터입니다!</value>
   </data>
+  <data name="Lives" xml:space="preserve">
+    <value>생명</value>
+  </data>
+  <data name="Level" xml:space="preserve">
+    <value>레벨</value>
+  </data>
+  <data name="Lev" xml:space="preserve">
+    <value>레벨</value>
+  </data>
 </root>

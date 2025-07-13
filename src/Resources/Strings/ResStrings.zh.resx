@@ -555,4 +555,13 @@
 最终得分：{0}
 你是破砖大师！</value>
   </data>
+  <data name="Lives" xml:space="preserve">
+    <value>生命</value>
+  </data>
+  <data name="Level" xml:space="preserve">
+    <value>关卡</value>
+  </data>
+  <data name="Lev" xml:space="preserve">
+    <value>关卡</value>
+  </data>
 </root>

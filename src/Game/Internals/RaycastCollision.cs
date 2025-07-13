@@ -9,7 +9,7 @@ namespace Breakout.Game
     public static class RaycastCollision
     {
         // Minimum threshold for direction components to avoid division by very small numbers
-        private const float MIN_DIRECTION_THRESHOLD = 0.001f;
+        private const float MIN_DIRECTION_THRESHOLD = 0.0001f;
 
         /// <summary>
         /// Represents the result of a raycast collision
@@ -234,111 +234,124 @@ namespace Breakout.Game
         }
 
         /// <summary>
-        /// Checks if a moving object (ball) would collide with walls - FIXED for shallow angles
+        /// Checks if a moving object (ball) would collide with walls using proper distance calculations
         /// </summary>
         public static RaycastHit CheckWallCollision(Vector2 position, Vector2 direction, float radius,
-            float distance, float screenWidth, float screenHeight)
+            float maxDistance, SKRect gameField)
         {
-            RaycastHit hit = RaycastHit.None;
-            hit.Distance = float.MaxValue;
+            RaycastHit closestHit = RaycastHit.None;
+            closestHit.Distance = float.MaxValue;
 
-            // Left wall - FIXED for shallow angles
-            if (direction.X < -MIN_DIRECTION_THRESHOLD) // Only check if moving meaningfully left
+            // Normalize direction to unit vector for distance calculations
+            Vector2 normalizedDirection = Vector2.Normalize(direction);
+
+            // Left wall collision
+            if (normalizedDirection.X < -MIN_DIRECTION_THRESHOLD) // Moving left
             {
-                float distanceToWall = position.X - radius;
-                if (distanceToWall > 0) // Only if we're not already past the wall
-                {
-                    float timeToHit = distanceToWall / -direction.X;
+                float wallPosition = gameField.Left + radius; // Ball edge should not go below this X position
+                float distanceToWall = position.X - wallPosition;
 
-                    if (timeToHit >= 0 && timeToHit <= distance && timeToHit < hit.Distance)
+                if (distanceToWall > 0) // Not already past the wall
+                {
+                    // Calculate actual distance along the ray to reach the wall
+                    float rayDistance = distanceToWall / -normalizedDirection.X;
+
+                    if (rayDistance >= 0 && rayDistance <= maxDistance && rayDistance < closestHit.Distance)
                     {
-                        Vector2 hitPoint = position + direction * timeToHit;
-                        // Verify the hit point is within screen bounds
-                        if (hitPoint.Y >= 0 && hitPoint.Y <= screenHeight)
+                        Vector2 hitPoint = position + normalizedDirection * rayDistance;
+
+                        // Verify Y coordinate is within bounds
+                        if (hitPoint.Y >= gameField.Top + radius && hitPoint.Y <= gameField.Bottom - radius)
                         {
-                            hit.Collided = true;
-                            hit.Distance = timeToHit;
-                            hit.Normal = new Vector2(1, 0);
-                            hit.Face = CollisionFace.Right;
-                            hit.Point = new Vector2(0, hitPoint.Y);
+                            closestHit.Collided = true;
+                            closestHit.Distance = rayDistance;
+                            closestHit.Normal = new Vector2(1, 0);
+                            closestHit.Face = CollisionFace.Left;
+                            closestHit.Point = new Vector2(gameField.Left, hitPoint.Y);
                         }
                     }
                 }
             }
 
-            // Right wall - FIXED for shallow angles
-            if (direction.X > MIN_DIRECTION_THRESHOLD) // Only check if moving meaningfully right
+            // Right wall collision
+            if (normalizedDirection.X > MIN_DIRECTION_THRESHOLD) // Moving right
             {
-                float distanceToWall = screenWidth - position.X - radius;
-                if (distanceToWall > 0) // Only if we're not already past the wall
-                {
-                    float timeToHit = distanceToWall / direction.X;
+                float wallPosition = gameField.Right - radius; // Ball edge should not go above this X position
+                float distanceToWall = wallPosition - position.X;
 
-                    if (timeToHit >= 0 && timeToHit <= distance && timeToHit < hit.Distance)
+                if (distanceToWall > 0) // Not already past the wall
+                {
+                    float rayDistance = distanceToWall / normalizedDirection.X;
+
+                    if (rayDistance >= 0 && rayDistance <= maxDistance && rayDistance < closestHit.Distance)
                     {
-                        Vector2 hitPoint = position + direction * timeToHit;
-                        // Verify the hit point is within screen bounds
-                        if (hitPoint.Y >= 0 && hitPoint.Y <= screenHeight)
+                        Vector2 hitPoint = position + normalizedDirection * rayDistance;
+
+                        if (hitPoint.Y >= gameField.Top + radius && hitPoint.Y <= gameField.Bottom - radius)
                         {
-                            hit.Collided = true;
-                            hit.Distance = timeToHit;
-                            hit.Normal = new Vector2(-1, 0);
-                            hit.Face = CollisionFace.Left;
-                            hit.Point = new Vector2(screenWidth, hitPoint.Y);
+                            closestHit.Collided = true;
+                            closestHit.Distance = rayDistance;
+                            closestHit.Normal = new Vector2(-1, 0);
+                            closestHit.Face = CollisionFace.Right;
+                            closestHit.Point = new Vector2(gameField.Right, hitPoint.Y);
                         }
                     }
                 }
             }
 
-            // Top wall - FIXED for shallow angles
-            if (direction.Y < -MIN_DIRECTION_THRESHOLD) // Only check if moving meaningfully up
+            // Top wall collision (ball hits top of screen - should bounce)
+            if (normalizedDirection.Y < -MIN_DIRECTION_THRESHOLD) // Moving up
             {
-                float distanceToWall = position.Y - radius;
-                if (distanceToWall > 0) // Only if we're not already past the wall
-                {
-                    float timeToHit = distanceToWall / -direction.Y;
+                float wallPosition = gameField.Top + radius; // Ball edge should not go above this Y position
+                float distanceToWall = position.Y - wallPosition;
 
-                    if (timeToHit >= 0 && timeToHit <= distance && timeToHit < hit.Distance)
+                if (distanceToWall > 0) // Not already past the wall
+                {
+                    float rayDistance = distanceToWall / -normalizedDirection.Y;
+
+                    if (rayDistance >= 0 && rayDistance <= maxDistance && rayDistance < closestHit.Distance)
                     {
-                        Vector2 hitPoint = position + direction * timeToHit;
-                        // Verify the hit point is within screen bounds
-                        if (hitPoint.X >= 0 && hitPoint.X <= screenWidth)
+                        Vector2 hitPoint = position + normalizedDirection * rayDistance;
+
+                        if (hitPoint.X >= gameField.Left + radius && hitPoint.X <= gameField.Right - radius)
                         {
-                            hit.Collided = true;
-                            hit.Distance = timeToHit;
-                            hit.Normal = new Vector2(0, 1);
-                            hit.Face = CollisionFace.Bottom;
-                            hit.Point = new Vector2(hitPoint.X, 0);
+                            closestHit.Collided = true;
+                            closestHit.Distance = rayDistance;
+                            closestHit.Normal = new Vector2(0, 1);
+                            closestHit.Face = CollisionFace.Bottom; // Ball hits bottom face of top wall
+                            closestHit.Point = new Vector2(hitPoint.X, gameField.Top);
                         }
                     }
                 }
             }
 
-            // Bottom wall - FIXED for shallow angles  
-            if (direction.Y > MIN_DIRECTION_THRESHOLD) // Only check if moving meaningfully down
+            // Bottom wall collision (ball hits bottom of screen - should lose life)
+            if (normalizedDirection.Y > MIN_DIRECTION_THRESHOLD) // Moving down
             {
-                float distanceToWall = screenHeight - position.Y - radius;
-                if (distanceToWall > 0) // Only if we're not already past the wall
-                {
-                    float timeToHit = distanceToWall / direction.Y;
+                float wallPosition = gameField.Bottom - radius; // Ball edge should not go below this Y position
+                float distanceToWall = wallPosition - position.Y;
 
-                    if (timeToHit >= 0 && timeToHit <= distance && timeToHit < hit.Distance)
+                if (distanceToWall > 0) // Not already past the wall
+                {
+                    float rayDistance = distanceToWall / normalizedDirection.Y;
+
+                    if (rayDistance >= 0 && rayDistance <= maxDistance && rayDistance < closestHit.Distance)
                     {
-                        Vector2 hitPoint = position + direction * timeToHit;
-                        // Verify the hit point is within screen bounds
-                        if (hitPoint.X >= 0 && hitPoint.X <= screenWidth)
+                        Vector2 hitPoint = position + normalizedDirection * rayDistance;
+
+                        if (hitPoint.X >= gameField.Left + radius && hitPoint.X <= gameField.Right - radius)
                         {
-                            hit.Collided = true;
-                            hit.Distance = timeToHit;
-                            hit.Normal = new Vector2(0, -1);
-                            hit.Face = CollisionFace.Top;
-                            hit.Point = new Vector2(hitPoint.X, screenHeight);
+                            closestHit.Collided = true;
+                            closestHit.Distance = rayDistance;
+                            closestHit.Normal = new Vector2(0, -1);
+                            closestHit.Face = CollisionFace.Top; // Ball hits top face of bottom wall
+                            closestHit.Point = new Vector2(hitPoint.X, gameField.Bottom);
                         }
                     }
                 }
             }
 
-            return hit;
+            return closestHit;
         }
 
         /// <summary>

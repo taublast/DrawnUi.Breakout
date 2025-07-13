@@ -13,6 +13,9 @@ namespace Breakout.Game
     {
         #region CONSTANTS
 
+        public const int WIDTH = 360;
+        public const int HEIGHT = 760;
+
         public const float BALL_SPEED = 375f;
         public const float PADDLE_SPEED = 475;
         public const float PADDLE_WIDTH = 80;
@@ -30,7 +33,9 @@ namespace Breakout.Game
         /// <summary>
         /// For long running profiling
         /// </summary>
-        const bool CHEAT_INVULNERABLE = true;
+        const bool CHEAT_INVULNERABLE = false;
+
+        public static bool USE_SOUND = false;
 
         public static bool USE_SOUND = false;
 
@@ -40,8 +45,6 @@ namespace Breakout.Game
         /// </summary>
         public static bool USE_RAYCAST_COLLISION = true;
 
-
-
         #endregion
 
         #region INITIALIZE
@@ -50,11 +53,6 @@ namespace Breakout.Game
         public AIPaddleController AIController => _aiController ??= new AIPaddleController(this, AIDifficulty.Medium);
 
         public AudioMixerService? _audioService;
-        public BallSprite Ball;
-        public PaddleSprite Paddle;
-        private SkiaLabel LabelScore;
-
-        protected SkiaLayout GameField;
 
         public BreakoutGame()
         {
@@ -307,7 +305,6 @@ namespace Breakout.Game
                 StartDemoMode();
                 ShowWelcomeDialog();
             }
-
         }
 
         /// <summary>
@@ -316,7 +313,6 @@ namespace Breakout.Game
         public void GameLost()
         {
             State = GameState.Ended;
-    
             Tasks.StartDelayed(TimeSpan.FromMilliseconds(150), () =>
             {
                 //PlaySound(Sound.SomethingTerrible);
@@ -614,7 +610,6 @@ namespace Breakout.Game
             BricksPool.Add(brick.Uid, brick);
         }
 
-        // Gameplay state
         private int _level = 1;
 
         public int Level
@@ -626,12 +621,10 @@ namespace Breakout.Game
                 {
                     _level = value;
                     OnPropertyChanged();
-                    OnPropertyChanged(nameof(LevelDisplay));
                 }
             }
         }
 
-        public string LevelDisplay => $"LEVEL: {_level}";
         private int _lives = LIVES;
 
         public int Lives
@@ -643,12 +636,10 @@ namespace Breakout.Game
                 {
                     _lives = value;
                     OnPropertyChanged();
-                    OnPropertyChanged(nameof(LivesDisplay));
                 }
             }
         }
 
-        public string LivesDisplay => $"LIVES: {_lives}";
         private int _score;
 
         public int Score
@@ -974,7 +965,7 @@ namespace Breakout.Game
 
             // Check for wall collisions
             var wallHit = RaycastCollision.CheckWallCollision(ballPosition, ballDirection, ballRadius, maxDistance,
-                (float)GameField.Width, (float)GameField.Height);
+                GameField.VisualLayer.HitBoxWithTransforms.Units);
 
             // Determine which collision happens first
             RaycastCollision.RaycastHit firstHit = RaycastCollision.RaycastHit.None;
@@ -1064,11 +1055,7 @@ namespace Breakout.Game
                             }
                             else
                             {
-                                State = GameState.Ended;
-                                Task.Delay(1500).ContinueWith(_ =>
-                                {
-                                    MainThread.BeginInvokeOnMainThread(() => ShowGameOverDialog());
-                                });
+                                this.GameLost();
                             }
                         }
                         else
@@ -1122,6 +1109,7 @@ namespace Breakout.Game
 
             Ball.Angle = randomAngle;
 
+            Ball.IsMoving = false;
             Ball.IsActive = true;
         }
 
@@ -1160,13 +1148,6 @@ namespace Breakout.Game
                         // todo :)
                     }
                 }
-
-                //else if (mauiKey == MauiKey.Space)
-                //{
-                //    // If game is not started, start it; otherwise, you might serve the ball.
-                //    if (State == GameState.Ready || State == GameState.Ended)
-                //        ResetGame();
-                //}
             }
         }
 

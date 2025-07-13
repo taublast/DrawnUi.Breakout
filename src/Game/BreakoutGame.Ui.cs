@@ -1,7 +1,5 @@
-﻿using AppoMobi.Maui.Gestures;
-using Breakout.Game.Dialogs;
-using BreakoutGame.Resources.Strings;
-
+﻿using System.Diagnostics;
+using AppoMobi.Maui.Gestures;
 
 namespace Breakout.Game
 {
@@ -9,28 +7,15 @@ namespace Breakout.Game
     {
         #region UI
 
-        /// <summary>
-        /// Score can change several times per frame
-        /// so we dont want bindings to update the score toooften.
-        /// Instead we update the display manually once after the frame is finalized.
-        /// </summary>
-        void UpdateScore()
-        {
-            if (State == GameState.DemoPlay)
-            {
-                LabelScore.Text = ResStrings.DemoMode.ToUpperInvariant();
-            }
-            else
-            {
-                LabelScore.Text = $"{ResStrings.Score.ToUpperInvariant()}: {_score:0}";  
-            }
-        }
+        public BallSprite Ball;
+        public PaddleSprite Paddle;
+        protected SkiaLayout GameField;
 
         void CreateUi()
         {
             HorizontalOptions = LayoutOptions.Fill;
             VerticalOptions = LayoutOptions.Fill;
-            BackgroundColor = Colors.DarkBlue;
+            BackgroundColor = Colors.DarkSlateBlue.WithAlpha(0.975f);
 
             Children = new List<SkiaControl>()
             {
@@ -55,7 +40,6 @@ namespace Breakout.Game
                         {
                             VerticalOptions = LayoutOptions.Fill,
                             //HeightRequest = 500,
-                            BackgroundColor = Colors.DarkSlateBlue,
                             Children =
                             {
                                 new BallSprite()
@@ -69,15 +53,17 @@ namespace Breakout.Game
                                     Top = -28
                                 }.Assign(out Paddle),
 
-                                //SCORE top bar
+                                //SCORE TOP BAR
                                 new SkiaLayer()
                                 {
                                     ZIndex = 110,
                                     UseCache = SkiaCacheType.GPU,
                                     Children =
                                     {
+                                        //SCORE/DEMO
                                         new SkiaRichLabel()
                                         {
+                                            UseCache = SkiaCacheType.Operations,
                                             Margin = 16,
                                             FontFamily = AppFonts.Game,
                                             FontSize = 17,
@@ -95,7 +81,70 @@ namespace Breakout.Game
                                                     Colors.CornflowerBlue
                                                 }
                                             }
-                                        }.Assign(out LabelScore)
+                                        }
+                                        .ObserveProperties(this, [nameof(Score), nameof(State)], me =>
+                                        {
+                                            if (State == GameState.DemoPlay)
+                                            {
+                                                me.Text = ResStrings.DemoMode.ToUpperInvariant();
+                                            }
+                                            else
+                                            {
+                                                me.Text = $"{ResStrings.Score.ToUpperInvariant()}: {Score:0}";
+                                            }
+                                        }),
+
+                                        //LEVEL
+                                        new SkiaRichLabel()
+                                        {
+                                            UseCache = SkiaCacheType.Operations,
+                                            Margin = 16,
+                                            HorizontalOptions = LayoutOptions.End,
+                                            FontFamily = AppFonts.Game,
+                                            FontSize = 17,
+                                            StrokeColor = AmstradColors.DarkBlue,
+                                            TextColor = AmstradColors.White,
+                                            DropShadowColor = Colors.DarkBlue,
+                                            DropShadowOffsetX = 2,
+                                            DropShadowOffsetY = 2,
+                                            DropShadowSize = 2,
+                                            FillGradient = new()
+                                            {
+                                                Colors = new List<Color>()
+                                                {
+                                                    Colors.White,
+                                                    Colors.CornflowerBlue
+                                                }
+                                            }
+                                        }
+                                        .ObserveProperty(this, nameof(Level), me =>
+                                        {
+                                            me.Text = $"{ResStrings.Lev.ToUpperInvariant()}: {Level}";
+                                        }),
+
+                                        //LIVES
+                                        new SkiaLayout()
+                                        {
+                                            UseCache = SkiaCacheType.Image,
+                                            HorizontalOptions = LayoutOptions.Start,
+                                            Type = LayoutType.Row,
+                                            Spacing = 4,
+                                            Margin = new (16,60,16,0),
+                                            ItemTemplateType = typeof(LifeSprite)
+                                        }
+                                        .ObserveProperties(this, [nameof(Lives), nameof(State)], me =>
+                                        {
+                                            //if (State == GameState.DemoPlay)
+                                            //{
+                                            //    me.IsVisible = false;
+                                            //}
+                                            //else
+                                            {
+                                                me.IsVisible = true;
+                                                me.ItemsSource = Enumerable.Repeat(1, Lives).ToArray();
+                                            }
+                                            Debug.WriteLine($"LIVES: {Lives}");
+                                        }),
                                     }
                                 }
                             }
@@ -174,7 +223,7 @@ namespace Breakout.Game
                         new SkiaRichLabel()
                         {
                             Text = caption,
-                            Margin = new Thickness(16, 10),
+                            Margin = new Thickness(16, 8,16,10),
                             UseCache = SkiaCacheType.Operations,
                             HorizontalOptions = LayoutOptions.Center,
                             VerticalOptions = LayoutOptions.Center,

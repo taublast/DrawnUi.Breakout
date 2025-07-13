@@ -17,15 +17,14 @@ namespace Breakout.Game
                 ApplyGameKey(GameKeysQueue.Dequeue());
             }
 
-            if ((State == GameState.DemoPlay
-                 || State == GameState.Playing) && levelReady)
+            if ((State == GameState.DemoPlay || State == GameState.Playing) && levelReady)
             {
                 if (CheckStateChanged())
                 {
                     PlaySound(Sound.Start);
                 }
 
-                // get the player hit box
+                // get the current player hit box
                 Ball.UpdateState(LastFrameTimeNanos);
                 var ballRect = Ball.HitBox;
 
@@ -33,7 +32,7 @@ namespace Breakout.Game
                 int bricksChecked = 0;
 
                 // collision detection
-                foreach (var x in this.GameField.Views)
+                foreach (var x in this.GameField.Views.ToList())
                 {
                     //collide ball vs everything and update ball position
                     if (x is BallSprite ball && ball.IsActive)
@@ -196,7 +195,7 @@ namespace Breakout.Game
                 {
                     _levelCompletionPending++;
 
-                    //make sure we show few frames after the final collision was detected
+                    //make sure we show some frames after the final collision was detected
                     if (_levelCompletionPending > 20)
                     {
                         State = GameState.LevelComplete;
@@ -211,9 +210,7 @@ namespace Breakout.Game
 
                 if (State == GameState.Playing || State == GameState.DemoPlay)
                 {
-                    // --
-
-                    // player movement
+                    // movement control
                     if (_moveLeft)
                     {
                         UpdatePlayerPosition(Paddle.Left - PADDLE_SPEED * cappedDelta);
@@ -223,16 +220,9 @@ namespace Breakout.Game
                     {
                         UpdatePlayerPosition(Paddle.Left + PADDLE_SPEED * cappedDelta);
                     }
-
-                    if (Lives < 1)
-                    {
-                        //EndGameLost();
-                    }
                 }
             }
 
-
-            // removing sprites
             ProcessSpritesToBeRemoved();
 
             if (_spritesToBeAdded.Count > 0)
@@ -244,8 +234,6 @@ namespace Breakout.Game
 
                 _spritesToBeAdded.Clear();
             }
-
-            UpdateScore();
 
             if (State == GameState.Playing || State == GameState.DemoPlay)
             {

@@ -555,4 +555,13 @@ Usa mouse/teclado para controlar.
 Puntaje final: {0}
 ¡Eres un maestro de Breakout!</value>
   </data>
+  <data name="Lives" xml:space="preserve">
+    <value>Vidas</value>
+  </data>
+  <data name="Level" xml:space="preserve">
+    <value>Nivel</value>
+  </data>
+  <data name="Lev" xml:space="preserve">
+    <value>Niv</value>
+  </data>
 </root>
