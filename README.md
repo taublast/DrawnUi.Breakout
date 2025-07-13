@@ -18,12 +18,12 @@ A cross-platform game to play on **iOS, MacCatalyst, Android and Windows**.
 * In-game dialogs with glass-style dynamic transparent backdrops
 
 ## Development Features
-* Windows: runs both MSIX-packaged and "Steam-friendly" unpackaged mode
+* Windows: x64 runs both MSIX-packaged and "Steam-friendly" unpackaged mode
 * Compatible with .NET HotReload, built with Fluent C#
 * All game field content is built with vector shapes and scalable to infinity
 * Uses [HotPreview]() to dynamically preview levels/states/languages/sprites and much more
 * Uses [Plugin.Maui.Audio]() for sound
-* Uses [DrawnUi for .NET MAUI]() for gestures/layout/bindings/fluent/rendering and more
+* Uses [DrawnUI for .NET MAUI]() for gestures/layout/bindings/fluent/rendering and more
 
 ## Development Notes
 * `MainPage.HotPreview.cs` contains all the HotPreview items. Read an article about [how to use HotPreview](). 
