@@ -37,8 +37,6 @@ namespace Breakout.Game
 
         public static bool USE_SOUND = false;
 
-        public static bool USE_SOUND = false;
-
         /// <summary>
         /// Compile-time flag to enable raycasting collision detection instead of AABB intersection
         /// AABB works ok on desktops, but on mobile with frame drops better to use raycasting.
@@ -313,6 +311,7 @@ namespace Breakout.Game
         public void GameLost()
         {
             State = GameState.Ended;
+
             Tasks.StartDelayed(TimeSpan.FromMilliseconds(150), () =>
             {
                 //PlaySound(Sound.SomethingTerrible);
