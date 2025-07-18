@@ -176,36 +176,25 @@ namespace Breakout.Game
                 });
         }
 
+        public class GameSwitch : SkiaSwitch
+        {
+            public GameSwitch()
+            {
+                WidthRequest = 60;
+                HeightRequest = 32;
+                ColorFrameOff = AmstradColors.DarkBlue;
+                ColorFrameOn = AmstradColors.Green;
+                ColorThumbOff = AmstradColors.White;
+                ColorThumbOn = AmstradColors.White;
+                UseCache = SkiaCacheType.Operations;
+            }
+        }
+
         /// <summary>
         /// Creates the content for the options dialog
         /// </summary>
         private SkiaControl CreateOptionsDialogContent()
         {
-            // Create music toggle switch
-            var musicSwitch = new SkiaSwitch()
-            {
-                IsToggled = _audioService?.IsMuted == false, // Switch is ON when music is NOT muted
-                HorizontalOptions = LayoutOptions.Center,
-                VerticalOptions = LayoutOptions.Center,
-                WidthRequest = 60,
-                HeightRequest = 32,
-                ColorFrameOff = AmstradColors.DarkBlue,
-                ColorFrameOn = AmstradColors.Green,
-                ColorThumbOff = AmstradColors.White,
-                ColorThumbOn = AmstradColors.White,
-                UseCache = SkiaCacheType.Operations
-            };
-
-            // Handle switch toggle
-            musicSwitch.Toggled += (sender, isToggled) =>
-            {
-                // Toggle audio mute state (switch ON = music enabled, switch OFF = music muted)
-                if (_audioService != null)
-                {
-                    _audioService.IsMuted = !isToggled;
-                }
-            };
-
             // Create the options layout
             var optionsLayout = new SkiaLayout()
             {
@@ -233,7 +222,6 @@ namespace Breakout.Game
                         Type = LayoutType.Row,
                         Spacing = 15,
                         HorizontalOptions = LayoutOptions.Fill,
-                        VerticalOptions = LayoutOptions.Center,
                         Children = new List<SkiaControl>
                         {
                             new SkiaRichLabel()
@@ -250,7 +238,26 @@ namespace Breakout.Game
                             {
                                 HorizontalOptions = LayoutOptions.Fill
                             },
-                            musicSwitch
+                            new GameSwitch()
+                                {
+                                    IsToggled = _audioService?.IsMuted == false, // Switch is ON when music is NOT muted
+                                    HorizontalOptions = LayoutOptions.End,
+                                    VerticalOptions = LayoutOptions.Center,
+                                }
+                                .Initialize(me =>
+                                {
+                                    if (_audioService != null)
+                                    {
+                                        me.IsToggled = !_audioService.IsMuted;
+                                    }
+                                })
+                                .OnToggled((me, state) =>
+                                {
+                                    if (_audioService != null)
+                                    {
+                                        _audioService.IsMuted = !state;
+                                    }
+                                })
                         }
                     }
                 }
@@ -260,6 +267,5 @@ namespace Breakout.Game
         }
 
         #endregion
-
     }
 }
