@@ -68,7 +68,7 @@
 
   <ItemGroup Condition="$(Configuration) == 'Debug'">
     <!--https://github.com/BretJohnson/hot-preview-->
-    <PackageReference Include="HotPreview.App.Maui" Version="0.12.6" />
+    <PackageReference Include="HotPreview.App.Maui" Version="0.13.27" />
   </ItemGroup>
 
   <ItemGroup>
