@@ -49,7 +49,7 @@ public class BrickSprite : SkiaShape, IWithHitBox, IReusableSprite
         this.CancelDisappearing?.Cancel();
         using var cancel = new CancellationTokenSource();
         CancelDisappearing = cancel;
-        await FadeToAsync(0, 150, Easing.SpringOut, cancel);
+        await FadeToAsync(0, 200, Easing.SpringOut, cancel);
     }
 
     public void UpdateState(long time)
