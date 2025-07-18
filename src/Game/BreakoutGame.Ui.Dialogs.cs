@@ -225,7 +225,10 @@ namespace Breakout.Game
                                     var lang = AppSettings.Get(AppSettings.Lang, AppSettings.LangDefault);
                                     me.Lang = lang;
                                 })
-                                .OnTapped(me => { MainPage.SelectAndSetCountry(); }),
+                                .OnTapped(me =>
+                                {
+                                    MainPage.SelectAndSetCountry();
+                                }),
                         }
                     },
 
@@ -291,6 +294,7 @@ namespace Breakout.Game
                                 HorizontalOptions = LayoutOptions.Start,
                                 UseCache = SkiaCacheType.Operations,
                             },
+
                             new GameSwitch()
                                 {
                                     HorizontalOptions = LayoutOptions.End,

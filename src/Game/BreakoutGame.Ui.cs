@@ -15,12 +15,13 @@ namespace Breakout.Game
         /// <summary>
         /// Need this when we change language
         /// </summary>
-        public void Redraw()
+        public void RedrawFromOptions()
         {
             OnPropertyChanged(nameof(Level));
             OnPropertyChanged(nameof(Score));
             OnPropertyChanged(nameof(State));
-            ShowGameOverDialog();
+            State = PreviousState;
+            ShowOptions();
         }
 
         void CreateUi()

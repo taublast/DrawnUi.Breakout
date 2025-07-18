@@ -118,9 +118,8 @@ namespace Breakout.Game
                     Thread.CurrentThread.CurrentUICulture = ResStrings.Culture;
 
                     //soft refresh
-                    BreakoutGame.Instance.Redraw();
-                    BreakoutGame.Instance.ShowOptions();
-
+                    BreakoutGame.Instance.RedrawFromOptions();
+                    
                     //mimic HotReload
                     //MainPage.Instance.Build(); // reload game completely
                 }
