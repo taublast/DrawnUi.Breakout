@@ -570,4 +570,7 @@ Vous êtes un maître de Breakout !</value>
   <data name="Sounds" xml:space="preserve">
     <value>Sons</value>
   </data>
+  <data name="NewGame" xml:space="preserve">
+    <value>Nouveau jeu</value>
+  </data>
 </root>

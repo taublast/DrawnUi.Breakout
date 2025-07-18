@@ -570,4 +570,7 @@ Puntaje final: {0}
   <data name="Sounds" xml:space="preserve">
     <value>Sonidos</value>
   </data>
+  <data name="NewGame" xml:space="preserve">
+    <value>Nuevo juego</value>
+  </data>
 </root>

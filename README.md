@@ -28,6 +28,13 @@ A cross-platform game to play on **iOS, MacCatalyst, Android and Windows**.
 ## Development Notes
 * `MainPage.HotPreview.cs` contains all the HotPreview items. Read an article about [how to use HotPreview](). 
 
+## CREDITS
+
+* **Glassy App Icons** by `Laura Reen` licenced under CC Attribution License
+* todo music
+
+
+
 ## TODO
 
 ### Required!

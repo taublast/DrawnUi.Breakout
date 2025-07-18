@@ -129,7 +129,7 @@ namespace Breakout.Game
         /// </summary>
         public void StartBackgroundMusic(int lvl)
         {
-            if (_audioService == null)
+            if (_audioService == null || !AppSettings.Get(AppSettings.MusicOn, AppSettings.MusicOnDefault))
             {
                 return;
             }

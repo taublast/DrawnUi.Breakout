@@ -52,7 +52,7 @@ namespace Breakout.Game
                         {
                             UseCache = SkiaCacheType.Image,
                             AddEffect = SkiaImageEffect.Darken,
-                            Darken = 0.85
+                            Darken = 0.2
                         }.Fill(),
 
                         //MAIN VIEW
@@ -68,7 +68,7 @@ namespace Breakout.Game
                                 new Game.BreakoutGame(),
                             }
                         }.Assign(out ViewsContainer),
-#if DEBUG
+#if xDEBUG
                         new SkiaLabelFps()
                         {
                             Margin = new(0, 0, 4, 24),

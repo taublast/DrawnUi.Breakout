@@ -389,7 +389,7 @@ namespace Breakout.Game.Dialogs
                         UseCache = SkiaCacheType.Image,
                         Type = LayoutType.Column,
                         Padding = 20,
-                        Spacing = 28,
+                        Spacing = 32,
                         Children = CreateGameContentChildren(dialog, content, okText, cancelText)
                     }
                 }
@@ -408,23 +408,29 @@ namespace Breakout.Game.Dialogs
                 children.Add(content);
             }
 
+            var btnOk = BreakoutGame.UiElements.Button(okText, async () => await dialog.CloseWithOkAsync());
+            btnOk.HorizontalOptions = LayoutOptions.Fill;
+            
             // Create buttons layout exactly like the original
             var buttonsLayout = new SkiaLayout()
             {
                 Type = LayoutType.Wrap,
-                Margin = new(0, 8, 0, 8),
-                HorizontalOptions = LayoutOptions.Center,
+                Margin = new(16, 0, 16, 0),
+                HorizontalOptions = LayoutOptions.Fill,
                 Spacing = 16,
                 Children =
                 {
                     // OK button using UiElements.Button (original design) with proper callback
-                    BreakoutGame.UiElements.Button(okText, async () => await dialog.CloseWithOkAsync())
+                    btnOk
                 }
             };
 
             // Cancel button (optional) - exactly like original
             if (!string.IsNullOrEmpty(cancelText))
             {
+                btnOk.HorizontalOptions = LayoutOptions.Start;
+                buttonsLayout.HorizontalOptions = LayoutOptions.Center;
+
                 var cancelButton = new SkiaButton()
                 {
                     Text = cancelText,

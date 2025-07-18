@@ -49,106 +49,6 @@ namespace Breakout.Game
             }
         }
 
-        // Example of using the async dialog method
-        async void ShowExampleAsyncDialog()
-        {
-            var content = UiElements.DialogPrompt("Do you want to continue?");
-
-            bool result = await GameDialog.ShowAsync(this, content, "YES", "NO");
-
-            if (result)
-            {
-                // User clicked YES
-                // Do something...
-            }
-            else
-            {
-                // User clicked NO
-                // Do something else...
-            }
-        }
-
-        // Example of using the navigation stack
-        void ShowStackedDialogs()
-        {
-            // Push first dialog
-            var content1 = UiElements.DialogPrompt("This is the first dialog");
-
-            GameDialog.Push(this, content1, "NEXT", "CANCEL",
-                onOk: () =>
-                {
-                    // Push second dialog
-                    var content2 = new SkiaRichLabel()
-                    {
-                        Text = "This is the second dialog",
-                        TextColor = Colors.White,
-                        FontSize = 16,
-                        HorizontalTextAlignment = DrawTextAlignment.Center,
-                        HorizontalOptions = LayoutOptions.Fill,
-                    };
-
-                    GameDialog.Push(this, content2, "FINISH", "BACK",
-                        onOk: () =>
-                        {
-                            // Pop all dialogs
-                            _ = GameDialog.PopAll(this);
-                        },
-                        onCancel: () =>
-                        {
-                            // Pop just this dialog (go back to first)
-                            _ = GameDialog.Pop(this);
-                        });
-                },
-                onCancel: () =>
-                {
-                    // Cancel everything
-                    _ = GameDialog.PopAll(this);
-                });
-        }
-
-        // Example of using different dialog themes
-        void ShowThemeExamples()
-        {
-            var content = new SkiaRichLabel()
-            {
-                Text = "Choose a dialog theme to preview:",
-                TextColor = Colors.White,
-                FontSize = 16,
-                HorizontalTextAlignment = DrawTextAlignment.Center,
-                HorizontalOptions = LayoutOptions.Fill,
-            };
-
-            // Show theme selection dialog using default Game theme
-            GameDialog.Show(this, content, "MODERN", "RETRO",
-                onOk: () =>
-                {
-                    // Show Modern theme example
-                    var modernContent = new SkiaRichLabel()
-                    {
-                        Text = "This is the Modern theme!\nClean, contemporary styling with smooth animations.",
-                        TextColor = Colors.Black,
-                        FontSize = 16,
-                        HorizontalTextAlignment = DrawTextAlignment.Center,
-                        HorizontalOptions = LayoutOptions.Fill,
-                    };
-                    GameDialog.Show(this, modernContent, "NICE!", template: DialogThemes.Modern);
-                },
-                onCancel: () =>
-                {
-                    // Show Retro theme example
-                    var retroContent = new SkiaRichLabel()
-                    {
-                        Text = "This is the Retro theme!\nTerminal-style green text on black background.",
-                        TextColor = Colors.LimeGreen,
-                        FontSize = 14,
-                        FontFamily = AppFonts.Game,
-                        HorizontalTextAlignment = DrawTextAlignment.Center,
-                        HorizontalOptions = LayoutOptions.Fill,
-                    };
-                    GameDialog.Show(this, retroContent, "COOL!", template: DialogThemes.Retro);
-                });
-        }
-
         /// <summary>
         /// Shows the options dialog with game settings like music toggle
         /// </summary>
@@ -158,38 +58,26 @@ namespace Breakout.Game
 
             // Pause the game if currently playing
             var lastState = State;
-            var wasPlaying = State == GameState.Playing;
-            if (wasPlaying)
-            {
-                State = GameState.Paused;
-                _moveLeft = false;
-                _moveRight = false;
-            }
+            State = GameState.Paused;
+            _moveLeft = false;
+            _moveRight = false;
 
             // Create options dialog content
             var optionsContent = CreateOptionsDialogContent();
 
+            void OnClose()
+            {
+                Tasks.StartDelayed(TimeSpan.FromMilliseconds(50), () =>
+                {
+                    TogglePause();
+                });
+            }
+
             // Show the dialog
-            GameDialog.Show(this, optionsContent, ResStrings.BtnOk.ToUpperInvariant(), null,
+            GameDialog.Show(this, optionsContent, ResStrings.BtnClose.ToUpperInvariant(), null,
                 onOk: () =>
                 {
-                    // Resume game if it was playing before
-                    if (wasPlaying)
-                    {
-                        State = GameState.Playing;
-                    }
-                    else
-                    {
-                        State = lastState;
-                        if (State == GameState.LevelComplete)
-                        {
-                            ShowLevelCompleteDialog();
-                        }
-                        else
-                        {
-                            ShowWelcomeDialog();
-                        }
-                    }
+                    OnClose();
                 });
         }
 
@@ -289,9 +177,10 @@ namespace Breakout.Game
             // Create the options layout
             var optionsLayout = new SkiaLayout()
             {
+                Tag = "Options",
                 Type = LayoutType.Column,
                 Spacing = 20,
-                Padding = new Thickness(20),
+                Padding = new Thickness(16,16,16,-12),
                 HorizontalOptions = LayoutOptions.Fill,
                 Children = new List<SkiaControl>
                 {
@@ -336,10 +225,7 @@ namespace Breakout.Game
                                     var lang = AppSettings.Get(AppSettings.Lang, AppSettings.LangDefault);
                                     me.Lang = lang;
                                 })
-                                .OnTapped(me =>
-                                {
-                                    MainPage.SelectAndSetCountry();
-                                }),
+                                .OnTapped(me => { MainPage.SelectAndSetCountry(); }),
                         }
                     },
 
@@ -422,18 +308,44 @@ namespace Breakout.Game
                                 {
                                     if (_audioService != null)
                                     {
-                                        SetupBackgroundMusic(state);
                                         AppSettings.Set(AppSettings.MusicOn, state);
+                                        if (state)
+                                        {
+                                            if (PreviousState == GameState.Playing)
+                                            {
+                                                StartBackgroundMusic(Level);
+                                            }
+                                            else
+                                            {
+                                                StartBackgroundMusic(0);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            StopBackgroundMusic();
+                                        }
                                     }
                                 }),
                         }
-                    }
+                    },
+
+                    //DEMO
+                    UiElements.Button(ResStrings.DemoMode.ToUpperInvariant(), async () =>
+                    {
+                        StartNewGameDemo();
+                    }).FillX().WithMargin(new Thickness(0,16,0,-16)),
+
+                    //RESTART
+                    UiElements.Button(ResStrings.NewGame.ToUpperInvariant(), async () =>
+                    {
+                        StartNewGamePlayer();
+                    }).FillX().WithMargin(new Thickness(0,16,0,0)),
+
                 }
             };
 
             return optionsLayout;
         }
-
 
         #endregion
     }

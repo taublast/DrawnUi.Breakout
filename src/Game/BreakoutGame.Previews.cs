@@ -45,7 +45,6 @@ namespace Breakout.Game
                 StartNewGamePlayer();
                 State = GameState.LevelComplete;
                 Level = previewAppState.Level;
-
                 Lives = previewAppState.Lives;
                 Score = previewAppState.Score;
 

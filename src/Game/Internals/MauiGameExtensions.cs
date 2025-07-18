@@ -5,12 +5,16 @@ namespace Breakout.Game;
 public static class MauiGameExtensions
 {
 
-    public static SKRect GetHitBox(this IReusableSprite sprite)
+    public static SKRect GetHitBox(this SkiaControl sprite)
     {
         if (sprite is SkiaControl control)
         {
             //real position even below/inside a cached layer
             //var position = control.GetFuturePositionOnCanvasInPoints();
+            if (control.VisualLayer == null)
+            {
+                return SKRect.Empty;
+            }
 
             //we can get position from layer as we do not ache above
             var position = control.VisualLayer.HitBoxWithTransforms.Units.Location;

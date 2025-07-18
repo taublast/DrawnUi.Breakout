@@ -799,6 +799,15 @@ namespace Breakout.Resources.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to New Game.
+        /// </summary>
+        public static string NewGame {
+            get {
+                return ResourceManager.GetString("NewGame", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No.
         /// </summary>
         public static string No {

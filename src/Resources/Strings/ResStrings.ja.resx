@@ -570,4 +570,7 @@
   <data name="Sounds" xml:space="preserve">
     <value>音</value>
   </data>
+  <data name="NewGame" xml:space="preserve">
+    <value>新しいゲーム</value>
+  </data>
 </root>

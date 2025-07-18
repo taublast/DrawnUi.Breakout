@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using AppoMobi.Maui.Gestures;
+using Breakout.Game.Dialogs;
 
 namespace Breakout.Game
 {
@@ -139,7 +140,7 @@ namespace Breakout.Game
                                             UseCache = SkiaCacheType.Image,
                                             HorizontalOptions = LayoutOptions.Start,
                                             Type = LayoutType.Row,
-                                            Spacing = 4,
+                                            Spacing = 3,
                                             Margin = new (16,60,16,0),
                                             ItemTemplateType = typeof(LifeSprite)
                                         }
@@ -165,7 +166,52 @@ namespace Breakout.Game
                         new SkiaLayer()
                         {
                             HeightRequest = 80,
-                            BackgroundColor = Color.Parse("#66000000")
+                            BackgroundColor = Color.Parse("#66000000"),
+                            Children =
+                            {
+                                new SkiaSvg()
+                                {
+                                    Opacity = 0.85,
+                                    UseCache = SkiaCacheType.Image,
+                                    SvgString = App.Current.Resources.Get<string>("SvgSettings"),
+                                    WidthRequest = 56,
+                                    LockRatio = 1,
+                                    VerticalOptions = LayoutOptions.Center,
+                                    Margin = new (12,0,0,0),
+                                }
+                                .OnTapped(me =>
+                                {
+                                    TogglePause();
+
+                                    //var dlgOptions = GameDialog.GetTopDialog(this);
+                                    //if (dlgOptions!=null && dlgOptions.Content.Tag == "Options")
+                                    //{
+                                    //    _ = dlgOptions.CloseAsync(true, true);
+                                    //}
+                                    //else
+                                    //{
+                                    //    this.ShowOptions();
+                                    //}
+                                }),
+
+                                /*
+                                new SkiaSvg()
+                                    {
+                                        Opacity = 0.75,
+                                        UseCache = SkiaCacheType.Image,
+                                        SvgString = App.Current.Resources.Get<string>("SvgUser"),
+                                        WidthRequest = 56,
+                                        LockRatio = 1,
+                                        HorizontalOptions = LayoutOptions.End,
+                                        VerticalOptions = LayoutOptions.Center,
+                                        Margin = new (0,0,12,0),
+                                    }
+                                    .OnTapped(me =>
+                                    {
+                                        //profile
+                                    })
+                                */
+                            }
                         }
                     }
                 },

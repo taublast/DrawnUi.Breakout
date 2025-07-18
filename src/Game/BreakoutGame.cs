@@ -24,6 +24,7 @@ namespace Breakout.Game
         {
             return Preferences.Default.Get(key, defaultValue);
         }
+
         public static void Set<T>(string key, T value)
         {
             Preferences.Default.Set(key, value);
@@ -46,7 +47,7 @@ namespace Breakout.Game
         public const float SPACING_BRICKS = 3f;
         public const float BRICKS_SIDE_MARGIN = 16f;
         public const float BRICKS_TOP_MARGIN = 90f;
-        
+
         public const int LIVES = 5;
 
         public const int MAXLVL = 12;
@@ -509,6 +510,7 @@ namespace Breakout.Game
 
         public void StartNewGameDemo()
         {
+            PreviousState = GameState.DemoPlay;
             StartNewGame();
             State = GameState.DemoPlay;
             StartBackgroundMusic(0);
@@ -516,6 +518,7 @@ namespace Breakout.Game
 
         public void StartNewGamePlayer()
         {
+            PreviousState = GameState.Playing;
             StartNewGame();
             State = GameState.Playing;
             StartBackgroundMusic(1);
@@ -524,6 +527,8 @@ namespace Breakout.Game
 
         void StartNewGame()
         {
+            _ = GameDialog.PopAll(this);
+
             Score = 0;
 
             Lives = LIVES;
@@ -1209,18 +1214,24 @@ namespace Breakout.Game
 
         bool TogglePause()
         {
-            if (State == GameState.Playing)
-            {
-                PauseGame();
-                return true;
-            }
+            //if (State == GameState.Playing)
+            //{
+            //    ShowOptions();
+            //    //PauseGame();
+            //    return true;
+            //}
 
             if (State == GameState.Paused)
             {
-                State = GameState.Playing;
+                State = PreviousState;
                 _moveLeft = false;
                 _moveRight = false;
                 _ = GameDialog.PopAllAsync(this);
+                return true;
+            }
+            else
+            {
+                ShowOptions();
                 return true;
             }
 
@@ -1296,16 +1307,35 @@ namespace Breakout.Game
         private GameState _lastStateChecked;
         private float thresholdTapVelocity = 200;
 
+        protected override void OnLayoutChanged()
+        {
+            base.OnLayoutChanged();
+
+            GameFieldArea = GameField.GetHitBox();
+        }
+
+        public SKRect GameFieldArea = SKRect.Empty;
+
         // Gesture handling following the SpaceShooter pattern.
         public override ISkiaGestureListener ProcessGestures(SkiaGesturesParameters args,
             GestureEventProcessingInfo apply)
         {
-            if (GameDialog.IsAnyDialogOpen(this))
+            ISkiaGestureListener consumed = null;
+            ISkiaGestureListener PassToChildren()
             {
-                var consumed = base.ProcessGestures(args, apply);
-                return consumed;
+                return base.ProcessGestures(args, apply);
             }
 
+            if (GameDialog.IsAnyDialogOpen(this))
+            {
+                return PassToChildren();
+            }
+
+            consumed = PassToChildren();
+            if (consumed !=null && consumed != this)
+            {
+                return consumed;
+            }
 
             if (State == GameState.DemoPlay && args.Type == TouchActionResult.Down)
             {
@@ -1348,11 +1378,9 @@ namespace Breakout.Game
                 }
                 else if (args.Type == TouchActionResult.Tapped)
                 {
+                    if (State == GameState.Playing)
                     {
-                        if (State == GameState.Playing)
-                        {
-                            GameKeysQueue.Enqueue(GameKey.Fire);
-                        }
+                        GameKeysQueue.Enqueue(GameKey.Fire);
                     }
                 }
                 else if (args.Type == TouchActionResult.Up)

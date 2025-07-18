@@ -56,7 +56,7 @@ namespace Breakout.Game.Dialogs
         public Action OnOkClicked { get; set; }
         public Action OnCancelClicked { get; set; }
 
-        private SkiaControl _content;
+        public SkiaControl Content;
         private string _okText;
         private string _cancelText;
         private SkiaLayout _parentContainer;
@@ -72,7 +72,7 @@ namespace Breakout.Game.Dialogs
         private GameDialog(SkiaControl content, string ok = null, string cancel = null,
             SkiaLayout parentContainer = null, DialogTemplate template = null)
         {
-            _content = content;
+            Content = content;
             _okText = ok ?? ResStrings.BtnOk;
             _cancelText = cancel;
             _parentContainer = parentContainer;
@@ -479,6 +479,18 @@ namespace Breakout.Game.Dialogs
             SetupDialogWithTemplate();
         }
 
+        public static GameDialog GetTopDialog(SkiaLayout parentContainer)
+        {
+            if (!_navigationStacks.ContainsKey(parentContainer))
+                return null;
+
+            var stack = _navigationStacks[parentContainer];
+            if (stack.Count == 0)
+                return null;
+
+            return stack.Last();
+        }
+
         protected virtual void SetupDialogWithTemplate()
         {
             // Create backdrop if template provides one
@@ -490,7 +502,7 @@ namespace Breakout.Game.Dialogs
             // Create dialog frame using template - pass dialog instance for callbacks
             if (_template.CreateDialogFrame != null)
             {
-                _dialogFrame = _template.CreateDialogFrame(this, _content, _okText, _cancelText);
+                _dialogFrame = _template.CreateDialogFrame(this, Content, _okText, _cancelText);
             }
             else
             {

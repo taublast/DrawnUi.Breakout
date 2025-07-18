@@ -6,7 +6,7 @@ public class LifeSprite : SkiaShape
     {
         Margin = new Thickness(1,1,3,3);
         WidthRequest = 26;
-        HeightRequest = 8;
+        HeightRequest = 7.5;
         StrokeColor = Color.Parse("#CCCCFF");
         StrokeWidth = -1;
         CornerRadius = 4;
@@ -19,7 +19,7 @@ public class LifeSprite : SkiaShape
                 HorizontalOptions = LayoutOptions.Fill,
                 VerticalOptions = LayoutOptions.Fill,
                 BackgroundColor = AmstradColors.BrightGreen,
-                Margin = new(4, 1),
+                Margin = new(5, 1.5),
                 BevelType = BevelType.Emboss,
                 Bevel = new SkiaBevel()
                 {
