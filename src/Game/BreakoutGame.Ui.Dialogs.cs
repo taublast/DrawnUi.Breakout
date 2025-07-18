@@ -1,4 +1,5 @@
 ﻿using Breakout.Game.Dialogs;
+using DrawnUi.Controls;
 
 namespace Breakout.Game
 {
@@ -146,7 +147,119 @@ namespace Breakout.Game
                 });
         }
 
+        /// <summary>
+        /// Shows the options dialog with game settings like music toggle
+        /// </summary>
+        public void ShowOptions()
+        {
+            // Pause the game if currently playing
+            var wasPlaying = State == GameState.Playing;
+            if (wasPlaying)
+            {
+                State = GameState.Paused;
+                _moveLeft = false;
+                _moveRight = false;
+            }
+
+            // Create options dialog content
+            var optionsContent = CreateOptionsDialogContent();
+
+            // Show the dialog
+            GameDialog.Show(this, optionsContent, ResStrings.BtnOk.ToUpperInvariant(), null,
+                onOk: () =>
+                {
+                    // Resume game if it was playing before
+                    if (wasPlaying)
+                    {
+                        State = GameState.Playing;
+                    }
+                });
+        }
+
+        /// <summary>
+        /// Creates the content for the options dialog
+        /// </summary>
+        private SkiaControl CreateOptionsDialogContent()
+        {
+            // Create music toggle switch
+            var musicSwitch = new SkiaSwitch()
+            {
+                IsToggled = _audioService?.IsMuted == false, // Switch is ON when music is NOT muted
+                HorizontalOptions = LayoutOptions.Center,
+                VerticalOptions = LayoutOptions.Center,
+                WidthRequest = 60,
+                HeightRequest = 32,
+                ColorFrameOff = AmstradColors.DarkBlue,
+                ColorFrameOn = AmstradColors.Green,
+                ColorThumbOff = AmstradColors.White,
+                ColorThumbOn = AmstradColors.White,
+                UseCache = SkiaCacheType.Operations
+            };
+
+            // Handle switch toggle
+            musicSwitch.Toggled += (sender, isToggled) =>
+            {
+                // Toggle audio mute state (switch ON = music enabled, switch OFF = music muted)
+                if (_audioService != null)
+                {
+                    _audioService.IsMuted = !isToggled;
+                }
+            };
+
+            // Create the options layout
+            var optionsLayout = new SkiaLayout()
+            {
+                Type = LayoutType.Column,
+                Spacing = 20,
+                Padding = new Thickness(20),
+                HorizontalOptions = LayoutOptions.Fill,
+                Children = new List<SkiaControl>
+                {
+                    // Title
+                    new SkiaRichLabel()
+                    {
+                        Text = "OPTIONS",
+                        FontFamily = AppFonts.Default,
+                        FontSize = 24,
+                        TextColor = AmstradColors.White,
+                        HorizontalTextAlignment = DrawTextAlignment.Center,
+                        HorizontalOptions = LayoutOptions.Fill,
+                        UseCache = SkiaCacheType.Operations
+                    },
+
+                    // Music setting row
+                    new SkiaLayout()
+                    {
+                        Type = LayoutType.Row,
+                        Spacing = 15,
+                        HorizontalOptions = LayoutOptions.Fill,
+                        VerticalOptions = LayoutOptions.Center,
+                        Children = new List<SkiaControl>
+                        {
+                            new SkiaRichLabel()
+                            {
+                                Text = "MUSIC",
+                                FontFamily = AppFonts.Default,
+                                FontSize = 18,
+                                TextColor = AmstradColors.White,
+                                VerticalOptions = LayoutOptions.Center,
+                                HorizontalOptions = LayoutOptions.Start,
+                                UseCache = SkiaCacheType.Operations
+                            },
+                            new SkiaLayout() // Spacer
+                            {
+                                HorizontalOptions = LayoutOptions.Fill
+                            },
+                            musicSwitch
+                        }
+                    }
+                }
+            };
+
+            return optionsLayout;
+        }
+
         #endregion
- 
+
     }
 }

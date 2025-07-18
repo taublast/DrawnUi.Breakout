@@ -35,7 +35,7 @@ namespace Breakout.Game
         /// </summary>
         const bool CHEAT_INVULNERABLE = false;
 
-        public static bool USE_SOUND = false;
+        public static bool USE_SOUND = true;
 
         /// <summary>
         /// Compile-time flag to enable raycasting collision detection instead of AABB intersection

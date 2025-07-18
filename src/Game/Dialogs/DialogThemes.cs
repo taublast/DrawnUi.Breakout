@@ -123,7 +123,7 @@ namespace Breakout.Game.Dialogs
         private static SkiaLayout CreateModernButtonLayout(GameDialog dialog, string okText, string cancelText)
         {
             var okButton = CreateModernButton(okText, true);
-            okButton.OnTapped(async (me) => await dialog.CloseWithOkAsync());
+            okButton.OnTapped(async me => await dialog.CloseWithOkAsync());
 
             var layout = new SkiaLayout
             {
@@ -136,7 +136,7 @@ namespace Breakout.Game.Dialogs
             if (!string.IsNullOrEmpty(cancelText))
             {
                 var cancelButton = CreateModernButton(cancelText, false);
-                cancelButton.OnTapped(async (me) => await dialog.CloseWithCancelAsync());
+                cancelButton.OnTapped(async me => await dialog.CloseWithCancelAsync());
                 layout.Add(cancelButton);
             }
 
@@ -271,7 +271,7 @@ namespace Breakout.Game.Dialogs
         private static SkiaLayout CreateRetroButtonLayout(GameDialog dialog, string okText, string cancelText)
         {
             var okButton = CreateRetroButton(okText, true);
-            okButton.OnTapped(async (me) => await dialog.CloseWithOkAsync());
+            okButton.OnTapped(async me => await dialog.CloseWithOkAsync());
 
             var layout = new SkiaLayout
             {
@@ -284,7 +284,7 @@ namespace Breakout.Game.Dialogs
             if (!string.IsNullOrEmpty(cancelText))
             {
                 var cancelButton = CreateRetroButton(cancelText, false);
-                cancelButton.OnTapped(async (me) => await dialog.CloseWithCancelAsync());
+                cancelButton.OnTapped(async me => await dialog.CloseWithCancelAsync());
                 layout.Add(cancelButton);
             }
 
@@ -436,7 +436,7 @@ namespace Breakout.Game.Dialogs
                     MinimumWidthRequest = 100,
                 };
 
-                cancelButton.OnTapped(async (me) => await dialog.CloseWithCancelAsync());
+                cancelButton.OnTapped(async me => await dialog.CloseWithCancelAsync());
                 buttonsLayout.Add(cancelButton);
             }
 

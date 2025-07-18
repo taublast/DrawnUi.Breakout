@@ -112,6 +112,13 @@ namespace Breakout.Game
 
         #endregion
 
+        #region DIALOGS
+
+        [Preview]
+        public static void Dialog_Options() => GameAction(x => x.ShowOptions());
+
+        #endregion
+
         public static SkiaViewSwitcher? ViewsContainer;
 
         public static SkiaLayout CreatePreviewWrapper(SkiaControl control, string comments)
