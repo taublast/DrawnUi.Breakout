@@ -9,7 +9,6 @@ namespace Breakout.Game
 {
     public partial class MainPage
     {
-
         public class RescalingCanvas : Canvas
         {
             public float GameScale { get; set; } = 1;

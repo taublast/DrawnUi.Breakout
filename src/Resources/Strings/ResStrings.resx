@@ -564,4 +564,10 @@ You're a Breakout Master!</value>
   <data name="Lev" xml:space="preserve">
     <value>Lvl</value>
   </data>
+  <data name="Music" xml:space="preserve">
+    <value>Music</value>
+  </data>
+  <data name="Sounds" xml:space="preserve">
+    <value>Sounds</value>
+  </data>
 </root>

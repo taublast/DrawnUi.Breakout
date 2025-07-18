@@ -1,5 +1,7 @@
-﻿using Breakout.Game.Dialogs;
+﻿using AppoMobi.Specials;
+using Breakout.Game.Dialogs;
 using DrawnUi.Controls;
+using System.Globalization;
 
 namespace Breakout.Game
 {
@@ -152,7 +154,10 @@ namespace Breakout.Game
         /// </summary>
         public void ShowOptions()
         {
+            _ = GameDialog.PopAll(this);
+
             // Pause the game if currently playing
+            var lastState = State;
             var wasPlaying = State == GameState.Playing;
             if (wasPlaying)
             {
@@ -173,7 +178,93 @@ namespace Breakout.Game
                     {
                         State = GameState.Playing;
                     }
+                    else
+                    {
+                        State = lastState;
+                        if (State == GameState.LevelComplete)
+                        {
+                            ShowLevelCompleteDialog();
+                        }
+                        else
+                        {
+                            ShowWelcomeDialog();
+                        }
+                    }
                 });
+        }
+
+        public class DisplayFlag : SkiaLayout
+        {
+            private string _lang;
+
+            public string Lang
+            {
+                get => _lang;
+                set
+                {
+                    if (value == _lang) return;
+                    _lang = value;
+                    OnPropertyChanged();
+                }
+            }
+
+            public DisplayFlag()
+            {
+                HeightRequest = 28;
+                WidthRequest = 56;
+                Children = new List<SkiaControl>()
+                {
+                    new SkiaLayout()
+                    {
+                        Type = LayoutType.Row,
+                        VerticalOptions = LayoutOptions.Fill,
+                        HorizontalOptions = LayoutOptions.Fill,
+                        Spacing = 0,
+
+                        Children = new List<SkiaControl>()
+                        {
+                            //flag icon
+                            new SkiaShape()
+                            {
+                                Margin = new(0, 0, 2, 0),
+                                StrokeColor = UiElements.ColorIconSecondary,
+                                StrokeWidth = 1,
+                                VerticalOptions = LayoutOptions.Fill,
+                                HorizontalOptions = LayoutOptions.Fill,
+                                Children =
+                                {
+                                    new SkiaSvg()
+                                        {
+                                            VerticalOptions = LayoutOptions.Fill,
+                                            HorizontalOptions = LayoutOptions.Fill,
+                                            Aspect = TransformAspect.Fill
+                                        }
+                                        .ObserveProperty(this, nameof(Lang), me =>
+                                        {
+                                            if (!string.IsNullOrEmpty(this.Lang))
+                                            {
+                                                var resKey = $"SvgFlag{this.Lang.ToTitleCase()}";
+                                                me.SvgString = App.Current.Resources.Get<string>(resKey);
+                                            }
+                                        }),
+                                }
+                            },
+
+
+                            //dropdown icon
+                            new SkiaSvg()
+                            {
+                                Margin = new Microsoft.Maui.Thickness(1, 1, 0, 0),
+                                HorizontalOptions = LayoutOptions.Start,
+                                TintColor = UiElements.ColorIconSecondary,
+                                VerticalOptions = LayoutOptions.Fill,
+                                WidthRequest = 10,
+                                SvgString = App.Current.Resources.Get<string>("SvgDropdown")
+                            }
+                        },
+                    }
+                };
+            }
         }
 
         public class GameSwitch : SkiaSwitch
@@ -182,8 +273,8 @@ namespace Breakout.Game
             {
                 WidthRequest = 60;
                 HeightRequest = 32;
-                ColorFrameOff = AmstradColors.DarkBlue;
-                ColorFrameOn = AmstradColors.Green;
+                ColorFrameOff = UiElements.ColorIconSecondary;
+                ColorFrameOn = UiElements.ColorPrimary;
                 ColorThumbOff = AmstradColors.White;
                 ColorThumbOn = AmstradColors.White;
                 UseCache = SkiaCacheType.Operations;
@@ -207,13 +298,92 @@ namespace Breakout.Game
                     // Title
                     new SkiaRichLabel()
                     {
-                        Text = "OPTIONS",
+                        Text = ResStrings.Options.ToUpperInvariant(),
                         FontFamily = AppFonts.Default,
                         FontSize = 24,
                         TextColor = AmstradColors.White,
                         HorizontalTextAlignment = DrawTextAlignment.Center,
                         HorizontalOptions = LayoutOptions.Fill,
                         UseCache = SkiaCacheType.Operations
+                    },
+
+                    // LANGUAGE setting row
+                    new SkiaLayout()
+                    {
+                        Type = LayoutType.Row,
+                        Spacing = 15,
+                        HorizontalOptions = LayoutOptions.Fill,
+                        Children = new List<SkiaControl>
+                        {
+                            //SOUND FX
+                            new SkiaRichLabel()
+                            {
+                                Text = ResStrings.Language.ToUpperInvariant(),
+                                FontFamily = AppFonts.Default,
+                                FontSize = 18,
+                                TextColor = AmstradColors.White,
+                                VerticalOptions = LayoutOptions.Center,
+                                HorizontalOptions = LayoutOptions.Start,
+                                UseCache = SkiaCacheType.Operations,
+                            },
+                            new DisplayFlag()
+                                {
+                                    HorizontalOptions = LayoutOptions.End,
+                                    VerticalOptions = LayoutOptions.Center,
+                                }
+                                .Initialize(me =>
+                                {
+                                    var lang = AppSettings.Get(AppSettings.Lang, AppSettings.LangDefault);
+                                    me.Lang = lang;
+                                })
+                                .OnTapped(me =>
+                                {
+                                    MainPage.SelectAndSetCountry();
+                                }),
+                        }
+                    },
+
+                    // SOUND setting row
+                    new SkiaLayout()
+                    {
+                        Type = LayoutType.Row,
+                        Spacing = 15,
+                        HorizontalOptions = LayoutOptions.Fill,
+                        Children = new List<SkiaControl>
+                        {
+                            //SOUND FX
+                            new SkiaRichLabel()
+                            {
+                                Text = ResStrings.Sounds.ToUpperInvariant(),
+                                FontFamily = AppFonts.Default,
+                                FontSize = 18,
+                                TextColor = AmstradColors.White,
+                                VerticalOptions = LayoutOptions.Center,
+                                HorizontalOptions = LayoutOptions.Start,
+                                UseCache = SkiaCacheType.Operations,
+                            },
+                            new GameSwitch()
+                                {
+                                    HorizontalOptions = LayoutOptions.End,
+                                    VerticalOptions = LayoutOptions.Center,
+                                }
+                                .Initialize(me =>
+                                {
+                                    if (_audioService != null)
+                                    {
+                                        me.IsToggled = AppSettings.Get(AppSettings.SoundsOn,
+                                            AppSettings.SoundsOnDefault);
+                                    }
+                                })
+                                .OnToggled((me, state) =>
+                                {
+                                    if (_audioService != null)
+                                    {
+                                        EnableSounds(state);
+                                        AppSettings.Set(AppSettings.SoundsOn, state);
+                                    }
+                                }),
+                        }
                     },
 
                     // Music setting row
@@ -224,23 +394,19 @@ namespace Breakout.Game
                         HorizontalOptions = LayoutOptions.Fill,
                         Children = new List<SkiaControl>
                         {
+                            //MUSIC
                             new SkiaRichLabel()
                             {
-                                Text = "MUSIC",
+                                Text = ResStrings.Music.ToUpperInvariant(),
                                 FontFamily = AppFonts.Default,
                                 FontSize = 18,
                                 TextColor = AmstradColors.White,
                                 VerticalOptions = LayoutOptions.Center,
                                 HorizontalOptions = LayoutOptions.Start,
-                                UseCache = SkiaCacheType.Operations
-                            },
-                            new SkiaLayout() // Spacer
-                            {
-                                HorizontalOptions = LayoutOptions.Fill
+                                UseCache = SkiaCacheType.Operations,
                             },
                             new GameSwitch()
                                 {
-                                    IsToggled = _audioService?.IsMuted == false, // Switch is ON when music is NOT muted
                                     HorizontalOptions = LayoutOptions.End,
                                     VerticalOptions = LayoutOptions.Center,
                                 }
@@ -248,16 +414,18 @@ namespace Breakout.Game
                                 {
                                     if (_audioService != null)
                                     {
-                                        me.IsToggled = !_audioService.IsMuted;
+                                        me.IsToggled = AppSettings.Get(AppSettings.MusicOn,
+                                            AppSettings.MusicOnDefault);
                                     }
                                 })
                                 .OnToggled((me, state) =>
                                 {
                                     if (_audioService != null)
                                     {
-                                        _audioService.IsMuted = !state;
+                                        SetupBackgroundMusic(state);
+                                        AppSettings.Set(AppSettings.MusicOn, state);
                                     }
-                                })
+                                }),
                         }
                     }
                 }
@@ -265,6 +433,7 @@ namespace Breakout.Game
 
             return optionsLayout;
         }
+
 
         #endregion
     }

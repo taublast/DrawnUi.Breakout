@@ -1,0 +1,211 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xaml-comp compile="true" ?>
+
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+   
+
+    <x:String x:Key="SvgStar">
+        <![CDATA[ 
+                                    
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
+        <path d="M288.1 0l63.5 195.6H557.2L390.9 316.4 454.4 512 288.1 391.1 121.7 512l63.5-195.6L18.9 195.6H224.5L288.1 0z"/>
+        <path class="fa-primary" d=""/>
+        </svg>
+        
+        ]]>
+    </x:String>
+
+
+    <x:String x:Key="SvgDropdown">
+        <![CDATA[ 
+        
+        <svg  viewBox="0 0 320 512"><path d="M320 240L160 384 0 240l0-48 320 0 0 48z"/></svg>
+
+        ]]>
+    </x:String>
+
+   
+
+    <x:String x:Key="SvgCircleClose">
+        <![CDATA[ 
+
+        <svg  viewBox="0 0 512 512"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM381.1 128L285.9 256l95.2 128-59.8 0L256 296.2 190.7 384l-59.8 0 95.2-128L130.9 128l59.8 0L256 215.8 321.3 128l59.8 0z"/></svg>
+        
+        ]]>
+    </x:String>
+
+    
+
+    <x:String x:Key="SvgClose">
+        <![CDATA[ 
+                                     
+        <svg  viewBox="0 0 320 512"><!--! Font Awesome Pro 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M312.1 375c9.369 9.369 9.369 24.57 0 33.94s-24.57 9.369-33.94 0L160 289.9l-119 119c-9.369 9.369-24.57 9.369-33.94 0s-9.369-24.57 0-33.94L126.1 256L7.027 136.1c-9.369-9.369-9.369-24.57 0-33.94s24.57-9.369 33.94 0L160 222.1l119-119c9.369-9.369 24.57-9.369 33.94 0s9.369 24.57 0 33.94L193.9 256L312.1 375z"/></svg>                        
+        
+        ]]>
+
+    </x:String>
+
+      
+
+
+    <!--#region FLAGS-->
+
+    <x:String x:Key="SvgFlagRu">
+        <![CDATA[ 
+                                    
+                <?xml version="1.0" encoding="UTF-8"?><svg  viewBox="0 0 9 6" width="900" height="600"><rect fill="#fff" width="9" height="3"/><rect fill="#d52b1e" y="3" width="9" height="3"/><rect fill="#0039a6" y="2" width="9" height="2"/></svg>               
+                
+                ]]>
+    </x:String>
+
+ 
+
+    <x:String x:Key="SvgFlagEn">
+        <![CDATA[ 
+                                    
+<?xml version="1.0"?>
+<svg  viewBox="0 0 60 30" width="1200" height="600">
+<clipPath id="s">
+	<path d="M0,0 v30 h60 v-30 z"/>
+</clipPath>
+<clipPath id="t">
+	<path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/>
+</clipPath>
+<g clip-path="url(#s)">
+	<path d="M0,0 v30 h60 v-30 z" fill="#012169"/>
+	<path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
+	<path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#t)" stroke="#C8102E" stroke-width="4"/>
+	<path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/>
+	<path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/>
+</g>
+</svg>
+                
+                ]]>
+    </x:String>
+ 
+
+    <x:String x:Key="SvgFlagFr">
+        <![CDATA[ 
+                                    
+                <?xml version="1.0" encoding="UTF-8"?>
+                <svg  width="900" height="600"><rect width="900" height="600" fill="#ED2939"/><rect width="600" height="600" fill="#fff"/><rect width="300" height="600" fill="#002395"/></svg>
+                
+                ]]>
+    </x:String>
+
+    <x:String x:Key="SvgFlagDe">
+        <![CDATA[ 
+                                    
+                <?xml version="1.0" encoding="UTF-8"?>
+            <svg  width="1000" height="600" viewBox="0 0 5 3">
+	            <rect id="black_stripe" width="5" height="3" y="0" x="0" fill="#000"/>
+	            <rect id="red_stripe" width="5" height="2" y="1" x="0" fill="#D00"/>
+	            <rect id="gold_stripe" width="5" height="1" y="2" x="0" fill="#FFCE00"/>
+            </svg>
+                
+                ]]>
+    </x:String>
+
+    <x:String x:Key="SvgFlagIt">
+        <![CDATA[ 
+                                    
+<?xml version="1.0" encoding="UTF-8"?>
+<svg  width="1500" height="1000" viewBox="0 0 3 2">
+<rect width="3" height="2" fill="#009246"/>
+<rect width="2" height="2" x="1" fill="#fff"/>
+<rect width="1" height="2" x="2" fill="#ce2b37"/>
+</svg>
+
+                
+                ]]>
+    </x:String>
+
+    <x:String x:Key="SvgFlagEs">
+
+        <![CDATA[ 
+                                    
+<?xml version="1.0" encoding="utf-8"?>
+<svg  width="900" height="600">
+<rect width="900" height="600" fill="#c60b1e"/>
+<rect width="900" height="300" y="150" fill="#ffc400"/>
+</svg>                
+                ]]>
+
+    </x:String>
+
+ 
+
+    <x:String x:Key="SvgFlagJa">
+        <![CDATA[ 
+                                    
+<?xml version="1.0" encoding="UTF-8"?>
+<svg  width="900" height="600">
+<rect fill="#fff" height="600" width="900"/>
+<circle fill="#bc002d" cx="450" cy="300" r="180"/>
+</svg>
+                
+                ]]>
+    </x:String>
+
+    <x:String x:Key="SvgFlagKo">
+        <![CDATA[ 
+                                    
+<?xml version="1.0" encoding="UTF-8"?>
+<svg  xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="600" viewBox="-36 -24 72 48">
+<title>Flag of South Korea</title>
+<rect fill="#fff" x="-36" y="-24" width="72" height="48"/>
+<g transform="rotate(-56.3099325)"><!--arctan(-3/2)-->
+<g id="b2"><path id="b" d="M-6-25H6M-6-22H6M-6-19H6" stroke="#000" stroke-width="2"/>
+<use xlink:href="#b" y="44"/></g>
+<path stroke="#fff" stroke-width="1" d="M0,17v10"/>
+<circle fill="#cd2e3a" r="12"/>
+<path fill="#0047a0" d="M0-12A6,6 0 0 0 0,0A6,6 0 0 1 0,12A12,12 0 0,1 0-12Z"/></g>
+<g transform="rotate(-123.6900675)"><use xlink:href="#b2"/>
+<path stroke="#fff" stroke-width="1" d="M0-23.5v3M0,17v3.5M0,23.5v3"/></g></svg>
+
+                
+                ]]>
+    </x:String>
+
+    <x:String x:Key="SvgFlagId">
+        <![CDATA[ 
+                                    
+<svg  width="900" height="600"><path fill="#fff" d="M0 0H900V600H0z"/><path fill="red" d="M0 0H900V300H0z"/></svg>
+                
+                ]]>
+    </x:String>
+
+    <x:String x:Key="SvgFlagZh">
+        <![CDATA[ 
+                                    
+<?xml version="1.0" encoding="UTF-8"?>
+<svg  xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="600" viewBox="0 0 30 20">
+<defs>
+<path id="s" d="M0,-1 0.587785,0.809017 -0.951057,-0.309017H0.951057L-0.587785,0.809017z" fill="#FFFF00"/>
+</defs>
+<rect width="30" height="20" fill="#EE1C25"/>
+<use xlink:href="#s" transform="translate(5,5) scale(3)"/>
+<use xlink:href="#s" transform="translate(10,2) rotate(23.036243)"/>
+<use xlink:href="#s" transform="translate(12,4) rotate(45.869898)"/>
+<use xlink:href="#s" transform="translate(12,7) rotate(69.945396)"/>
+<use xlink:href="#s" transform="translate(10,9) rotate(20.659808)"/>
+</svg>
+                
+                ]]>
+    </x:String>
+
+    <x:String x:Key="SvgFlagHi">
+        <![CDATA[ 
+                                    
+<svg  xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 225 150" width="1350" height="900"><rect width="225" height="150" fill="#f93"/><rect width="225" height="50" y="50" fill="#fff"/><rect width="225" height="50" y="100" fill="#128807"/><g transform="translate(112.5,75)"><circle r="20" fill="#008"/><circle r="17.5" fill="#fff"/><circle r="3.5" fill="#008"/><g id="d"><g id="c"><g id="b"><g id="a"><circle r="0.875" fill="#008" transform="rotate(7.5) translate(17.5)"/><path fill="#008" d="M 0,17.5 0.6,7 C 0.6,7 0,2 0,2 0,2 -0.6,7 -0.6,7 L 0,17.5 z"/></g><use xlink:href="#a" transform="rotate(15)"/></g><use xlink:href="#b" transform="rotate(30)"/></g><use xlink:href="#c" transform="rotate(60)"/></g><use xlink:href="#d" transform="rotate(120)"/><use xlink:href="#d" transform="rotate(-120)"/></g></svg>
+                
+                ]]>
+    </x:String>
+
+
+    <!--#endregion-->
+
+
+</ResourceDictionary>

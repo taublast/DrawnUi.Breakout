@@ -9,6 +9,13 @@ namespace Breakout.Game
 
     public partial class MainPage : BasePageReloadable
     {
+        #region DIALOGS
+
+        [Preview]
+        public static void Dialog_Options() => GameAction(x => x.ShowOptions());
+
+        #endregion
+
         [Preview]
         public static void State_Welcome() => ApplyPreviewState(new PreviewAppState() { GameState = GameState.Ready });
 
@@ -109,13 +116,6 @@ namespace Breakout.Game
 
         [Preview]
         public static void Language_ZH() => MainPage.RestartWithLanguage("zh");
-
-        #endregion
-
-        #region DIALOGS
-
-        [Preview]
-        public static void Dialog_Options() => GameAction(x => x.ShowOptions());
 
         #endregion
 

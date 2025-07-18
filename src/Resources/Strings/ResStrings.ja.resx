@@ -564,4 +564,10 @@
   <data name="Lev" xml:space="preserve">
     <value>レベル</value>
   </data>
+  <data name="Music" xml:space="preserve">
+    <value>音楽</value>
+  </data>
+  <data name="Sounds" xml:space="preserve">
+    <value>音</value>
+  </data>
 </root>

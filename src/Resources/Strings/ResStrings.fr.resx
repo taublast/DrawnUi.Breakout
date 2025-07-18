@@ -564,4 +564,10 @@ Vous êtes un maître de Breakout !</value>
   <data name="Lev" xml:space="preserve">
     <value>Niv</value>
   </data>
+  <data name="Music" xml:space="preserve">
+    <value>Musique</value>
+  </data>
+  <data name="Sounds" xml:space="preserve">
+    <value>Sons</value>
+  </data>
 </root>

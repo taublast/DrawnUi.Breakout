@@ -13,7 +13,7 @@ public static class MauiProgram
     /// <summary>
     /// Enabled languages
     /// </summary>
-    public static IEnumerable<string> Languages = new List<string>
+    public static List<string> Languages = new List<string>
     {
         "en", //FIRST is fallback
         "de",

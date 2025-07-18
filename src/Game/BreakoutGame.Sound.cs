@@ -16,9 +16,16 @@ namespace Breakout.Game
             Start
         }
 
+        public void EnableSounds(bool state)
+        {
+            soundsOn = state;
+        }
+
+        private bool soundsOn;
+
         public void PlaySound(Sound sound, System.Numerics.Vector3 position = default)
         {
-            if (_audioService == null)
+            if (_audioService == null || !soundsOn)
                 return;
 
             if (position == default)
@@ -45,7 +52,8 @@ namespace Breakout.Game
                         _audioService.PlaySound("oops", 0.75f);
                     break;
                 case Sound.Start:
-                    _audioService.PlaySound("start", 0.75f);
+                    if (State != GameState.DemoPlay)
+                        _audioService.PlaySound("start", 0.75f);
                     break;
             }
         }
@@ -80,7 +88,30 @@ namespace Breakout.Game
 
             _audioService = audioService;
 
-            StartBackgroundMusic(0);
+            var soundsOn = AppSettings.Get(AppSettings.SoundsOn, AppSettings.SoundsOnDefault);
+            EnableSounds(soundsOn);
+
+            var musicOn = AppSettings.Get(AppSettings.MusicOn, AppSettings.MusicOnDefault);
+            SetupBackgroundMusic(musicOn);
+        }
+
+        public void SetupBackgroundMusic(bool isOn)
+        {
+            if (!isOn)
+            {
+                StopBackgroundMusic();
+            }
+            else
+            {
+                if (State == GameState.Playing)
+                {
+                    StartBackgroundMusic(Level);
+                }
+                else
+                {
+                    StartBackgroundMusic(0);
+                }
+            }
         }
 
         public void ToggleSound()

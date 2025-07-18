@@ -564,4 +564,10 @@ Puntaje final: {0}
   <data name="Lev" xml:space="preserve">
     <value>Niv</value>
   </data>
+  <data name="Music" xml:space="preserve">
+    <value>Música</value>
+  </data>
+  <data name="Sounds" xml:space="preserve">
+    <value>Sonidos</value>
+  </data>
 </root>

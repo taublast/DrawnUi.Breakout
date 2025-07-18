@@ -9,6 +9,27 @@ using SkiaSharp;
 
 namespace Breakout.Game
 {
+    public static class AppSettings
+    {
+        public static readonly string Lang = "lang";
+        public static readonly string LangDefault = string.Empty;
+
+        public static readonly string MusicOn = "mus";
+        public static readonly bool MusicOnDefault = true;
+
+        public static readonly string SoundsOn = "fx";
+        public static readonly bool SoundsOnDefault = true;
+
+        public static T Get<T>(string key, T defaultValue)
+        {
+            return Preferences.Default.Get(key, defaultValue);
+        }
+        public static void Set<T>(string key, T value)
+        {
+            Preferences.Default.Set(key, value);
+        }
+    }
+
     public partial class BreakoutGame : MauiGame
     {
         #region CONSTANTS
@@ -25,7 +46,8 @@ namespace Breakout.Game
         public const float SPACING_BRICKS = 3f;
         public const float BRICKS_SIDE_MARGIN = 16f;
         public const float BRICKS_TOP_MARGIN = 90f;
-        public const int LIVES = 3;
+        
+        public const int LIVES = 5;
 
         public const int MAXLVL = 12;
         public const int DEMO_MAXLVL = 3;
@@ -478,6 +500,8 @@ namespace Breakout.Game
             if (State == GameState.DemoPlay)
             {
                 AIController.ResetTimers();
+                _moveLeft = false;
+                _moveRight = false;
             }
         }
 

@@ -772,6 +772,15 @@ namespace Breakout.Resources.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Music.
+        /// </summary>
+        public static string Music {
+            get {
+                return ResourceManager.GetString("Music", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to My Profile.
         /// </summary>
         public static string MyProfile {
@@ -1128,6 +1137,15 @@ namespace Breakout.Resources.Strings {
         public static string Shop {
             get {
                 return ResourceManager.GetString("Shop", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sounds.
+        /// </summary>
+        public static string Sounds {
+            get {
+                return ResourceManager.GetString("Sounds", resourceCulture);
             }
         }
         

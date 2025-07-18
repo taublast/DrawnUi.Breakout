@@ -1,4 +1,5 @@
-﻿using DrawnUi.Views;
+﻿using AppoMobi.Specials;
+using DrawnUi.Views;
 using System.Globalization;
 
 namespace Breakout.Game
@@ -7,15 +8,22 @@ namespace Breakout.Game
     {
         public MainPage()
         {
+            Instance = this;
             ApplySelectedLanguage();
         }
+
+        /// <summary>
+        /// To change language of this one
+        /// </summary>
+        public static MainPage Instance;
 
         /// <summary>
         /// Applies the selected language or detects device language on first start
         /// </summary>
         public void ApplySelectedLanguage()
         {
-            if (Preferences.Get("FirstStart", true))
+            if (Preferences.Get("FirstStart", true) ||
+                AppSettings.Get(AppSettings.Lang, AppSettings.LangDefault) == string.Empty)
             {
                 // detect the device language
                 var deviceLanguage = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
@@ -29,11 +37,13 @@ namespace Breakout.Game
                 {
                     ApplyLanguage(deviceLanguage);
                 }
+
                 Preferences.Set("FirstStart", false);
             }
             else
             {
-                ApplyLanguage(Preferences.Get("SelectedLang", ""));
+                var lang = AppSettings.Get(AppSettings.Lang, AppSettings.LangDefault);
+                ApplyLanguage(lang);
             }
         }
 
@@ -42,8 +52,7 @@ namespace Breakout.Game
             ResStrings.Culture = CultureInfo.CreateSpecificCulture(lang);
             Thread.CurrentThread.CurrentCulture = ResStrings.Culture;
             Thread.CurrentThread.CurrentUICulture = ResStrings.Culture;
-            Preferences.Set("DeviceLang", lang);
-            Preferences.Set("SelectedLang", lang);
+            AppSettings.Set(AppSettings.Lang, lang);
         }
 
         public static void RestartWithLanguage(string lang)
@@ -53,14 +62,75 @@ namespace Breakout.Game
             //whatever thread we are in
             Thread.CurrentThread.CurrentCulture = ResStrings.Culture;
             Thread.CurrentThread.CurrentUICulture = ResStrings.Culture;
-            Preferences.Set("DeviceLang", lang);
-            Preferences.Set("SelectedLang", lang);
+            AppSettings.Set(AppSettings.Lang, lang);
 
-            MainThread.BeginInvokeOnMainThread(() =>
-            {
-                App.Current.MainPage = new NavigationPage(new MainPage());
-            });
+            MainThread.BeginInvokeOnMainThread(() => { App.Current.MainPage = new NavigationPage(new MainPage()); });
         }
+
+        static List<KeyValuePair<string, string>> DisplayLanguages;
+
+        public static void SelectAndSetCountry()
+        {
+
+            var languages = MauiProgram.Languages;
+            if (languages.Count() > 2)
+            {
+                if (DisplayLanguages == null)
+                {
+                    DisplayLanguages = new();
+                    foreach (var lang in languages)
+                    {
+                        var culture = CultureInfo.CreateSpecificCulture(lang);
+                        var title = culture.NativeName.ToTitleCase().ToTitleCase("(");
+                        DisplayLanguages.Add(new(lang, title));
+                    }
+                }
+
+                MainThread.BeginInvokeOnMainThread(async () =>
+                {
+                    // Create picker with detailed camera info
+                    var options = DisplayLanguages.Select(c => c.Value).ToArray();
+                    var result = await App.Current.MainPage.DisplayActionSheet(ResStrings.Language, ResStrings.BtnCancel, null, options);
+                    if (!string.IsNullOrEmpty(result))
+                    {
+                        var selectedIndex = options.FindIndex(result);
+                        if (selectedIndex >= 0)
+                        {
+                            var lang = languages[selectedIndex];
+                            if (lang != AppSettings.Get(AppSettings.Lang, AppSettings.LangDefault))
+                            {
+                                AppSettings.Set(AppSettings.Lang, lang);
+                                
+                                ResStrings.Culture = CultureInfo.CreateSpecificCulture(lang);
+                                Thread.CurrentThread.CurrentCulture = ResStrings.Culture;
+                                Thread.CurrentThread.CurrentUICulture = ResStrings.Culture;
+                                Thread.CurrentThread.CurrentUICulture = ResStrings.Culture;
+
+                                Super.OnFrame += OnFrame; //will change language on rendering thread too if different from main
+                            }
+                        }
+                    }
+                });
+
+                void OnFrame(object o, EventArgs a)
+                {
+                    Super.OnFrame -= OnFrame;
+                    Thread.CurrentThread.CurrentUICulture = ResStrings.Culture;
+
+                    //soft refresh
+                    BreakoutGame.Instance.Redraw();
+                    BreakoutGame.Instance.ShowOptions();
+
+                    //mimic HotReload
+                    //MainPage.Instance.Build(); // reload game completely
+                }
+
+            }
+
+
+
+        }
+
 
     }
 }

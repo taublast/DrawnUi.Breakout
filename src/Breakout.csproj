@@ -2,10 +2,10 @@
 
 	<PropertyGroup>
 
-    <TargetFrameworks>net9.0-windows10.0.19041.0</TargetFrameworks>
+    <!--<TargetFrameworks>net9.0-windows10.0.19041.0</TargetFrameworks>-->
 
-    <!--<TargetFrameworks>net9.0-android;net9.0-ios;net9.0-maccatalyst</TargetFrameworks>
-    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net9.0-windows10.0.19041.0</TargetFrameworks>-->
+    <TargetFrameworks>net9.0-android;net9.0-ios;net9.0-maccatalyst</TargetFrameworks>
+    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net9.0-windows10.0.19041.0</TargetFrameworks>
 
     <OutputType>Exe</OutputType>
     <RootNamespace>Breakout</RootNamespace>
@@ -16,7 +16,7 @@
     <!-- Display name -->
     <ApplicationTitle>Breakout</ApplicationTitle>
 
-    <!--<UseNuget>true</UseNuget>-->
+    <UseNuget>true</UseNuget>
     
     <!-- App Identifier -->
     <ApplicationId>com.mauigame.breakout</ApplicationId>
@@ -33,6 +33,12 @@
     <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</TargetPlatformMinVersion>
     <WindowsPackageType>None</WindowsPackageType>
   </PropertyGroup>
+
+  <!--production-->
+  <ItemGroup Condition="'$(UseNuget)' == 'true'">
+    <PackageReference Include="DrawnUi.Maui.Game" Version="1.6.2.7" />
+  </ItemGroup>
+
 
   <ItemGroup>
 		<!-- App Icon -->
@@ -78,11 +84,6 @@
   <ItemGroup Condition="'$(UseNuget)' != 'true'">
     <ProjectReference Include="..\..\DrawnUi.Maui\src\Maui\DrawnUi\DrawnUi.Maui.csproj" />
     <ProjectReference Include="..\..\DrawnUi.Maui\src\Maui\Addons\DrawnUi.Maui.Game\DrawnUi.Maui.Game.csproj" />
-  </ItemGroup>
-
-  <!--production-->
-  <ItemGroup Condition="'$(UseNuget)' == 'true'">
-    <PackageReference Include="DrawnUi.Maui.Game" Version="1.6.2.5" />
   </ItemGroup>
 
   <ItemGroup>

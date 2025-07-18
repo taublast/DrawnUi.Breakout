@@ -11,6 +11,17 @@ namespace Breakout.Game
         public PaddleSprite Paddle;
         protected SkiaLayout GameField;
 
+        /// <summary>
+        /// Need this when we change language
+        /// </summary>
+        public void Redraw()
+        {
+            OnPropertyChanged(nameof(Level));
+            OnPropertyChanged(nameof(Score));
+            OnPropertyChanged(nameof(State));
+            ShowGameOverDialog();
+        }
+
         void CreateUi()
         {
             HorizontalOptions = LayoutOptions.Fill;
@@ -165,6 +176,12 @@ namespace Breakout.Game
 
         public static class UiElements
         {
+
+            public static Color ColorPrimary = Colors.HotPink;
+            public static Color ColorPrimaryDark = Colors.DeepPink;
+
+            public static Color ColorIconSecondary = Colors.DarkGray;
+
             public static SkiaControl DialogPrompt(string prompt)
             {
                 return new SkiaRichLabel() //will auto-find installed font for missing glyphs
@@ -240,8 +257,8 @@ namespace Breakout.Game
                         EndYRatio = 0.5f,
                         Colors = new Color[]
                         {
-                            Colors.HotPink,
-                            Colors.DeepPink,
+                            UiElements.ColorPrimary,
+                            UiElements.ColorPrimaryDark,
                         }
                     },
                 }.WithGestures((me, args, b) =>
