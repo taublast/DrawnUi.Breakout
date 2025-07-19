@@ -63,6 +63,7 @@ public static class BrickPresets
                 BackgroundColor = Colors.Orange,
                 SupplementaryHitsToDestroy = 0,
                 ScoreValue = 15,
+                PowerUpType = PowerupType.Destroyer,
                 Description = "Standard brick, 1 hit",
                 Probability = 0.20f
             }},
@@ -83,6 +84,7 @@ public static class BrickPresets
                 SupplementaryHitsToDestroy = 0,
                 ScoreValue = 20,
                 Description = "???",
+                PowerUpType = PowerupType.StickyBall,
                 Probability = 0.15f
             }},
 
@@ -92,6 +94,7 @@ public static class BrickPresets
                 BackgroundColor = Colors.DarkGreen,
                 SupplementaryHitsToDestroy = 1,
                 ScoreValue = 30,
+                PowerUpType = PowerupType.ExtraLife,
                 Description = "Hard brick, 3 hits",
                 Probability = 0.10f
             }},
@@ -113,7 +116,7 @@ public static class BrickPresets
                 SupplementaryHitsToDestroy = 0,
                 ScoreValue = 25,
                 IsSpecial = true,
-                PowerUpType = PowerUpType.ExpandPaddle,
+                PowerUpType = PowerupType.ExpandPaddle,
                 Description = "Drops paddle expander power-up",
                 Probability = 0.07f
             }},
@@ -124,7 +127,7 @@ public static class BrickPresets
                 SupplementaryHitsToDestroy = 0,
                 ScoreValue = 25,
                 IsSpecial = true,
-                PowerUpType = PowerUpType.SlowBall,
+                PowerUpType = PowerupType.SlowBall,
                 Description = "Drops slow ball power-up",
                 Probability = 0.07f
             }},
@@ -135,8 +138,8 @@ public static class BrickPresets
                 SupplementaryHitsToDestroy = 0,
                 ScoreValue = 35,
                 IsSpecial = true,
-                PowerUpType = PowerUpType.MultiBall,
-                Description = "Drops multi-ball power-up",
+                PowerUpType = PowerupType.ExtraLife,
+                Description = "Drops extralife power-up",
                 Probability = 0.04f
             }},
 
@@ -146,7 +149,7 @@ public static class BrickPresets
                 SupplementaryHitsToDestroy = 1,
                 ScoreValue = 50,
                 IsSpecial = true,
-                PowerUpType = PowerUpType.ExtraLife,
+                PowerUpType = PowerupType.Destroyer,
                 Description = "Drops extra life power-up (rare)",
                 Probability = 0.02f
             }}

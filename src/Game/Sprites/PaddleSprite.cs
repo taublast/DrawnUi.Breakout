@@ -78,7 +78,7 @@ public class PaddleSprite : SkiaShape, IWithHitBox, IReusableSprite
     /// </summary>
     private void ApplyPowerup(PowerupType powerup)
     {
-        if (Powerup == PowerupType.WidePaddle)
+        if (Powerup == PowerupType.ExpandPaddle)
         {
             WidthRequest = BreakoutGame.PADDLE_WIDTH * 1.33;
         }

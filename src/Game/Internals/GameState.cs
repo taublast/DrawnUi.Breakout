@@ -28,15 +28,6 @@ public enum GameState
     DemoPlay
 }
 
-public enum PowerupType
-{
-    None,
-    Destroyer,
-    WidePaddle,
-    ExtraLife,
-    StickyBall,
-    SlowBall
-}
 
 public class PowerupSprite : SkiaShape, IWithHitBox, IReusableSprite
 {
