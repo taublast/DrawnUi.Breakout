@@ -10,7 +10,7 @@ namespace Breakout.Game
 
         public BallSprite Ball;
         public PaddleSprite Paddle;
-        protected SkiaLayout GameField;
+        public SkiaLayout GameField;
         private SkiaLayout BricksContainer;
 
         /// <summary>

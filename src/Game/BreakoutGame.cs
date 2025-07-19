@@ -1,11 +1,12 @@
-using System.Diagnostics;
-using System.Numerics;
-using System.Runtime.CompilerServices;
 using AppoMobi.Maui.Gestures;
 using AppoMobi.Specials;
 using Breakout.Game.Ai;
 using Breakout.Game.Dialogs;
 using SkiaSharp;
+using System.Diagnostics;
+using System.Numerics;
+using System.Runtime.CompilerServices;
+using static Breakout.Game.BreakoutGame;
 
 namespace Breakout.Game
 {
@@ -212,8 +213,8 @@ namespace Breakout.Game
             var preset = BrickPresets.Presets[presetId];
             if (BricksPool.Count > 0)
             {
-                var brick = BricksPool.Values.FirstOrDefault();
-                if (brick != null && BricksPool.Remove(brick.Uid))
+                var brick = BricksPool.Get();
+                if (brick != null)
                 {
                     brick.IsActive = true;
                     brick.WidthRequest = brickWidth;
@@ -248,8 +249,8 @@ namespace Breakout.Game
             var preset = BrickPresets.Presets[presetId];
             if (BricksPool.Count > 0)
             {
-                var brick = BricksPool.Values.FirstOrDefault();
-                if (brick != null && BricksPool.Remove(brick.Uid))
+                var brick = BricksPool.Get();
+                if (brick != null)
                 {
                     brick.IsActive = true;
                     brick.WidthRequest = brickWidth;
@@ -262,36 +263,6 @@ namespace Breakout.Game
                     brick.BackgroundColor = preset.BackgroundColor;
                     brick.SupplementaryHitsToDestroy = preset.SupplementaryHitsToDestroy;
                     brick.Undestructible = preset.Undestructible;
-
-                    brick.ResetAnimationState();
-                    _spritesToBeAdded.Add(brick);
-                }
-            }
-        }
-
-        private void AddBrick(int col, int row, float brickWidth, float brickHeight, float margin)
-        {
-            if (BricksPool.Count > 0)
-            {
-                var brick = BricksPool.Values.FirstOrDefault();
-                if (brick != null && BricksPool.Remove(brick.Uid))
-                {
-                    brick.IsActive = true;
-                    brick.WidthRequest = brickWidth;
-                    brick.HeightRequest = brickHeight;
-                    float xPos = margin + col * (brickWidth + margin);
-                    float yPos = margin + row * (brickHeight + margin);
-                    brick.Left = xPos;
-                    brick.Top = yPos;
-                    // Color by row.
-                    switch (row % 5)
-                    {
-                        case 0: brick.BackgroundColor = Colors.Red; break;
-                        case 1: brick.BackgroundColor = Colors.Orange; break;
-                        case 2: brick.BackgroundColor = Colors.Yellow; break;
-                        case 3: brick.BackgroundColor = Colors.Green; break;
-                        case 4: brick.BackgroundColor = Colors.Blue; break;
-                    }
 
                     brick.ResetAnimationState();
                     _spritesToBeAdded.Add(brick);
@@ -694,14 +665,14 @@ namespace Breakout.Game
         void AddToPoolBrickSprite()
         {
             var brick = BrickSprite.Create();
-            BricksPool.Add(brick.Uid, brick);
+            BricksPool.Return(brick);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         void AddToPoolPowerupSprite()
         {
             var powerup = PowerupSprite.Create();
-            PowerupsPool.Add(powerup.Uid, powerup);
+            PowerupsPool.Return(powerup);
         }
 
         private int _level = 1;
@@ -752,10 +723,48 @@ namespace Breakout.Game
         private bool _initialized;
         private bool _needPrerender;
 
+        public class ReusableSpritePool<T> where T: IReusableSprite
+        {
+            protected Dictionary<Guid, T> Pool;
+
+            public ReusableSpritePool(int size)
+            {
+                Pool = new(size);
+            }
+
+            public void Return(T item)
+            {
+                Pool.TryAdd(item.Uid, item);
+            }
+
+            public T Get()
+            {
+                var sprite = Pool.Values.FirstOrDefault();
+                if (sprite != null && Pool.Remove(sprite.Uid))
+                {
+                    return sprite;
+                }
+                return default;
+            }
+
+            public int Count
+            {
+                get
+                {
+                    if (Pool == null)
+                    {
+                        return 0;
+                    }
+                    return Pool.Count;
+                }
+            }
+        }
+
         // Pools for bricks (reusable sprites)
-        private Dictionary<Guid, BrickSprite> BricksPool = new(MAX_BRICKS);
-        private Dictionary<Guid, PowerupSprite> PowerupsPool = new(MAX_POWERUPS);
-        private Dictionary<Guid, PaddleBulletSprite> PaddleBulletsPool = new(MAX_PADDLE_BULLETS);
+        private ReusableSpritePool<BrickSprite> BricksPool = new(MAX_BRICKS);
+        private ReusableSpritePool<PowerupSprite> PowerupsPool = new(MAX_POWERUPS);
+        private ReusableSpritePool<PaddleBulletSprite> PaddleBulletsPool = new(MAX_PADDLE_BULLETS);
+
         private Queue<SkiaControl> _spritesToBeRemovedLater = new();
         private object _lockSpritesToBeRemovedLater = new();
         private List<SkiaControl> _spritesToBeAdded = new(MAX_BRICKS);
@@ -1550,17 +1559,17 @@ namespace Breakout.Game
         {
             if (sprite is BrickSprite enemy)
             {
-                BricksPool.TryAdd(enemy.Uid, enemy);
+                BricksPool.Return(enemy);
             }
 
             if (sprite is PowerupSprite powerup)
             {
-                PowerupsPool.TryAdd(powerup.Uid, powerup);
+                PowerupsPool.Return(powerup);
             }
             
             if (sprite is PaddleBulletSprite paddleBullet)
             {
-                PaddleBulletsPool.TryAdd(paddleBullet.Uid, paddleBullet);
+                PaddleBulletsPool.Return(paddleBullet);
             }
 
             if (sprite is BrickSprite brick)
@@ -1592,8 +1601,8 @@ namespace Breakout.Game
         {
             if (PowerupsPool.Count > 0)
             {
-                var powerup = PowerupsPool.Values.FirstOrDefault();
-                if (powerup != null && PowerupsPool.Remove(powerup.Uid))
+                var powerup = PowerupsPool.Get();
+                if (powerup != null)
                 {
                     powerup.IsActive = true;
                     
