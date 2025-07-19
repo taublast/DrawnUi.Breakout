@@ -47,24 +47,36 @@ namespace Breakout.Game
             }
         }
 
-        public void ApplyLanguage(string lang)
+        public static void ApplyLanguage(string lang)
         {
             ResStrings.Culture = CultureInfo.CreateSpecificCulture(lang);
             Thread.CurrentThread.CurrentCulture = ResStrings.Culture;
             Thread.CurrentThread.CurrentUICulture = ResStrings.Culture;
+            
             AppSettings.Set(AppSettings.Lang, lang);
+
+            switch (lang)
+            {
+                case "zh":
+                    AppFonts.UseGameFont(AppFonts.GameZh, 1.2);
+                    break;
+                case "ko":
+                    AppFonts.UseGameFont(AppFonts.GameKo, 1.1);
+                    break;
+                default:
+                    AppFonts.UseGameFont(AppFonts.Game);
+                    break;
+            }
         }
 
         public static void RestartWithLanguage(string lang)
         {
-            ResStrings.Culture = CultureInfo.CreateSpecificCulture(lang);
+            ApplyLanguage(lang);
 
-            //whatever thread we are in
-            Thread.CurrentThread.CurrentCulture = ResStrings.Culture;
-            Thread.CurrentThread.CurrentUICulture = ResStrings.Culture;
-            AppSettings.Set(AppSettings.Lang, lang);
-
-            MainThread.BeginInvokeOnMainThread(() => { App.Current.MainPage = new NavigationPage(new MainPage()); });
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                App.Current.MainPage = new NavigationPage(new MainPage());
+            });
         }
 
         static List<KeyValuePair<string, string>> DisplayLanguages;
@@ -99,12 +111,7 @@ namespace Breakout.Game
                             var lang = languages[selectedIndex];
                             if (lang != AppSettings.Get(AppSettings.Lang, AppSettings.LangDefault))
                             {
-                                AppSettings.Set(AppSettings.Lang, lang);
-                                
-                                ResStrings.Culture = CultureInfo.CreateSpecificCulture(lang);
-                                Thread.CurrentThread.CurrentCulture = ResStrings.Culture;
-                                Thread.CurrentThread.CurrentUICulture = ResStrings.Culture;
-                                Thread.CurrentThread.CurrentUICulture = ResStrings.Culture;
+                                ApplyLanguage(lang);
 
                                 Super.OnFrame += OnFrame; //will change language on rendering thread too if different from main
                             }

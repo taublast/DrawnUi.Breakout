@@ -10,11 +10,13 @@ A cross-platform game to play on **iOS, MacCatalyst, Android and Windows**.
 * Cross-platform for iOS, MacCatalyst, Android and Windows with hardware acceleration
 * Control with touch/mouse/keyboard, customizable keys
 * Localized to 9 languages
+* Select font upon language
 * Auto-scales to any screen/window size
 * Background music and multichannel sounds
 * Auto-generated random levels
 * AI-controlled paddle
 * Raycast collision detection
+* Layered rendering
 * In-game dialogs with glass-style dynamic transparent backdrops
 
 ## Development Features

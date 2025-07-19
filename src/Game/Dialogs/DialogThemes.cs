@@ -206,8 +206,8 @@ namespace Breakout.Game.Dialogs
             CreateButton = (text) => new SkiaButton
             {
                 Text = text,
-                FontSize = 14,
-                FontFamily = AppFonts.Game,
+                FontSize = 14 * AppFonts.GameAdjustSize,
+                FontFamily = AppFonts.GameAutoselect,
                 TextColor = Colors.LimeGreen,
                 BackgroundColor = Colors.Black,
                 StrokeColor = Colors.LimeGreen,
@@ -258,7 +258,7 @@ namespace Breakout.Game.Dialogs
                 if (content is SkiaLabel label)
                 {
                     label.TextColor = Colors.LimeGreen;
-                    label.FontFamily = AppFonts.Game;
+                    label.FontFamily = AppFonts.GameAutoselect;
                 }
 
                 children.Add(content);
@@ -296,8 +296,8 @@ namespace Breakout.Game.Dialogs
             return new SkiaButton
             {
                 Text = text,
-                FontSize = 14,
-                FontFamily = AppFonts.Game,
+                FontSize = 14 * AppFonts.GameAdjustSize,
+                FontFamily = AppFonts.GameAutoselect,
                 TextColor = Colors.LimeGreen,
                 BackgroundColor = Colors.Black,
                 StrokeColor = Colors.LimeGreen,
@@ -434,8 +434,8 @@ namespace Breakout.Game.Dialogs
                 var cancelButton = new SkiaButton()
                 {
                     Text = cancelText,
-                    FontSize = 14,
-                    FontFamily = AppFonts.Game,
+                    FontSize = 14 * AppFonts.GameAdjustSize,
+                    FontFamily = AppFonts.GameAutoselect,
                     TextColor = Colors.White,
                     BackgroundColor = Colors.DarkRed,
                     WidthRequest = -1,

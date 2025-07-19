@@ -59,10 +59,10 @@ namespace Breakout.Game
                                 //we place brick inside one layer to check and draw one cache if unchanged
                                 new SkiaLayer()
                                 {
-                                    BackgroundColor = Color.Parse("#000000"),
+                                    //BackgroundColor = Color.Parse("#000000"),
                                     HorizontalOptions = LayoutOptions.Center,
                                     Margin = new(0,90,0,0),
-                                    UseCache = SkiaCacheType.ImageComposite
+                                    UseCache = SkiaCacheType.ImageComposite //critical for perf
                                 }.Assign(out BricksContainer),
 
                                 new BallSprite()
@@ -88,8 +88,8 @@ namespace Breakout.Game
                                         {
                                             UseCache = SkiaCacheType.Operations,
                                             Margin = 16,
-                                            FontFamily = AppFonts.Game,
-                                            FontSize = 17,
+                                            FontFamily = AppFonts.GameAutoselect,
+                                            FontSize = 17 * AppFonts.GameAdjustSize,
                                             StrokeColor = AmstradColors.DarkBlue,
                                             TextColor = AmstradColors.White,
                                             DropShadowColor = Colors.DarkBlue,
@@ -107,6 +107,9 @@ namespace Breakout.Game
                                         }
                                         .ObserveProperties(this, [nameof(Score), nameof(State)], me =>
                                         {
+                                            me.FontFamily = AppFonts.GameAutoselect;
+                                            me.FontSize = 17 * AppFonts.GameAdjustSize;
+
                                             if (State == GameState.DemoPlay)
                                             {
                                                 me.Text = ResStrings.DemoMode.ToUpperInvariant();
@@ -118,13 +121,14 @@ namespace Breakout.Game
                                         }),
 
                                         //LEVEL
+                            
                                         new SkiaRichLabel()
                                         {
                                             UseCache = SkiaCacheType.Operations,
                                             Margin = 16,
                                             HorizontalOptions = LayoutOptions.End,
-                                            FontFamily = AppFonts.Game,
-                                            FontSize = 17,
+                                            FontFamily = AppFonts.GameAutoselect,
+                                            FontSize = 17* AppFonts.GameAdjustSize,
                                             StrokeColor = AmstradColors.DarkBlue,
                                             TextColor = AmstradColors.White,
                                             DropShadowColor = Colors.DarkBlue,
@@ -142,8 +146,12 @@ namespace Breakout.Game
                                         }
                                         .ObserveProperty(this, nameof(Level), me =>
                                         {
+                                            me.FontFamily = AppFonts.GameAutoselect;
+                                            me.FontSize = 17 * AppFonts.GameAdjustSize;
+
                                             me.Text = $"{ResStrings.Lev.ToUpperInvariant()}: {Level}";
                                         }),
+                                 
 
                                         //LIVES
                                         new SkiaLayout()
@@ -301,8 +309,8 @@ namespace Breakout.Game
                             UseCache = SkiaCacheType.Operations,
                             HorizontalOptions = LayoutOptions.Center,
                             VerticalOptions = LayoutOptions.Center,
-                            FontSize = 14,
-                            FontFamily = AppFonts.Game,
+                            FontSize = 14 * AppFonts.GameAdjustSize,
+                            FontFamily = AppFonts.GameAutoselect,
                             TextColor = Colors.White,
                         }
                     },

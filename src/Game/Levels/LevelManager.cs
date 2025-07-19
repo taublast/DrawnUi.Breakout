@@ -51,7 +51,7 @@
         /// <summary>
         /// Maximum rows in layout
         /// </summary>
-        public int MaxRows { get; set; } = 15;
+        public int MaxRows { get; set; } = BreakoutGame.MAX_BRICKS_ROWS;
 
         /// <summary>
         /// Horizontal spacing between bricks
@@ -396,30 +396,63 @@
 
 
         /// <summary>
+        /// Normalizes brick positions to ensure they start from column 0 (left-aligned)
+        /// </summary>
+        private void NormalizePositions(List<BrickPosition> positions)
+        {
+            if (positions == null || positions.Count == 0)
+                return;
+
+            float minColumn = positions.Min(p => p.Column);
+
+            if (minColumn != 0)
+            {
+                float offset = -minColumn;
+                foreach (var position in positions)
+                {
+                    position.Column += offset;
+                }
+            }
+        }
+
+        /// <summary>
         /// Generates formation based on specified type
         /// </summary>
         private List<BrickPosition> GenerateFormation(FormationType formation, int columns, int rows)
         {
+            List<BrickPosition> positions;
+
             switch (formation)
             {
-            case FormationType.Pyramid:
-            return GeneratePyramidFormation(columns, rows);
-            case FormationType.Arch:
-            return GenerateArchFormation(columns, rows);
-            case FormationType.Diamond:
-            return GenerateDiamondFormation(columns, rows);
-            case FormationType.Zigzag:
-            return GenerateZigzagFormation(columns, rows);
-            case FormationType.Spiral:
-            return GenerateSpiralFormation(columns, rows);
-            case FormationType.Organic:
-            return GenerateOrganicFormation(columns, rows);
-            case FormationType.Wave:
-            return GenerateWaveFormation(columns, rows);
-            case FormationType.Grid:
-            default:
-            return GenerateGridFormation(columns, rows);
+                case FormationType.Pyramid:
+                    positions = GeneratePyramidFormation(columns, rows);
+                    break;
+                case FormationType.Arch:
+                    positions = GenerateArchFormation(columns, rows);
+                    break;
+                case FormationType.Diamond:
+                    positions = GenerateDiamondFormation(columns, rows);
+                    break;
+                case FormationType.Zigzag:
+                    positions = GenerateZigzagFormation(columns, rows);
+                    break;
+                //case FormationType.Spiral:
+                //    positions = GenerateSpiralFormation(columns, rows);
+                //    break;
+                case FormationType.Organic:
+                    positions = GenerateOrganicFormation(columns, rows);
+                    break;
+                case FormationType.Wave:
+                    positions = GenerateWaveFormation(columns, rows);
+                    break;
+                case FormationType.Grid:
+                default:
+                    positions = GenerateGridFormation(columns, rows);
+                    break;
             }
+
+            NormalizePositions(positions);
+            return positions;
         }
 
         #endregion
@@ -646,11 +679,11 @@
             // Number of spiral turns
             int turns = Math.Min(columns, rows) / 4;
 
-            // Brick interval along the spiral
-            float interval = 0.5f;
+            // Use consistent step size instead of decreasing interval
+            float stepSize = 0.3f;
 
             // Generate the spiral
-            for (float t = 0; t < turns * 2 * Math.PI; t += interval / (1 + t))
+            for (float t = 0; t < turns * 2 * Math.PI; t += stepSize)
             {
                 // Calculate spiral radius (grows with angle)
                 float radius = t / (2 * (float)Math.PI) * 2;

@@ -41,8 +41,9 @@ namespace Breakout.Game
         public const float BALL_SPEED = 375f;
         public const float PADDLE_SPEED = 475;
         public const float PADDLE_WIDTH = 80;
-        public const int MAX_BRICKS = 100;
         public const int MAX_BRICKS_COLUMNS = 8;
+        public const int MAX_BRICKS_ROWS = 15;
+        public const int MAX_BRICKS = MAX_BRICKS_COLUMNS * MAX_BRICKS_ROWS + 1;
         public const int MIN_BRICKS_ROWS = 3;
         public const float SPACING_BRICKS = 3f;
         public const float BRICKS_SIDE_MARGIN = 16f;
@@ -246,7 +247,10 @@ namespace Breakout.Game
                     return brick;
                 }
             }
-
+            else
+            {
+                Super.Log("[FATAL] Out of bricks in the pool, check what you done wrong!!!");
+            }
             return null;
         }
 
@@ -485,7 +489,8 @@ namespace Breakout.Game
             BricksLeftToBreak = LevelManager.CountBreakableBricks(brickPositions);
 
             // Calculate brick dimensions based on columns and rows
-            int columns = brickPositions.Max(p => (int)p.Column) + 1;
+            int columns = brickPositions.Select(p => (int)p.Column).Distinct().Count();
+
             float margin = SPACING_BRICKS;
             float totalSpacing = margin * (columns + 1);
             float availableWidth = (float)Width - totalSpacing - BRICKS_SIDE_MARGIN * 2;
@@ -516,6 +521,10 @@ namespace Breakout.Game
                 if (brick != null) 
                 {
                     BrickPresets.ApplyPreset(brick, presetId);
+                }
+                else
+                {
+                    var stop = 1;
                 }
             }
 
