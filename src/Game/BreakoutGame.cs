@@ -35,7 +35,7 @@ namespace Breakout.Game
         public const int DEMO_MAXLVL = 3;
 
         public const int MAX_POWERUPS = 12;
-        public const int MAX_PADDLE_BULLETS = 8;
+        public const int MAX_PADDLE_BULLETS = 64;
 
         /// <summary>
         /// For long running profiling
@@ -79,7 +79,7 @@ namespace Breakout.Game
                 _ = InitializeAudioAsync();
             }
 
-            _aiController = new AIPaddleController(this, AIDifficulty.Hard);
+            _aiController = new AIPaddleController(this, AIDifficulty.Perfect);
 
             //BackgroundColor = AmstradColors.DarkBlue;
 
@@ -165,6 +165,12 @@ namespace Breakout.Game
             for (int i = 0; i < MAX_POWERUPS; i++)
             {
                 AddToPoolPowerupSprite();
+            }
+
+            // Pool paddle bullets for reuse
+            for (int i = 0; i < MAX_PADDLE_BULLETS; i++)
+            {
+                AddToPoolPaddleBulletSprite();
             }
 
             // Set initial timestamp
@@ -675,6 +681,13 @@ namespace Breakout.Game
             PowerupsPool.Return(powerup);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        void AddToPoolPaddleBulletSprite()
+        {
+            var bullet = BulletSprite.Create();
+            PaddleBulletsPool.Return(bullet);
+        }
+
         private int _level = 1;
 
         public int Level
@@ -739,10 +752,10 @@ namespace Breakout.Game
 
             public T Get()
             {
-                var sprite = Pool.Values.FirstOrDefault();
-                if (sprite != null && Pool.Remove(sprite.Uid))
+                var item = Pool.Values.FirstOrDefault();
+                if (item != null && Pool.Remove(item.Uid))
                 {
-                    return sprite;
+                    return item;
                 }
                 return default;
             }
@@ -763,7 +776,7 @@ namespace Breakout.Game
         // Pools for bricks (reusable sprites)
         private ReusableSpritePool<BrickSprite> BricksPool = new(MAX_BRICKS);
         private ReusableSpritePool<PowerupSprite> PowerupsPool = new(MAX_POWERUPS);
-        private ReusableSpritePool<PaddleBulletSprite> PaddleBulletsPool = new(MAX_PADDLE_BULLETS);
+        private ReusableSpritePool<BulletSprite> PaddleBulletsPool = new(MAX_PADDLE_BULLETS);
 
         private Queue<SkiaControl> _spritesToBeRemovedLater = new();
         private object _lockSpritesToBeRemovedLater = new();
@@ -1017,7 +1030,7 @@ namespace Breakout.Game
             RemoveReusable(brick);
         }
 
-        void CollideBulletAndBrick(PaddleBulletSprite bullet, BrickSprite brick)
+        void CollideBulletAndBrick(BulletSprite bullet, BrickSprite brick)
         {
             // Remove the bullet
             RemoveReusable(bullet);
@@ -1288,7 +1301,7 @@ namespace Breakout.Game
                     }
                     else if (Paddle.Powerup == PowerupType.Destroyer)
                     {
-                        // todo :)
+                        FirePaddleBullet();
                     }
                 }
             }
@@ -1567,7 +1580,7 @@ namespace Breakout.Game
                 PowerupsPool.Return(powerup);
             }
             
-            if (sprite is PaddleBulletSprite paddleBullet)
+            if (sprite is BulletSprite paddleBullet)
             {
                 PaddleBulletsPool.Return(paddleBullet);
             }
@@ -1631,6 +1644,10 @@ namespace Breakout.Game
                         powerup.ResetAnimationState();
                         _spritesToBeAdded.Add(powerup);
                     }
+                    else
+                    {
+                        PowerupsPool.Return(powerup);
+                    }
                 }
             }
         }
@@ -1657,17 +1674,17 @@ namespace Breakout.Game
             {
                 case PowerupType.Destroyer:
                     paddle.Powerup = PowerupType.Destroyer;
-                    paddle.PowerupDuration = 10.0f; // 10 seconds
+                    paddle.PowerupDuration = 30.0f; // 10 seconds
                     break;
                 
                 case PowerupType.ExpandPaddle:
                     paddle.Powerup = PowerupType.ExpandPaddle;
-                    paddle.PowerupDuration = 15.0f; // 15 seconds
+                    paddle.PowerupDuration = 10.0f; // 15 seconds
                     break;
                 
                 case PowerupType.StickyBall:
                     paddle.Powerup = PowerupType.StickyBall;
-                    paddle.PowerupDuration = 20.0f; // 20 seconds
+                    paddle.PowerupDuration = 10.0f; // 20 seconds
                     break;
                 
                 case PowerupType.SlowBall:
@@ -1683,22 +1700,24 @@ namespace Breakout.Game
                     break;
                 
                 case PowerupType.MultiBall:
-                    // TODO: Implement multi-ball later
+                    // TODO: Implement multi-ball muuch later
                     break;
             }
+
+            Debug.WriteLine($"POWERUP! {powerup.Type}");
             
             // Apply visual changes
             paddle.ApplyPowerup(paddle.Powerup);
         }
 
-        private bool DetectBulletCollisionsWithRaycast(PaddleBulletSprite bullet, float deltaSeconds)
+        private bool DetectBulletCollisionsWithRaycast(BulletSprite bullet, float deltaSeconds)
         {
             // Calculate bullet movement
             Vector2 bulletPosition = new Vector2((float)bullet.Left + (float)bullet.WidthRequest / 2, 
                                                 (float)bullet.Top + (float)bullet.HeightRequest / 2);
             Vector2 bulletDirection = new Vector2(0, -1); // Moving up
             float bulletRadius = (float)bullet.WidthRequest / 2;
-            float bulletSpeed = PaddleBulletSprite.Speed * bullet.SpeedRatio;
+            float bulletSpeed = BulletSprite.Speed * bullet.SpeedRatio;
             float maxDistance = bulletSpeed * deltaSeconds;
 
             // Collect brick targets
@@ -1729,6 +1748,25 @@ namespace Breakout.Game
             }
 
             return false;
+        }
+
+        void FirePaddleBullet()
+        {
+            if (PaddleBulletsPool.Count > 0)
+            {
+                var bullet = PaddleBulletsPool.Get();
+                if (bullet != null)
+                {
+                    bullet.IsActive = true;
+                    
+                    // Position bullet at center of paddle, above it
+                    bullet.Left = Paddle.Left + (Paddle.WidthRequest - bullet.WidthRequest) / 2;
+                    bullet.Top = Paddle.Top - bullet.HeightRequest;
+                    
+                    bullet.ResetAnimationState();
+                    _spritesToBeAdded.Add(bullet);
+                }
+            }
         }
         #endregion
     }

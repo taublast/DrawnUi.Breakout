@@ -19,6 +19,8 @@ namespace Breakout.Game.Ai
         private GameKey _lastMovementKey = GameKey.Stop;
         private float _idleWanderTimer = 0;
         private float _idleWanderInterval = 0.8f;
+        private float _shootingTimer = 0;
+        private float _shootingInterval = 0.3f; // Shoot every 300ms when in destroyer mode
 
         // AI characteristics
         private readonly float _reactionTimeMin;
@@ -56,15 +58,15 @@ namespace Breakout.Game.Ai
             break;
 
             case AIDifficulty.Hard:
-            _reactionTimeMin = 0.15f;
-            _reactionTimeMax = 0.4f;
-            _accuracy = 0.9f;
-            _mistakeProbability = 0.1f;
-            _mistakeDurationMin = 0.2f;
-            _mistakeDurationMax = 0.5f;
-            _decisionChangeInterval = 2.0f;
-            _serveDelay = 0.8f;
-            _movementSmoothingTime = 0.1f;
+            _reactionTimeMin = 0.05f;  // Much faster reaction
+            _reactionTimeMax = 0.15f;  // Reduced from 0.4f
+            _accuracy = 0.98f;         // Increased from 0.9f
+            _mistakeProbability = 0.02f; // Reduced from 0.1f
+            _mistakeDurationMin = 0.1f;  // Reduced from 0.2f
+            _mistakeDurationMax = 0.2f;  // Reduced from 0.5f
+            _decisionChangeInterval = 3.0f; // Increased from 2.0f
+            _serveDelay = 0.5f;        // Reduced from 0.8f
+            _movementSmoothingTime = 0.05f; // Reduced from 0.1f
             break;
 
             case AIDifficulty.Medium:
@@ -78,6 +80,18 @@ namespace Breakout.Game.Ai
             _decisionChangeInterval = 1.5f;
             _serveDelay = 1.5f;
             _movementSmoothingTime = 0.2f;
+            break;
+
+            case AIDifficulty.Perfect:
+            _reactionTimeMin = 0.01f;
+            _reactionTimeMax = 0.02f;
+            _accuracy = 1.0f;          // Perfect accuracy
+            _mistakeProbability = 0.0f; // No mistakes
+            _mistakeDurationMin = 0.0f;
+            _mistakeDurationMax = 0.0f;
+            _decisionChangeInterval = 5.0f;
+            _serveDelay = 0.2f;
+            _movementSmoothingTime = 0.01f;
             break;
             }
 
@@ -99,6 +113,7 @@ namespace Breakout.Game.Ai
             _isMoving = false;
             _lastMovementKey = GameKey.Stop;
             _idleWanderTimer = 0;
+            _shootingTimer = 0;
         }
 
         /// <summary>
@@ -107,31 +122,35 @@ namespace Breakout.Game.Ai
         /// <param name="deltaTime">Time since last frame</param>
         public void UpdateAI(float deltaTime)
         {
+            // Update shooting timer for destroyer mode
+            _shootingTimer -= deltaTime;
+
+            // If paddle has destroyer powerup, shoot at bricks
+            if (_game.Paddle.Powerup == PowerupType.Destroyer && _shootingTimer <= 0)
+            {
+                _game.ApplyGameKey(GameKey.Fire);
+                _shootingTimer = _shootingInterval + _random.NextSingle() * 0.2f;
+            }
+
             // If the ball isn't moving, handle serving
             if (!_game.Ball.IsMoving)
             {
-                // Move a bit before serving to look more human-like
                 IdleWandering(deltaTime);
-
-                // Check if it's time to serve
                 _decisionChangeTimer -= deltaTime;
                 if (_decisionChangeTimer <= 0 && _canFire)
                 {
                     _game.ApplyGameKey(GameKey.Fire);
-                    _canFire = false; // Prevent multiple fire inputs
+                    _canFire = false;
                     _decisionChangeTimer = _decisionChangeInterval;
                 }
-
                 return;
             }
 
-            // Reset _canFire when ball is moving (for next time)
             _canFire = true;
-
-            // Update timers
             _reactionTimer -= deltaTime;
             _movementSmoothingTimer -= deltaTime;
 
+            // Handle mistakes
             if (_makingMistake)
             {
                 _mistakeTimer -= deltaTime;
@@ -213,72 +232,78 @@ namespace Breakout.Game.Ai
                 return;
             }
 
-            // If still in reaction delay, don't update target
-            if (_reactionTimer > 0)
+            // Check ball direction
+            bool ballIsComingDown = MathF.Sin(_game.Ball.Angle) > 0;
+            
+            if (ballIsComingDown)
             {
-                return;
-            }
-
-            // Only predict if ball is moving downward
-            if (MathF.Sin(_game.Ball.Angle) > 0)
-            {
-                // Calculate where ball will intersect with paddle Y position
-                var ballX = _game.Ball.Left;
-                var ballY = _game.Ball.Top;
-                var paddleY = _game.Paddle.Top;
-
-                // Calculate ball trajectory - note both ball and paddle are centered so Left=0 means center
-                var ballVelX = MathF.Cos(_game.Ball.Angle) * BreakoutGame.BALL_SPEED * _game.Ball.SpeedRatio;
-                var ballVelY = MathF.Sin(_game.Ball.Angle) * BreakoutGame.BALL_SPEED * _game.Ball.SpeedRatio;
-
-                // Time until ball reaches paddle height
-                var timeToIntersect = (paddleY - ballY) / ballVelY;
-
-                if (timeToIntersect > 0)
+                // BALL IS COMING DOWN - PRIORITIZE BALL, but try powerups if safe
+                if (_reactionTimer <= 0)
                 {
-                    // Predicted X position when ball reaches paddle
-                    var predictedX = ballX + ballVelX * timeToIntersect;
+                    // Calculate ball trajectory first
+                    var ballX = _game.Ball.Left;
+                    var ballY = _game.Ball.Top;
+                    var paddleY = _game.Paddle.Top;
 
-                    // Add some inaccuracy - intentionally larger in easy/medium difficulty
-                    var maxError = (1 - _accuracy) * _game.Paddle.Width;
-                    var error = (_random.NextSingle() * 2 - 1) * maxError;
+                    var ballVelX = MathF.Cos(_game.Ball.Angle) * BreakoutGame.BALL_SPEED * _game.Ball.SpeedRatio;
+                    var ballVelY = MathF.Sin(_game.Ball.Angle) * BreakoutGame.BALL_SPEED * _game.Ball.SpeedRatio;
 
-                    // Handle wall bounces for prediction
-                    var halfGameWidth = _game.Width / 2;
+                    var timeToIntersect = (paddleY - ballY) / ballVelY;
 
-                    while (predictedX < -halfGameWidth || predictedX > halfGameWidth)
+                    if (timeToIntersect > 0)
                     {
-                        if (predictedX < -halfGameWidth)
-                            predictedX = -halfGameWidth - (predictedX + halfGameWidth);
-                        else
-                            predictedX = halfGameWidth - (predictedX - halfGameWidth);
+                        var predictedX = ballX + ballVelX * timeToIntersect;
+                        var accuracyBonus = _game.Paddle.Powerup == PowerupType.Destroyer ? 0.1f : 0f;
+                        var effectiveAccuracy = Math.Min(1.0f, _accuracy + accuracyBonus);
+                        var maxError = (1 - effectiveAccuracy) * _game.Paddle.Width;
+                        var error = (_random.NextSingle() * 2 - 1) * maxError;
+
+                        // Handle wall bounces
+                        var halfGameWidth = _game.Width / 2;
+                        while (predictedX < -halfGameWidth || predictedX > halfGameWidth)
+                        {
+                            if (predictedX < -halfGameWidth)
+                                predictedX = -halfGameWidth - (predictedX + halfGameWidth);
+                            else
+                                predictedX = halfGameWidth - (predictedX - halfGameWidth);
+                        }
+
+                        _targetX = predictedX + error;
+                        _reactionTimer = GetRandomReactionTime();
+
+                        // Check if we have time to grab a powerup on the way
+                        if (timeToIntersect > 2.0f && CheckForPowerupsToCollect())
+                        {
+                            // Go for powerup if we have plenty of time
+                            return;
+                        }
+                        
+                        // Otherwise focus on ball
+                        MovePaddleTowardTarget();
+                        return;
                     }
-
-                    // Target position with accuracy factor
-                    _targetX = predictedX + error;
-                    _reactionTimer = GetRandomReactionTime();
-
-                    // Move paddle toward target
-                    MovePaddleTowardTarget();
                 }
             }
             else
             {
-                // Ball moving upward - occasionally adjust position to center
+                // BALL IS FLYING UP - SAFE! PRIORITIZE POWERUPS!
+                if (CheckForPowerupsToCollect())
+                {
+                    return; // Going for powerup
+                }
+                
+                // No powerups, do some idle movement
                 if (_movementSmoothingTimer <= 0)
                 {
                     if (Math.Abs(_game.Paddle.Left) > _game.Paddle.Width && _random.NextDouble() < 0.2)
                     {
-                        // Ease back toward center if far from center
                         _targetX = _game.Paddle.Left > 0 ? -_game.Paddle.Width : _game.Paddle.Width;
                         MovePaddleTowardTarget();
                     }
                     else if (_isMoving && _random.NextDouble() < 0.3)
                     {
-                        // Sometimes just stop moving
                         StopMovement();
                     }
-
                     _movementSmoothingTimer = _movementSmoothingTime;
                 }
             }
@@ -400,6 +425,70 @@ namespace Breakout.Game.Ai
         private float GetRandomReactionTime()
         {
             return _random.NextSingle() * (_reactionTimeMax - _reactionTimeMin) + _reactionTimeMin;
+        }
+
+        /// <summary>
+        /// Checks for falling powerups and decides whether to collect them
+        /// </summary>
+        private bool CheckForPowerupsToCollect()
+        {
+            PowerupSprite targetPowerup = null;
+            double closestDistance = double.MaxValue;
+
+            // Find ANY powerup that can be reached
+            foreach (var view in _game.GameField.Views)
+            {
+                if (view is PowerupSprite powerup && powerup.IsActive)
+                {
+                    var distance = Math.Abs(powerup.Left - _game.Paddle.Left);
+                    var timeToReachPaddle = (powerup.Top - _game.Paddle.Top) / PowerupSprite.FallSpeed;
+                    
+                    // Go for ANY powerup that's reachable - MUCH MORE AGGRESSIVE
+                    if (timeToReachPaddle > 0.1f && distance < closestDistance)
+                    {
+                        closestDistance = distance;
+                        targetPowerup = powerup;
+                    }
+                }
+            }
+
+            // If we found any powerup, go for it aggressively
+            if (targetPowerup != null)
+            {
+                _targetX = targetPowerup.Left;
+                MovePaddleTowardTarget();
+                return true; // Signal that we're going for a powerup
+            }
+
+            return false; // No powerups to collect
+        }
+
+        /// <summary>
+        /// Determines if a powerup type is worth collecting
+        /// </summary>
+        private bool IsUsefulPowerup(PowerupType type)
+        {
+            switch (type)
+            {
+                case PowerupType.Destroyer:
+                    return true; // Always useful for shooting
+                case PowerupType.ExpandPaddle:
+                    return _game.Paddle.Powerup != PowerupType.ExpandPaddle; // Don't collect if already have it
+                case PowerupType.StickyBall:
+                    return true; // Useful for control
+                case PowerupType.ExtraLife:
+                    return true; // Always useful
+                case PowerupType.SlowBall:
+                    return _game.Ball.SpeedRatio > 1.0f; // Only if ball is fast
+                case PowerupType.FastBall:
+                    return false; // AI doesn't want faster ball
+                case PowerupType.ShrinkPaddle:
+                    return false; // Never want this
+                case PowerupType.MultiBall:
+                    return true; // Could be useful
+                default:
+                    return false;
+            }
         }
     }
 }

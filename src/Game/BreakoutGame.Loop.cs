@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Numerics;
 
 namespace Breakout.Game
@@ -218,7 +219,7 @@ namespace Breakout.Game
                             }
                         }
                     }
-                    else if (x is PaddleBulletSprite bullet && bullet.IsActive)
+                    else if (x is BulletSprite bullet && bullet.IsActive)
                     {
                         bullet.UpdateState(LastFrameTimeNanos);
 
@@ -268,7 +269,7 @@ namespace Breakout.Game
                             // Move bullet up if still active
                             if (bullet.IsActive && !bulletHit)
                             {
-                                bullet.Top -= PaddleBulletSprite.Speed * cappedDelta;
+                                bullet.Top -= BulletSprite.Speed * cappedDelta;
                             }
                         }
                     }

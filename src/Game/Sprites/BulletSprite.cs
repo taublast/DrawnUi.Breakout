@@ -2,13 +2,13 @@ using SkiaSharp;
 
 namespace Breakout.Game;
 
-public class PaddleBulletSprite : SkiaShape, IWithHitBox, IReusableSprite
+public class BulletSprite : SkiaShape, IWithHitBox, IReusableSprite
 {
     public static float Speed = 400f;
 
-    public static PaddleBulletSprite Create()
+    public static BulletSprite Create()
     {
-        var bullet = new PaddleBulletSprite()
+        var bullet = new BulletSprite()
         {
             HeightRequest = 12,
             WidthRequest = 3,
@@ -18,8 +18,10 @@ public class PaddleBulletSprite : SkiaShape, IWithHitBox, IReusableSprite
             StrokeWidth = 1,
             UseCache = SkiaCacheType.Operations,
             SpeedRatio = 1,
-            IsActive = false,
-            ZIndex = 2
+            ZIndex = 2,
+            //same as player
+            HorizontalOptions = LayoutOptions.Center,
+            VerticalOptions = LayoutOptions.End,
         };
         return bullet;
     }

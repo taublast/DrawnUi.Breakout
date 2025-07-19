@@ -7,5 +7,6 @@ public enum AIDifficulty
 {
     Easy,
     Medium,
-    Hard
+    Hard,
+    Perfect  // For testing - never misses
 }

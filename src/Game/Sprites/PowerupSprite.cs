@@ -60,12 +60,12 @@ public class PowerupSprite : SkiaShape, IWithHitBox, IReusableSprite
                 break;
             case PowerupType.ExpandPaddle:
                 _letterLabel.Text = "E";
-                BackgroundColor = Colors.Green;
+                BackgroundColor = Colors.BlueViolet;
                 _letterLabel.TextColor = WhiteColor;
                 break;
             case PowerupType.StickyBall:
                 _letterLabel.Text = "S";
-                BackgroundColor = Colors.Blue;
+                BackgroundColor = Colors.Cyan;
                 _letterLabel.TextColor = WhiteColor;
                 break;
             case PowerupType.ShrinkPaddle:
@@ -75,12 +75,12 @@ public class PowerupSprite : SkiaShape, IWithHitBox, IReusableSprite
                 break;
             case PowerupType.SlowBall:
                 _letterLabel.Text = "L";
-                BackgroundColor = Colors.Cyan;
+                BackgroundColor = Colors.White;
                 _letterLabel.TextColor = BlackColor;
                 break;
             case PowerupType.FastBall:
                 _letterLabel.Text = "F";
-                BackgroundColor = Colors.Yellow;
+                BackgroundColor = Colors.CornflowerBlue;
                 _letterLabel.TextColor = BlackColor;
                 break;
             case PowerupType.MultiBall:
@@ -90,13 +90,13 @@ public class PowerupSprite : SkiaShape, IWithHitBox, IReusableSprite
                 break;
             case PowerupType.ExtraLife:
                 _letterLabel.Text = "1";
-                BackgroundColor = Colors.Gold;
+                BackgroundColor = Colors.GreenYellow;
                 _letterLabel.TextColor = BlackColor;
                 break;
             default:
                 _letterLabel.Text = "?";
-                BackgroundColor = Colors.Purple;
-                _letterLabel.TextColor = WhiteColor;
+                BackgroundColor = Colors.White;
+                _letterLabel.TextColor = BlackColor;
                 break;
         }
     }
