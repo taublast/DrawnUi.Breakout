@@ -5,13 +5,13 @@ namespace Breakout.Game;
 public class PaddleSprite : SkiaShape, IWithHitBox, IReusableSprite
 {
     public static float Speed = BreakoutGame.PADDLE_SPEED;
-    public float Angle { get; set; }
 
     Color ColorA = Colors.DarkOrange;
     private Color ColorB = AmstradColors.BrightGreen;
 
     public PaddleSprite()
     {
+        UseCache = SkiaCacheType.GPU;
         HeightRequest = 16;
         CornerRadius = 8;
         BackgroundColor = ColorA;
@@ -22,7 +22,6 @@ public class PaddleSprite : SkiaShape, IWithHitBox, IReusableSprite
         StrokeWidth = 2;
         SpeedRatio = 1;
         IsActive = true;
-        UseCache = SkiaCacheType.GPU;
         BevelType = BevelType.Bevel;
         Bevel = new SkiaBevel()
         {
@@ -32,30 +31,32 @@ public class PaddleSprite : SkiaShape, IWithHitBox, IReusableSprite
             Opacity = 0.33,
         };
         Children = new List<SkiaControl>()
-        {
-            new SkiaShape()
             {
-                CornerRadius = 2,
-                HorizontalOptions = LayoutOptions.Fill,
-                VerticalOptions = LayoutOptions.Fill,
-                BackgroundColor = ColorB,
-                Margin = new(14, 3),
-                BevelType = BevelType.Emboss,
-                Bevel = new SkiaBevel()
+                new SkiaShape()
                 {
-                    Depth = 2,
-                    LightColor = Colors.White,
-                    ShadowColor = Color.Parse("#333333"),
-                    Opacity = 0.33,
+                    CornerRadius = 2,
+                    HorizontalOptions = LayoutOptions.Fill,
+                    VerticalOptions = LayoutOptions.Fill,
+                    BackgroundColor = ColorB,
+                    Margin = new(14, 3),
+                    BevelType = BevelType.Emboss,
+                    Bevel = new SkiaBevel()
+                    {
+                        Depth = 2,
+                        LightColor = Colors.White,
+                        ShadowColor = Color.Parse("#333333"),
+                        Opacity = 0.33,
+                    }
                 }
             }
-        }
-        ;
+            ;
 
         ApplyPowerup(PowerupType.None);
 
         //Powerup = PowerupType.StickyBall;
     }
+
+    public float Angle { get; set; }
 
     private PowerupType _powerup;
 

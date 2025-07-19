@@ -160,7 +160,7 @@
                     var preset = BrickPresets.GetPreset(position.PresetId);
 
                     // Count as breakable if not undestructible and not special
-                    if (preset != null && !preset.Undestructible && !preset.IsSpecial)
+                    if (preset != null && !preset.Undestructible)
                     {
                         breakableBricks++;
                     }

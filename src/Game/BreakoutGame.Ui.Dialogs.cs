@@ -171,6 +171,10 @@ namespace Breakout.Game
 
         /// <summary>
         /// Creates the content for the options dialog
+        ///
+        ///
+        ///
+        /// 
         /// </summary>
         private SkiaControl CreateOptionsDialogContent()
         {
@@ -210,6 +214,7 @@ namespace Breakout.Game
                                 Text = ResStrings.Language.ToUpperInvariant(),
                                 FontFamily = AppFonts.Default,
                                 FontSize = 18,
+
                                 TextColor = AmstradColors.White,
                                 VerticalOptions = LayoutOptions.Center,
                                 HorizontalOptions = LayoutOptions.Start,

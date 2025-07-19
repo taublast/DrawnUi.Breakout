@@ -29,7 +29,6 @@ namespace Breakout.Game
                 var ballRect = Ball.HitBox;
 
                 bool ballCollided = false;
-                int bricksChecked = 0;
 
                 // collision detection
                 foreach (var x in this.GameField.Views.ToList())
@@ -44,15 +43,6 @@ namespace Breakout.Game
                             {
                                 // Use raycast collision detection
                                 ballCollided = DetectCollisionsWithRaycast(ball, cappedDelta);
-
-                                // Count bricks for level completion check
-                                foreach (var view in GameField.Views)
-                                {
-                                    if (view is BrickSprite brick && brick.IsActive)
-                                    {
-                                        bricksChecked++;
-                                    }
-                                }
                             }
                             else
                             {
@@ -61,31 +51,31 @@ namespace Breakout.Game
                                 {
                                     foreach (var view in GameField.Views)
                                     {
-                                        if (view is BrickSprite brick && brick.IsActive)
+                                        if (view == BricksContainer)
                                         {
-                                            bricksChecked++;
-
-                                            //calculate hitbox
-                                            brick.UpdateState(LastFrameTimeNanos);
-
-                                            if (ballRect.IntersectsWith(brick.HitBox, out var overlap))
+                                            foreach (var child in BricksContainer.Views)
                                             {
-                                                CollideBallAndBrick(brick, ball, overlap);
-                                                ballCollided = true;
-                                                break;
+                                                if (child is BrickSprite brick && brick.IsActive)
+                                                {
+                                                    //calculate hitbox
+                                                    brick.UpdateState(LastFrameTimeNanos);
+
+                                                    if (ballRect.IntersectsWith(brick.HitBox, out var overlap))
+                                                    {
+                                                        CollideBallAndBrick(brick, ball, overlap);
+                                                        ballCollided = true;
+                                                        break;
+                                                    }
+                                                }
                                             }
                                         }
                                     }
                                 }
                             }
                         }
-                        else
-                        {
-                            bricksChecked++;
-                        }
 
                         //maybe GameState would change after all of that
-                        if (BricksLeft == 0)
+                        if (BricksLeftToBreak == 0)
                         {
                             break;
                         }
@@ -191,7 +181,7 @@ namespace Breakout.Game
                 }
 
                 if ((State == GameState.Playing || State == GameState.DemoPlay) &&
-                    (bricksChecked < 1 || BricksLeft == 0))
+                    (BricksLeftToBreak == 0))
                 {
                     _levelCompletionPending++;
 
@@ -229,7 +219,14 @@ namespace Breakout.Game
             {
                 foreach (var add in _spritesToBeAdded)
                 {
-                    GameField.AddSubView(add);
+                    if (add is BrickSprite brick)
+                    {
+                        BricksContainer.AddSubView(brick);
+                    }
+                    else
+                    {
+                        GameField.AddSubView(add);
+                    }
                 }
 
                 _spritesToBeAdded.Clear();

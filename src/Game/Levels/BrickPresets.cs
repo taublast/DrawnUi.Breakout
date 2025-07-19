@@ -158,13 +158,17 @@ public static class BrickPresets
     /// </summary>
     public static void ApplyPreset(BrickSprite brick, string presetId)
     {
-        if (Presets.TryGetValue(presetId, out var preset))
+        if (brick != null)
         {
-            brick.BackgroundColor = preset.BackgroundColor;
-            brick.SupplementaryHitsToDestroy = preset.SupplementaryHitsToDestroy;
-            brick.Undestructible = preset.Undestructible;
+            brick.ResetAnimationState();
+            if (Presets.TryGetValue(presetId, out var preset))
+            {
+                brick.BackgroundColor = preset.BackgroundColor;
+                brick.SupplementaryHitsToDestroy = preset.SupplementaryHitsToDestroy;
+                brick.Undestructible = preset.Undestructible;
 
-            // Additional properties could be set here if BrickSprite supports them
+                // Additional properties could be set here if BrickSprite supports them
+            }
         }
     }
 

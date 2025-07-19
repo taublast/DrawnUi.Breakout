@@ -8,6 +8,7 @@ public class BrickSprite : SkiaShape, IWithHitBox, IReusableSprite
     {
         return new BrickSprite
         {
+            UseCache = SkiaCacheType.Image,
             BackgroundColor = Colors.Red,
             CornerRadius = 6,
             WidthRequest = 50,
@@ -22,9 +23,13 @@ public class BrickSprite : SkiaShape, IWithHitBox, IReusableSprite
                 ShadowColor = Color.Parse("#333333"),
                 Opacity = 0.33
             },
-            UseCache = SkiaCacheType.Image,
             ZIndex = 4
         };
+    }
+
+    public override void OnWillDisposeWithChildren()
+    {
+        base.OnWillDisposeWithChildren();
     }
 
     //public Guid Uid { get; } = Guid.NewGuid();

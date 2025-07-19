@@ -11,6 +11,7 @@ namespace Breakout.Game
         public BallSprite Ball;
         public PaddleSprite Paddle;
         protected SkiaLayout GameField;
+        private SkiaLayout BricksContainer;
 
         /// <summary>
         /// Need this when we change language
@@ -55,6 +56,15 @@ namespace Breakout.Game
                             //HeightRequest = 500,
                             Children =
                             {
+                                //we place brick inside one layer to check and draw one cache if unchanged
+                                new SkiaLayer()
+                                {
+                                    BackgroundColor = Color.Parse("#000000"),
+                                    HorizontalOptions = LayoutOptions.Center,
+                                    Margin = new(0,90,0,0),
+                                    UseCache = SkiaCacheType.ImageComposite
+                                }.Assign(out BricksContainer),
+
                                 new BallSprite()
                                 {
                                     ZIndex = 4

@@ -58,7 +58,7 @@ namespace Breakout.Game
         /// </summary>
         const bool CHEAT_INVULNERABLE = false;
 
-        public static bool USE_SOUND = true;
+        public static bool USE_SOUND = false;
 
         /// <summary>
         /// Compile-time flag to enable raycasting collision detection instead of AABB intersection
@@ -78,6 +78,11 @@ namespace Breakout.Game
         public BreakoutGame()
         {
             CreateUi();
+
+#if ANDROID
+            //prefer skipping frames than go smooth because this game is dynamic
+            MauiGame.FrameInterpolatorDisabled = true;
+#endif
 
             BindingContext = this;
 
@@ -213,6 +218,38 @@ namespace Breakout.Game
 
         #region ACTIONS
 
+        private BrickSprite AddBrickToContainer(string presetId, int col, int row,
+            float brickWidth, float brickHeight, float margin)
+        {
+            var preset = BrickPresets.Presets[presetId];
+            if (BricksPool.Count > 0)
+            {
+                var brick = BricksPool.Values.FirstOrDefault();
+                if (brick != null && BricksPool.Remove(brick.Uid))
+                {
+                    brick.IsActive = true;
+                    brick.WidthRequest = brickWidth;
+                    brick.HeightRequest = brickHeight;
+
+                    // Position relative to container (0,0)
+                    float xPos = col * (brickWidth + margin);
+                    float yPos = row * (brickHeight + margin);
+                    brick.Left = xPos;
+                    brick.Top = yPos;
+
+                    brick.BackgroundColor = preset.BackgroundColor;
+                    brick.SupplementaryHitsToDestroy = preset.SupplementaryHitsToDestroy;
+                    brick.Undestructible = preset.Undestructible;
+
+                    // Add to container instead of main field
+                    _spritesToBeAdded.Add(brick);
+                    return brick;
+                }
+            }
+
+            return null;
+        }
+
         private void AddBrick(string presetId, int col, int row,
             float brickWidth, float brickHeight, float margin, float offsetX, float offsetY)
         {
@@ -271,7 +308,7 @@ namespace Breakout.Game
         }
 
         public LevelManager LevelManager { get; set; }
-        public int BricksLeft { get; set; }
+        public int BricksLeftToBreak { get; set; }
 
         void LevelComplete()
         {
@@ -363,16 +400,7 @@ namespace Breakout.Game
 
             _levelCompletionPending = 0;
 
-            lock (_lockSpritesToBeRemovedLater)
-            {
-                foreach (var control in GameField.Views)
-                {
-                    if (control is BrickSprite)
-                    {
-                        _spritesToBeRemovedLater.Enqueue(control);
-                    }
-                }
-            }
+            ClearBricks();
 
             ProcessSpritesToBeRemoved();
 
@@ -454,7 +482,7 @@ namespace Breakout.Game
                 allowedPresets
             );
 
-            BricksLeft = LevelManager.CountBreakableBricks(brickPositions);
+            BricksLeftToBreak = LevelManager.CountBreakableBricks(brickPositions);
 
             // Calculate brick dimensions based on columns and rows
             int columns = brickPositions.Max(p => (int)p.Column) + 1;
@@ -464,31 +492,55 @@ namespace Breakout.Game
             float brickWidth = availableWidth / columns;
             float brickHeight = 20f; // Fixed brick height as in original code
 
-            float offsetBricksY = BRICKS_TOP_MARGIN;
+            // Calculate container dimensions
+            int maxRow = brickPositions.Max(p => (int)p.Row);
+            float containerWidth = columns * brickWidth + (columns - 1) * margin;
+            float containerHeight = (maxRow + 1) * brickHeight + maxRow * margin+1;
 
-            // Add bricks using the existing pool and AddBrick method
+            // Prepare BricksContainer
+            SetupBricksContainer(containerWidth, containerHeight);
+
+            // Create and setup BricksContainer
+            // Add bricks to container
             foreach (var position in brickPositions)
             {
-                // Use the row and column from position
                 int col = (int)position.Column;
                 int row = (int)position.Row;
                 string presetId = position.PresetId;
 
-                // Skip if no preset was assigned
                 if (string.IsNullOrEmpty(presetId))
                     continue;
 
+                var brick = AddBrickToContainer(presetId, col, row, brickWidth, brickHeight, margin);
 
-                // Use existing AddBrick method that handles pooling
-                AddBrick(presetId, col, row, brickWidth, brickHeight, margin, BRICKS_SIDE_MARGIN, offsetBricksY);
-
-                // Get the brick we just added (it should be the last one in _spritesToBeAdded)
-                if (_spritesToBeAdded.Count > 0 && _spritesToBeAdded[_spritesToBeAdded.Count - 1] is BrickSprite brick)
+                if (brick != null) 
                 {
-                    // Apply the preset to this brick
                     BrickPresets.ApplyPreset(brick, presetId);
                 }
             }
+
+            //// Add bricks using the existing pool and AddBrick method
+            //foreach (var position in brickPositions)
+            //{
+            //    // Use the row and column from position
+            //    int col = (int)position.Column;
+            //    int row = (int)position.Row;
+            //    string presetId = position.PresetId;
+
+            //    // Skip if no preset was assigned
+            //    if (string.IsNullOrEmpty(presetId))
+            //        continue;
+
+            //    // Use existing AddBrick method that handles pooling
+            //    AddBrick(presetId, col, row, brickWidth, brickHeight, margin, BRICKS_SIDE_MARGIN, offsetBricksY);
+
+            //    // Get the brick we just added (it should be the last one in _spritesToBeAdded)
+            //    if (_spritesToBeAdded.Count > 0 && _spritesToBeAdded[_spritesToBeAdded.Count - 1] is BrickSprite brick)
+            //    {
+            //        // Apply the preset to this brick
+            //        BrickPresets.ApplyPreset(brick, presetId);
+            //    }
+            //}
 
             levelReady = false;
 
@@ -504,6 +556,14 @@ namespace Breakout.Game
                 _moveLeft = false;
                 _moveRight = false;
             }
+        }
+
+        void SetupBricksContainer(float width, float height)
+        {
+            BricksContainer.ClearChildren(); //todo check they dont get disposed!
+
+            BricksContainer.WidthRequest = width;
+            BricksContainer.HeightRequest = height;
         }
 
         private bool levelReady;
@@ -565,6 +625,29 @@ namespace Breakout.Game
             StartLoop();
         }
 
+        void ClearBricks()
+        {
+            lock (_lockSpritesToBeRemovedLater)
+            {
+                foreach (var control in GameField.Views)
+                {
+                    if (control == BricksContainer)
+                    {
+                        foreach (var brick in BricksContainer.Views)
+                        {
+                            _spritesToBeRemovedLater.Enqueue(brick);
+                        }
+                    }
+                    else
+                        //old code without wrapper for bricks, should not hit, left for info
+                    if (control is BrickSprite)
+                    {
+                        _spritesToBeRemovedLater.Enqueue(control);
+                    }
+                }
+            }
+        }
+
         void RestartDemoMode()
         {
             // Restart demo mode from level 1 without showing any dialogs
@@ -572,17 +655,7 @@ namespace Breakout.Game
             Lives = LIVES;
             Level = 1;
 
-            // Clear all bricks
-            lock (_lockSpritesToBeRemovedLater)
-            {
-                foreach (var control in GameField.Views)
-                {
-                    if (control is BrickSprite)
-                    {
-                        _spritesToBeRemovedLater.Enqueue(control);
-                    }
-                }
-            }
+            ClearBricks();
 
             ProcessSpritesToBeRemoved();
 
@@ -606,17 +679,7 @@ namespace Breakout.Game
             Level = 1;
             State = GameState.Ready;
 
-            // Clear all bricks
-            lock (_lockSpritesToBeRemovedLater)
-            {
-                foreach (var control in GameField.Views)
-                {
-                    if (control is BrickSprite)
-                    {
-                        _spritesToBeRemovedLater.Enqueue(control);
-                    }
-                }
-            }
+            ClearBricks();
 
             ProcessSpritesToBeRemoved();
 
@@ -934,7 +997,7 @@ namespace Breakout.Game
 
         void RemoveBrick(BrickSprite brick)
         {
-            BricksLeft -= 1;
+            BricksLeftToBreak -= 1;
             RemoveReusable(brick);
         }
 
@@ -967,10 +1030,16 @@ namespace Breakout.Game
             // Add bricks
             foreach (var view in GameField.Views)
             {
-                if (view is BrickSprite brick && brick.IsActive)
+                if (view == BricksContainer)
                 {
-                    brick.UpdateState(LastFrameTimeNanos);
-                    collisionTargets.Add(brick);
+                    foreach (var child in BricksContainer.Views)
+                    {
+                        if (child is BrickSprite brick && brick.IsActive)
+                        {
+                            brick.UpdateState(LastFrameTimeNanos);
+                            collisionTargets.Add(brick);
+                        }
+                    }
                 }
             }
 
@@ -1321,6 +1390,7 @@ namespace Breakout.Game
             GestureEventProcessingInfo apply)
         {
             ISkiaGestureListener consumed = null;
+
             ISkiaGestureListener PassToChildren()
             {
                 return base.ProcessGestures(args, apply);
@@ -1332,7 +1402,7 @@ namespace Breakout.Game
             }
 
             consumed = PassToChildren();
-            if (consumed !=null && consumed != this)
+            if (consumed != null && consumed != this)
             {
                 return consumed;
             }
@@ -1446,7 +1516,15 @@ namespace Breakout.Game
                 BricksPool.TryAdd(enemy.Uid, enemy);
             }
 
-            GameField.RemoveSubView(sprite);
+            if (sprite is BrickSprite brick)
+            {
+                BricksContainer.RemoveSubView(brick);
+            }
+            else
+            {
+                GameField.RemoveSubView(sprite);
+            }
+
         }
 
         void ProcessSpritesToBeRemoved()
