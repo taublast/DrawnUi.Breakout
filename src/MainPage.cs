@@ -9,26 +9,17 @@ namespace Breakout.Game
 {
     public partial class MainPage
     {
-        [AutoGeneratePreview(false)]
-        public class RescalingCanvas : Canvas
+        public MainPage()
         {
-            public float GameScale { get; set; } = 1;
+            Instance = this;
 
-            protected override void Draw(DrawingContext context)
-            {
-                var wantedHeight = Breakout.Game.BreakoutGame.HEIGHT * context.Scale;
-                var wantedWidth = Breakout.Game.BreakoutGame.WIDTH * context.Scale;
-
-                var scaleWidth = this.DrawingRect.Width / wantedWidth;
-                var scaleHeight = this.DrawingRect.Height / wantedHeight;
-
-                GameScale = Math.Min(scaleWidth, scaleHeight);
-
-                context.Scale *= GameScale;
-
-                base.Draw(context);
-            }
+            AppLanguage.ApplySelected();
         }
+
+        /// <summary>
+        /// To change language of this one
+        /// </summary>
+        public static MainPage Instance;
 
         Canvas Canvas;
 
@@ -88,6 +79,28 @@ namespace Breakout.Game
 
             this.Content = Canvas;
         }
+
+        [AutoGeneratePreview(false)]
+        public class RescalingCanvas : Canvas
+        {
+            public float GameScale { get; set; } = 1;
+
+            protected override void Draw(DrawingContext context)
+            {
+                var wantedHeight = Breakout.Game.BreakoutGame.HEIGHT * context.Scale;
+                var wantedWidth = Breakout.Game.BreakoutGame.WIDTH * context.Scale;
+
+                var scaleWidth = this.DrawingRect.Width / wantedWidth;
+                var scaleHeight = this.DrawingRect.Height / wantedHeight;
+
+                GameScale = Math.Min(scaleWidth, scaleHeight);
+
+                context.Scale *= GameScale;
+
+                base.Draw(context);
+            }
+        }
+
     }
 
 

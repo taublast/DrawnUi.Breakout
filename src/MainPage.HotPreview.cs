@@ -91,31 +91,31 @@ namespace Breakout.Game
         #region LANGUAGE
 
         [Preview]
-        public static void Language_EN() => MainPage.RestartWithLanguage("en");
+        public static void Language_EN() => AppLanguage.RestartWith("en");
 
         [Preview]
-        public static void Language_DE() => MainPage.RestartWithLanguage("de");
+        public static void Language_DE() => AppLanguage.RestartWith("de");
 
         [Preview]
-        public static void Language_ES() => MainPage.RestartWithLanguage("es");
+        public static void Language_ES() => AppLanguage.RestartWith("es");
 
         [Preview]
-        public static void Language_FR() => MainPage.RestartWithLanguage("fr");
+        public static void Language_FR() => AppLanguage.RestartWith("fr");
 
         [Preview]
-        public static void Language_RU() => MainPage.RestartWithLanguage("ru");
+        public static void Language_RU() => AppLanguage.RestartWith("ru");
 
         [Preview]
-        public static void Language_IT() => MainPage.RestartWithLanguage("it");
+        public static void Language_IT() => AppLanguage.RestartWith("it");
 
         [Preview]
-        public static void Language_JA() => MainPage.RestartWithLanguage("ja");
+        public static void Language_JA() => AppLanguage.RestartWith("ja");
 
         [Preview]
-        public static void Language_KO() => MainPage.RestartWithLanguage("ko");
+        public static void Language_KO() => AppLanguage.RestartWith("ko");
 
         [Preview]
-        public static void Language_ZH() => MainPage.RestartWithLanguage("zh");
+        public static void Language_ZH() => AppLanguage.RestartWith("zh");
 
         #endregion
 

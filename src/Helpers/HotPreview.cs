@@ -3,7 +3,7 @@ using DrawnUi.Views;
 
 #if PREVIEWS
 
-namespace DrawnUi.Draw
+namespace Breakout.Helpers
 {
     using Microsoft.Maui.ApplicationModel;
     using HotPreview;
@@ -35,7 +35,7 @@ namespace DrawnUi.Draw
         {
             return MainThread.InvokeOnMainThreadAsync(async () =>
             {
-                object? previewUI = preview.Create();
+                object previewUI = preview.Create();
 
                 if (uiComponent.Kind == UIComponentKind.Control)
                 {
@@ -50,8 +50,8 @@ namespace DrawnUi.Draw
                 {
                     if (previewUI is RoutePreview routePreview)
                     {
-                        Window? mainWindow = Application.Current!.Windows[0];
-                        Shell? shell = mainWindow?.Page as Shell;
+                        Window mainWindow = Application.Current!.Windows[0];
+                        Shell shell = mainWindow?.Page as Shell;
 
 
                         if (shell is null)

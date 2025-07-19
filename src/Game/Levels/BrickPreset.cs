@@ -48,6 +48,6 @@
         /// <summary>
         /// Type of power-up this brick might drop
         /// </summary>
-        public PowerupType? PowerUpType { get; set; }
+        public PowerupType PowerUpType { get; set; }
     }
 }

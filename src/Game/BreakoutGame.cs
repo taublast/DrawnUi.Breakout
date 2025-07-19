@@ -9,28 +9,6 @@ using SkiaSharp;
 
 namespace Breakout.Game
 {
-    public static class AppSettings
-    {
-        public static readonly string Lang = "lang";
-        public static readonly string LangDefault = string.Empty;
-
-        public static readonly string MusicOn = "mus";
-        public static readonly bool MusicOnDefault = true;
-
-        public static readonly string SoundsOn = "fx";
-        public static readonly bool SoundsOnDefault = true;
-
-        public static T Get<T>(string key, T defaultValue)
-        {
-            return Preferences.Default.Get(key, defaultValue);
-        }
-
-        public static void Set<T>(string key, T value)
-        {
-            Preferences.Default.Set(key, value);
-        }
-    }
-
     public partial class BreakoutGame : MauiGame
     {
         #region CONSTANTS
@@ -39,6 +17,7 @@ namespace Breakout.Game
         public const int HEIGHT = 760;
 
         public const float BALL_SPEED = 375f;
+        public const float POWERUP_SPEED = 120;
         public const float PADDLE_SPEED = 475;
         public const float PADDLE_WIDTH = 80;
         public const int MAX_BRICKS_COLUMNS = 8;
@@ -53,6 +32,9 @@ namespace Breakout.Game
 
         public const int MAXLVL = 12;
         public const int DEMO_MAXLVL = 3;
+
+        public const int MAX_POWERUPS = 12;
+        public const int MAX_PADDLE_BULLETS = 8;
 
         /// <summary>
         /// For long running profiling
@@ -178,6 +160,11 @@ namespace Breakout.Game
                 AddToPoolBrickSprite();
             }
 
+            // Pool powerups for reuse
+            for (int i = 0; i < MAX_POWERUPS; i++)
+            {
+                AddToPoolPowerupSprite();
+            }
 
             // Set initial timestamp
             //LastFrameTimeNanos = SkiaControl.GetNanoseconds();
@@ -238,6 +225,7 @@ namespace Breakout.Game
                     brick.Left = xPos;
                     brick.Top = yPos;
 
+                    brick.Preset = preset;
                     brick.BackgroundColor = preset.BackgroundColor;
                     brick.SupplementaryHitsToDestroy = preset.SupplementaryHitsToDestroy;
                     brick.Undestructible = preset.Undestructible;
@@ -404,7 +392,7 @@ namespace Breakout.Game
 
             _levelCompletionPending = 0;
 
-            ClearBricks();
+            ClearSpritesOnBoard();
 
             ProcessSpritesToBeRemoved();
 
@@ -634,7 +622,7 @@ namespace Breakout.Game
             StartLoop();
         }
 
-        void ClearBricks()
+        void ClearSpritesOnBoard()
         {
             lock (_lockSpritesToBeRemovedLater)
             {
@@ -648,8 +636,7 @@ namespace Breakout.Game
                         }
                     }
                     else
-                        //old code without wrapper for bricks, should not hit, left for info
-                    if (control is BrickSprite)
+                    if (control is IReusableSprite)
                     {
                         _spritesToBeRemovedLater.Enqueue(control);
                     }
@@ -664,7 +651,7 @@ namespace Breakout.Game
             Lives = LIVES;
             Level = 1;
 
-            ClearBricks();
+            ClearSpritesOnBoard();
 
             ProcessSpritesToBeRemoved();
 
@@ -688,7 +675,7 @@ namespace Breakout.Game
             Level = 1;
             State = GameState.Ready;
 
-            ClearBricks();
+            ClearSpritesOnBoard();
 
             ProcessSpritesToBeRemoved();
 
@@ -708,6 +695,13 @@ namespace Breakout.Game
         {
             var brick = BrickSprite.Create();
             BricksPool.Add(brick.Uid, brick);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        void AddToPoolPowerupSprite()
+        {
+            var powerup = PowerupSprite.Create();
+            PowerupsPool.Add(powerup.Uid, powerup);
         }
 
         private int _level = 1;
@@ -760,6 +754,8 @@ namespace Breakout.Game
 
         // Pools for bricks (reusable sprites)
         private Dictionary<Guid, BrickSprite> BricksPool = new(MAX_BRICKS);
+        private Dictionary<Guid, PowerupSprite> PowerupsPool = new(MAX_POWERUPS);
+        private Dictionary<Guid, PaddleBulletSprite> PaddleBulletsPool = new(MAX_PADDLE_BULLETS);
         private Queue<SkiaControl> _spritesToBeRemovedLater = new();
         private object _lockSpritesToBeRemovedLater = new();
         private List<SkiaControl> _spritesToBeAdded = new(MAX_BRICKS);
@@ -999,6 +995,8 @@ namespace Breakout.Game
                 // Increment score
                 Score += 10;
 
+                SpawnPowerUp(brick);
+
                 // Remove the brick
                 RemoveBrick(brick);
             }
@@ -1008,6 +1006,36 @@ namespace Breakout.Game
         {
             BricksLeftToBreak -= 1;
             RemoveReusable(brick);
+        }
+
+        void CollideBulletAndBrick(PaddleBulletSprite bullet, BrickSprite brick)
+        {
+            // Remove the bullet
+            RemoveReusable(bullet);
+            
+            // Handle brick hit logic (same as ball collision)
+            if (brick.Undestructible)
+            {
+                PlaySound(Sound.Wall);
+                return;
+            }
+
+            PlaySound(Sound.Brick);
+
+            if (brick.SupplementaryHitsToDestroy > 0)
+            {
+                brick.SupplementaryHitsToDestroy--;
+                brick.BackgroundColor = brick.BackgroundColor.WithLuminosity(0.5f);
+                Score += 5;
+            }
+            else
+            {
+                Score += 10;
+
+                SpawnPowerUp(brick);
+
+                RemoveBrick(brick);
+            }
         }
 
         #region RAYCAST COLLISION DETECTION
@@ -1525,6 +1553,16 @@ namespace Breakout.Game
                 BricksPool.TryAdd(enemy.Uid, enemy);
             }
 
+            if (sprite is PowerupSprite powerup)
+            {
+                PowerupsPool.TryAdd(powerup.Uid, powerup);
+            }
+            
+            if (sprite is PaddleBulletSprite paddleBullet)
+            {
+                PaddleBulletsPool.TryAdd(paddleBullet.Uid, paddleBullet);
+            }
+
             if (sprite is BrickSprite brick)
             {
                 BricksContainer.RemoveSubView(brick);
@@ -1533,7 +1571,6 @@ namespace Breakout.Game
             {
                 GameField.RemoveSubView(sprite);
             }
-
         }
 
         void ProcessSpritesToBeRemoved()
@@ -1551,6 +1588,139 @@ namespace Breakout.Game
             }
         }
 
+        public void SpawnPowerUp(BrickSprite brick)
+        {
+            if (PowerupsPool.Count > 0)
+            {
+                var powerup = PowerupsPool.Values.FirstOrDefault();
+                if (powerup != null && PowerupsPool.Remove(powerup.Uid))
+                {
+                    powerup.IsActive = true;
+                    
+                    // Position at center of destroyed brick
+                    powerup.Left = brick.Left + (brick.WidthRequest - powerup.WidthRequest) / 2;
+                    powerup.Top = brick.Top;
+
+                    // Determine powerup type
+                    PowerupType powerupType = PowerupType.None;
+                    if (brick.Preset != null && brick.Preset.PowerUpType != PowerupType.None)
+                    {
+                        var chance = RndExtensions.CreateRandom(0, 1);
+                        if (chance < 1)
+                        {
+                            powerupType = brick.Preset.PowerUpType;
+                        }
+                    }
+                    else
+                    {
+                        powerupType = GetRandomPowerupType();
+                    }
+
+                    if (powerupType != PowerupType.None)
+                    {
+                        powerup.SetPowerupType(powerupType);
+                        powerup.ResetAnimationState();
+                        _spritesToBeAdded.Add(powerup);
+                    }
+                }
+            }
+        }
+
+        private PowerupType GetRandomPowerupType()
+        {
+            var chance = RndExtensions.CreateRandom(0,1);
+            
+            if (chance < 0.5) return PowerupType.ExtraLife;
+            if (chance < 0.6) return PowerupType.SlowBall;
+            if (chance < 0.7) return PowerupType.FastBall;
+            if (chance < 0.8) return PowerupType.ExpandPaddle;
+            if (chance < 0.9) return PowerupType.StickyBall;
+            if (chance < 1.0) return PowerupType.Destroyer;
+            
+            return PowerupType.None; 
+        }
+
+        private void ApplyPowerupToPaddle(PowerupSprite powerup, PaddleSprite paddle)
+        {
+            PlaySound(Sound.Powerup); // Assuming you have a powerup sound
+            
+            switch (powerup.Type)
+            {
+                case PowerupType.Destroyer:
+                    paddle.Powerup = PowerupType.Destroyer;
+                    paddle.PowerupDuration = 10.0f; // 10 seconds
+                    break;
+                
+                case PowerupType.ExpandPaddle:
+                    paddle.Powerup = PowerupType.ExpandPaddle;
+                    paddle.PowerupDuration = 15.0f; // 15 seconds
+                    break;
+                
+                case PowerupType.StickyBall:
+                    paddle.Powerup = PowerupType.StickyBall;
+                    paddle.PowerupDuration = 20.0f; // 20 seconds
+                    break;
+                
+                case PowerupType.SlowBall:
+                    Ball.SpeedRatio = Math.Max(0.5f, Ball.SpeedRatio * 0.7f);
+                    break;
+                
+                case PowerupType.FastBall:
+                    Ball.SpeedRatio = Math.Min(2.0f, Ball.SpeedRatio * 1.3f);
+                    break;
+                
+                case PowerupType.ExtraLife:
+                    Lives++;
+                    break;
+                
+                case PowerupType.MultiBall:
+                    // TODO: Implement multi-ball later
+                    break;
+            }
+            
+            // Apply visual changes
+            paddle.ApplyPowerup(paddle.Powerup);
+        }
+
+        private bool DetectBulletCollisionsWithRaycast(PaddleBulletSprite bullet, float deltaSeconds)
+        {
+            // Calculate bullet movement
+            Vector2 bulletPosition = new Vector2((float)bullet.Left + (float)bullet.WidthRequest / 2, 
+                                                (float)bullet.Top + (float)bullet.HeightRequest / 2);
+            Vector2 bulletDirection = new Vector2(0, -1); // Moving up
+            float bulletRadius = (float)bullet.WidthRequest / 2;
+            float bulletSpeed = PaddleBulletSprite.Speed * bullet.SpeedRatio;
+            float maxDistance = bulletSpeed * deltaSeconds;
+
+            // Collect brick targets
+            var collisionTargets = new List<IWithHitBox>();
+            
+            foreach (var view in GameField.Views)
+            {
+                if (view == BricksContainer)
+                {
+                    foreach (var child in BricksContainer.Views)
+                    {
+                        if (child is BrickSprite brick && brick.IsActive)
+                        {
+                            brick.UpdateState(LastFrameTimeNanos);
+                            collisionTargets.Add(brick);
+                        }
+                    }
+                }
+            }
+
+            // Check for collisions
+            var hit = RaycastCollision.CastRay(bulletPosition, bulletDirection, maxDistance, bulletRadius, collisionTargets);
+
+            if (hit.Collided && hit.Target is BrickSprite brickHit)
+            {
+                CollideBulletAndBrick(bullet, brickHit);
+                return true;
+            }
+
+            return false;
+        }
         #endregion
     }
 }

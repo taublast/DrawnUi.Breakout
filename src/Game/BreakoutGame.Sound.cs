@@ -1,3 +1,4 @@
+using Breakout.Helpers;
 using System.Numerics;
 
 namespace Breakout.Game
@@ -13,7 +14,8 @@ namespace Breakout.Game
             Brick,
             Wall,
             Oops,
-            Start
+            Start,
+            Powerup
         }
 
         public void EnableSounds(bool state)
@@ -54,6 +56,10 @@ namespace Breakout.Game
                 case Sound.Start:
                     if (State != GameState.DemoPlay)
                         _audioService.PlaySound("start", 0.75f);
+                    break;
+                case Sound.Powerup:
+                    if (State != GameState.DemoPlay)
+                        _audioService.PlaySound("powerup", 0.6f);
                     break;
             }
         }

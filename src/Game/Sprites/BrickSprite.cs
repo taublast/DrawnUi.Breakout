@@ -79,5 +79,6 @@ public class BrickSprite : SkiaShape, IWithHitBox, IReusableSprite
     /// </summary>
     public bool Undestructible { get; set; }
 
+    public BrickPreset Preset { get; set; }
 }
 

@@ -2,7 +2,7 @@ using SkiaSharp;
 
 namespace Breakout.Game;
 
-public class PaddleSprite : SkiaShape, IWithHitBox, IReusableSprite
+public class PaddleSprite : SkiaShape, IWithHitBox//, IReusableSprite
 {
     public static float Speed = BreakoutGame.PADDLE_SPEED;
 
@@ -73,10 +73,12 @@ public class PaddleSprite : SkiaShape, IWithHitBox, IReusableSprite
         }
     }
 
+    public float PowerupDuration { get; set; }
+
     /// <summary>
     /// Update look upon powerups
     /// </summary>
-    private void ApplyPowerup(PowerupType powerup)
+    public void ApplyPowerup(PowerupType powerup)
     {
         if (Powerup == PowerupType.ExpandPaddle)
         {

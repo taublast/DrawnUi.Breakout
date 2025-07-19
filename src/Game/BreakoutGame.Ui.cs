@@ -59,7 +59,7 @@ namespace Breakout.Game
                                 //we place brick inside one layer to check and draw one cache if unchanged
                                 new SkiaLayer()
                                 {
-                                    //BackgroundColor = Color.Parse("#000000"),
+                                    BackgroundColor = Color.Parse("#000000"),
                                     HorizontalOptions = LayoutOptions.Center,
                                     Margin = new(0,90,0,0),
                                     UseCache = SkiaCacheType.ImageComposite //critical for perf

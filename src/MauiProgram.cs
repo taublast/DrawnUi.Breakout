@@ -10,22 +10,6 @@ namespace Breakout;
 
 public static class MauiProgram
 {
-    /// <summary>
-    /// Enabled languages
-    /// </summary>
-    public static List<string> Languages = new List<string>
-    {
-        "en", //FIRST is fallback
-        "de",
-        "es",
-        "fr",
-        "it",
-        "ru",
-        "ja",
-        "ko",
-        "zh",
-    };
-
     public static MauiApp CreateMauiApp()
     {
         var builder = MauiApp.CreateBuilder();

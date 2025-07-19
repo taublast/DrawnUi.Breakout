@@ -178,6 +178,100 @@ namespace Breakout.Game
                             }
                         }
                     }
+
+                    else if (x is PowerupSprite powerup && powerup.IsActive)
+                    {
+                        // Update powerup state and position
+                        powerup.UpdateState(LastFrameTimeNanos);
+                        powerup.UpdateRotation(cappedDelta);
+
+                        // Check if powerup hit bottom - remove it
+                        if (powerup.Top > GameField.Height)
+                        {
+                            RemoveReusable(powerup);
+                        }
+                        else
+                        {
+                            // Check collision with paddle
+                            var powerupRect = powerup.HitBox;
+
+                            foreach (var view in GameField.Views)
+                            {
+                                if (view is PaddleSprite paddle && paddle.IsActive)
+                                {
+                                    paddle.UpdateState(LastFrameTimeNanos);
+
+                                    if (powerupRect.IntersectsWith(paddle.HitBox))
+                                    {
+                                        // Apply powerup to paddle
+                                        ApplyPowerupToPaddle(powerup, paddle);
+                                        RemoveReusable(powerup);
+                                        break;
+                                    }
+                                }
+                            }
+
+                            // Move powerup down if still active
+                            if (powerup.IsActive)
+                            {
+                                powerup.Top += PowerupSprite.FallSpeed * cappedDelta;
+                            }
+                        }
+                    }
+                    else if (x is PaddleBulletSprite bullet && bullet.IsActive)
+                    {
+                        bullet.UpdateState(LastFrameTimeNanos);
+
+                        // Check if bullet reached top - remove it
+                        if (bullet.Top < 0)
+                        {
+                            RemoveReusable(bullet);
+                        }
+                        else
+                        {
+                            // Check collision with bricks using raycast
+                            bool bulletHit = false;
+
+                            if (USE_RAYCAST_COLLISION)
+                            {
+                                bulletHit = DetectBulletCollisionsWithRaycast(bullet, cappedDelta);
+                            }
+                            else
+                            {
+                                // Traditional AABB collision for bullets vs bricks
+                                var bulletRect = bullet.HitBox;
+
+                                foreach (var view in GameField.Views)
+                                {
+                                    if (view == BricksContainer)
+                                    {
+                                        foreach (var child in BricksContainer.Views)
+                                        {
+                                            if (child is BrickSprite brick && brick.IsActive)
+                                            {
+                                                brick.UpdateState(LastFrameTimeNanos);
+
+                                                if (bulletRect.IntersectsWith(brick.HitBox))
+                                                {
+                                                    CollideBulletAndBrick(bullet, brick);
+                                                    bulletHit = true;
+                                                    break;
+                                                }
+                                            }
+                                        }
+
+                                        if (bulletHit) break;
+                                    }
+                                }
+                            }
+
+                            // Move bullet up if still active
+                            if (bullet.IsActive && !bulletHit)
+                            {
+                                bullet.Top -= PaddleBulletSprite.Speed * cappedDelta;
+                            }
+                        }
+                    }
                 }
 
                 if ((State == GameState.Playing || State == GameState.DemoPlay) &&
@@ -200,6 +294,18 @@ namespace Breakout.Game
 
                 if (State == GameState.Playing || State == GameState.DemoPlay)
                 {
+                    // Update paddle powerup duration
+                    if (Paddle.PowerupDuration > 0)
+                    {
+                        Paddle.PowerupDuration -= cappedDelta;
+                        if (Paddle.PowerupDuration <= 0)
+                        {
+                            // Remove powerup effect
+                            Paddle.Powerup = PowerupType.None;
+                            Paddle.ApplyPowerup(PowerupType.None);
+                        }
+                    }
+
                     // movement control
                     if (_moveLeft)
                     {

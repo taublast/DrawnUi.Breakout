@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace Breakout.Game;
 
-public class BallSprite : SkiaShape, IWithHitBox, IReusableSprite
+public class BallSprite : SkiaShape, IWithHitBox//, IReusableSprite
 {
     //BackgroundColor="#dddddd"
     public BallSprite()
