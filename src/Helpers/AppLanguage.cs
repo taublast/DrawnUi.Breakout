@@ -63,7 +63,7 @@ public static class AppLanguage
         switch (lang)
         {
             case "zh":
-                AppFonts.UseGameFont(AppFonts.GameZh, 1.2);
+                AppFonts.UseGameFont(AppFonts.GameZh, 1.1);
                 break;
             case "ko":
                 AppFonts.UseGameFont(AppFonts.GameKo, 1.1);

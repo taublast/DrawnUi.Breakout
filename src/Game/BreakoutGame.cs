@@ -52,6 +52,15 @@ namespace Breakout.Game
 
         #endregion
 
+        // Pools for bricks (reusable sprites)
+        private ReusableSpritePool<BrickSprite> BricksPool = new(MAX_BRICKS);
+        private ReusableSpritePool<PowerupSprite> PowerupsPool = new(MAX_POWERUPS);
+        private ReusableSpritePool<BulletSprite> PaddleBulletsPool = new(MAX_PADDLE_BULLETS);
+
+        private Queue<SkiaControl> _spritesToBeRemovedLater = new();
+        private object _lockSpritesToBeRemovedLater = new();
+        private List<SkiaControl> _spritesToBeAdded = new(MAX_BRICKS);
+
         #region INITIALIZE
 
         private AIPaddleController _aiController;
@@ -459,11 +468,12 @@ namespace Breakout.Game
             float margin = SPACING_BRICKS;
             float totalSpacing = margin * (columns + 1);
             float availableWidth = (float)Width - totalSpacing - BRICKS_SIDE_MARGIN * 2;
-            float brickWidth = availableWidth / columns;
+            float brickWidth = availableWidth / MAX_BRICKS_COLUMNS;
             float brickHeight = 20f; // Fixed brick height as in original code
 
             // Calculate container dimensions
             int maxRow = brickPositions.Max(p => (int)p.Row);
+
             float containerWidth = columns * brickWidth + (columns - 1) * margin;
             float containerHeight = (maxRow + 1) * brickHeight + maxRow * margin+1;
 
@@ -772,15 +782,6 @@ namespace Breakout.Game
                 }
             }
         }
-
-        // Pools for bricks (reusable sprites)
-        private ReusableSpritePool<BrickSprite> BricksPool = new(MAX_BRICKS);
-        private ReusableSpritePool<PowerupSprite> PowerupsPool = new(MAX_POWERUPS);
-        private ReusableSpritePool<BulletSprite> PaddleBulletsPool = new(MAX_PADDLE_BULLETS);
-
-        private Queue<SkiaControl> _spritesToBeRemovedLater = new();
-        private object _lockSpritesToBeRemovedLater = new();
-        private List<SkiaControl> _spritesToBeAdded = new(MAX_BRICKS);
 
         // For paddle movement via keys/gestures
         volatile bool _moveLeft, _moveRight;
@@ -1620,8 +1621,9 @@ namespace Breakout.Game
                     powerup.IsActive = true;
                     
                     // Position at center of destroyed brick
-                    powerup.Left = brick.Left + (brick.WidthRequest - powerup.WidthRequest) / 2;
-                    powerup.Top = brick.Top;
+                    powerup.Left = brick.HitBox.Left + (brick.Width - powerup.WidthRequest) / 2;
+                    powerup.Left = brick.HitBox.Left + (brick.Width - powerup.WidthRequest) / 2;
+                    powerup.Top = brick.HitBox.Top;
 
                     // Determine powerup type
                     PowerupType powerupType = PowerupType.None;
@@ -1656,11 +1658,11 @@ namespace Breakout.Game
         {
             var chance = RndExtensions.CreateRandom(0,1);
             
-            if (chance < 0.5) return PowerupType.ExtraLife;
-            if (chance < 0.6) return PowerupType.SlowBall;
-            if (chance < 0.7) return PowerupType.FastBall;
-            if (chance < 0.8) return PowerupType.ExpandPaddle;
-            if (chance < 0.9) return PowerupType.StickyBall;
+            if (chance < 0.1) return PowerupType.ExtraLife;
+            if (chance < 0.2) return PowerupType.SlowBall;
+            if (chance < 0.3) return PowerupType.FastBall;
+            if (chance < 0.4) return PowerupType.ExpandPaddle;
+            if (chance < 0.5) return PowerupType.StickyBall;
             if (chance < 1.0) return PowerupType.Destroyer;
             
             return PowerupType.None; 
@@ -1668,55 +1670,32 @@ namespace Breakout.Game
 
         private void ApplyPowerupToPaddle(PowerupSprite powerup, PaddleSprite paddle)
         {
-            PlaySound(Sound.Powerup); // Assuming you have a powerup sound
-            
-            switch (powerup.Type)
+            PlaySound(Sound.Powerup);
+
+            if (powerup.Type == PowerupType.ExtraLife)
             {
-                case PowerupType.Destroyer:
-                    paddle.Powerup = PowerupType.Destroyer;
-                    paddle.PowerupDuration = 30.0f; // 10 seconds
-                    break;
-                
-                case PowerupType.ExpandPaddle:
-                    paddle.Powerup = PowerupType.ExpandPaddle;
-                    paddle.PowerupDuration = 10.0f; // 15 seconds
-                    break;
-                
-                case PowerupType.StickyBall:
-                    paddle.Powerup = PowerupType.StickyBall;
-                    paddle.PowerupDuration = 10.0f; // 20 seconds
-                    break;
-                
-                case PowerupType.SlowBall:
-                    Ball.SpeedRatio = Math.Max(0.5f, Ball.SpeedRatio * 0.7f);
-                    break;
-                
-                case PowerupType.FastBall:
-                    Ball.SpeedRatio = Math.Min(2.0f, Ball.SpeedRatio * 1.3f);
-                    break;
-                
-                case PowerupType.ExtraLife:
-                    Lives++;
-                    break;
-                
-                case PowerupType.MultiBall:
-                    // TODO: Implement multi-ball muuch later
-                    break;
+                Lives++;
             }
+
+            if (Paddle.Powerup != PowerupType.StickyBall)
+            {
+                Ball.IsMoving = true;
+            }
+
+            //todo PowerupType.MultiBall
 
             Debug.WriteLine($"POWERUP! {powerup.Type}");
             
-            // Apply visual changes
-            paddle.ApplyPowerup(paddle.Powerup);
+            paddle.Powerup = powerup.Type;
         }
 
         private bool DetectBulletCollisionsWithRaycast(BulletSprite bullet, float deltaSeconds)
         {
             // Calculate bullet movement
-            Vector2 bulletPosition = new Vector2((float)bullet.Left + (float)bullet.WidthRequest / 2, 
-                                                (float)bullet.Top + (float)bullet.HeightRequest / 2);
+            Vector2 bulletPosition = new Vector2((float)bullet.HitBox.Left + (float)bullet.HitBox.Width / 2, 
+                                                (float)bullet.HitBox.Top + (float)bullet.HitBox.Height / 2);
             Vector2 bulletDirection = new Vector2(0, -1); // Moving up
-            float bulletRadius = (float)bullet.WidthRequest / 2;
+            float bulletRadius = (float)bullet.HitBox.Width / 2;
             float bulletSpeed = BulletSprite.Speed * bullet.SpeedRatio;
             float maxDistance = bulletSpeed * deltaSeconds;
 
@@ -1760,8 +1739,8 @@ namespace Breakout.Game
                     bullet.IsActive = true;
                     
                     // Position bullet at center of paddle, above it
-                    bullet.Left = Paddle.Left + (Paddle.WidthRequest - bullet.WidthRequest) / 2;
-                    bullet.Top = Paddle.Top - bullet.HeightRequest;
+                    bullet.Left = Paddle.Left + (Paddle.Width - bullet.Width) / 2;
+                    bullet.Top = Paddle.Top - bullet.Height;
                     
                     bullet.ResetAnimationState();
                     _spritesToBeAdded.Add(bullet);

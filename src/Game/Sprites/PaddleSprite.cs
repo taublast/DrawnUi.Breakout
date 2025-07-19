@@ -2,7 +2,7 @@ using SkiaSharp;
 
 namespace Breakout.Game;
 
-public class PaddleSprite : SkiaShape, IWithHitBox//, IReusableSprite
+public class PaddleSprite : SkiaShape, IWithHitBox //, IReusableSprite
 {
     public static float Speed = BreakoutGame.PADDLE_SPEED;
 
@@ -78,8 +78,34 @@ public class PaddleSprite : SkiaShape, IWithHitBox//, IReusableSprite
     /// <summary>
     /// Update look upon powerups
     /// </summary>
-    public void ApplyPowerup(PowerupType powerup)
+    protected void ApplyPowerup(PowerupType powerup )
     {
+        //DURATION
+        if (powerup == PowerupType.None)
+        {
+            PowerupDuration = 0;
+        }
+        else
+        {
+            PowerupDuration = 15;
+        }
+
+        //SPEED
+        if (powerup == PowerupType.SlowBall)
+        {
+            SpeedRatio = Math.Max(0.5f, SpeedRatio * 0.7f);
+        }
+        else
+        if (powerup == PowerupType.FastBall)
+        {
+            SpeedRatio = Math.Max(0.5f, SpeedRatio * 1.3f);
+        }
+        else
+        {
+            SpeedRatio = 1;
+        }
+
+        //SIZE
         if (Powerup == PowerupType.ExpandPaddle)
         {
             WidthRequest = BreakoutGame.PADDLE_WIDTH * 1.33;
@@ -89,9 +115,10 @@ public class PaddleSprite : SkiaShape, IWithHitBox//, IReusableSprite
             WidthRequest = BreakoutGame.PADDLE_WIDTH;
         }
 
+        //COLORS
         if (Powerup == PowerupType.Destroyer)
         {
-            BackgroundColor = AmstradColors.Red;
+              BackgroundColor = AmstradColors.Red;
         }
         else
         {

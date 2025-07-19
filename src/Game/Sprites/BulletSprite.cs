@@ -2,28 +2,41 @@ using SkiaSharp;
 
 namespace Breakout.Game;
 
-public class BulletSprite : SkiaShape, IWithHitBox, IReusableSprite
+public class BulletSprite : SkiaLayout, IWithHitBox, IReusableSprite
 {
     public static float Speed = 400f;
 
     public static BulletSprite Create()
     {
-        var bullet = new BulletSprite()
+        return new BulletSprite
         {
-            HeightRequest = 12,
-            WidthRequest = 3,
+            WidthRequest = BreakoutGame.PADDLE_WIDTH,
+            UseCache = SkiaCacheType.Operations,
+            SpeedRatio = 1,
+            ZIndex = 2,
+            HeightRequest = 16,
+            //same as player
+            HorizontalOptions = LayoutOptions.Center,
+            VerticalOptions = LayoutOptions.End,
+            Children =
+            {
+                CreateLazer(),
+                CreateLazer().EndX(),
+            }
+        };
+    }
+
+    static SkiaShape CreateLazer()
+    {
+        return new SkiaShape()
+        {
+            WidthRequest = 5,
             CornerRadius = 2,
             BackgroundColor = Color.Parse("#ffff4444"),
             StrokeColor = Color.Parse("#ffff0000"),
             StrokeWidth = 1,
-            UseCache = SkiaCacheType.Operations,
-            SpeedRatio = 1,
-            ZIndex = 2,
-            //same as player
-            HorizontalOptions = LayoutOptions.Center,
-            VerticalOptions = LayoutOptions.End,
+            VerticalOptions = LayoutOptions.Fill,
         };
-        return bullet;
     }
 
     public bool IsActive { get; set; }

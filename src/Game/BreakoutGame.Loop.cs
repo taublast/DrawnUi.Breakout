@@ -224,7 +224,7 @@ namespace Breakout.Game
                         bullet.UpdateState(LastFrameTimeNanos);
 
                         // Check if bullet reached top - remove it
-                        if (bullet.Top < 0)
+                        if (bullet.HitBox.Top < 0)
                         {
                             RemoveReusable(bullet);
                         }
@@ -303,7 +303,6 @@ namespace Breakout.Game
                         {
                             // Remove powerup effect
                             Paddle.Powerup = PowerupType.None;
-                            Paddle.ApplyPowerup(PowerupType.None);
                         }
                     }
 

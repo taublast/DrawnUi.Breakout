@@ -8,7 +8,7 @@ public class BrickSprite : SkiaShape, IWithHitBox, IReusableSprite
     {
         return new BrickSprite
         {
-            UseCache = SkiaCacheType.Image,
+            UseCache = SkiaCacheType.Operations,
             BackgroundColor = Colors.Red,
             CornerRadius = 6,
             WidthRequest = 50,
