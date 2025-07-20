@@ -35,27 +35,8 @@ A cross-platform game to play on **iOS, MacCatalyst, Android and Windows**.
 * **Glassy App Icons** by `Laura Reen` licenced under CC Attribution License
 * todo music
 
+### Optional Maybe ToDo
 
-
-## TODO
-
-### Required!
-
+* add enemies
 * an AI-boss paddle will appear on top after all bricks destroyed
-* make paddle start at center for real user after demo player..
-* add on screen hud controls for mobile, remove for desktop
-* fix geometry of some levels
-
-### Optional Maybe
-
-* add to settings dialog change language
-* add to settings dialog music on/off
-* add to settings dialog customize buttons
-* add power-ups
-* add enemies
-* add enemies
-
-### Very optional
-
 * add Pong mode 
-
