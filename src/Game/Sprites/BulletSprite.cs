@@ -9,6 +9,12 @@ public class BulletSprite : SkiaLayout, IWithHitBox, IReusableSprite
         //base.InvalidateCache(); - disable cache invalidation, we will need it built only once
     }
 
+    protected override void OnCacheDestroyed()
+    {
+        base.OnCacheDestroyed();
+    }
+
+
     public static float Speed = 500f;
 
     public static BulletSprite Create()
@@ -17,7 +23,7 @@ public class BulletSprite : SkiaLayout, IWithHitBox, IReusableSprite
         {
             Tag = "Bullet",
             WidthRequest = BreakoutGame.PADDLE_WIDTH,
-            UseCache = SkiaCacheType.Image,
+            UseCache = SkiaCacheType.Operations,
             SpeedRatio = 1,
             ZIndex = 2,
             HeightRequest = 16,

@@ -371,14 +371,12 @@ namespace Breakout.Game
             _levelCompletionPending = 0;
 
             ClearSpritesOnBoard();
-
             ProcessSpritesToBeRemoved();
 
-            ResetBall();
-
             Ball.IsMoving = false;
-
             Ball.SpeedRatio = 1 + 0.2f * (Level - 1);
+
+            ResetPaddle();
 
             // Set formation and presets based on level
             FormationType formation;
@@ -629,10 +627,6 @@ namespace Breakout.Game
             ClearSpritesOnBoard();
 
             ProcessSpritesToBeRemoved();
-
-            // Reset ball
-            ResetBall();
-            Ball.IsMoving = false;
 
             // Start new level
             StartNewLevel();
@@ -1226,6 +1220,12 @@ namespace Breakout.Game
             Ball.SetOffsetY(Paddle.Top - Ball.HeightRequest);
         }
 
+        public void ResetPaddle()
+        {
+            Paddle.Left = 0;
+            ResetBall();
+        }
+
         public void ResetBall()
         {
             //PlaySound(Sound.Start);
@@ -1591,7 +1591,7 @@ namespace Breakout.Game
                     if (brick.Preset != null && brick.Preset.PowerUpType != PowerupType.None)
                     {
                         var chance = RndExtensions.CreateRandom(0, 1);
-                        if (chance < 1)
+                        if (chance < 0.5)  
                         {
                             powerupType = brick.Preset.PowerUpType;
                         }
@@ -1624,14 +1624,14 @@ namespace Breakout.Game
         {
             var chance = RndExtensions.CreateRandom(0, 1);
 
-            if (chance < 0.1) return PowerupType.ExtraLife;
-            if (chance < 0.2) return PowerupType.SlowBall;
-            if (chance < 0.3) return PowerupType.FastBall;
-            if (chance < 0.4) return PowerupType.ExpandPaddle;
-            if (chance < 0.5) return PowerupType.StickyBall;
-            if (chance < 1.0) return PowerupType.Destroyer;
+            if (chance < 0.04) return PowerupType.ExtraLife;
+            if (chance < 0.10) return PowerupType.SlowBall;
+            if (chance < 0.16) return PowerupType.FastBall;
+            if (chance < 0.22) return PowerupType.ExpandPaddle;
+            if (chance < 0.28) return PowerupType.StickyBall;
+            if (chance < 0.30) return PowerupType.Destroyer;
 
-            return PowerupType.None;
+            return PowerupType.None; 
         }
 
         private void ApplyPowerupToPaddle(PowerupSprite powerup, PaddleSprite paddle)

@@ -17,7 +17,7 @@ public class PowerupSprite : SkiaShape, IWithHitBox, IReusableSprite
 
     private void Initialize()
     {
-        UseCache = SkiaCacheType.Image;
+        UseCache = SkiaCacheType.Operations;
         WidthRequest = 34;
         HeightRequest = 18;
         CornerRadius = 4;

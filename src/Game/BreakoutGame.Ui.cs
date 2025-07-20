@@ -67,6 +67,7 @@ namespace Breakout.Game
                         //GAME FIELD
                         new SkiaLayer()
                         {
+                            IsClippedToBounds = true, // clip powerups
                             VerticalOptions = LayoutOptions.Fill,
                             //HeightRequest = 500,
                             Children =

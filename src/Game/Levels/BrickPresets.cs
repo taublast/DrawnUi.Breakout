@@ -63,7 +63,6 @@ public static class BrickPresets
                 BackgroundColor = Colors.Orange,
                 SupplementaryHitsToDestroy = 0,
                 ScoreValue = 15,
-                PowerUpType = PowerupType.Destroyer,
                 Description = "Standard brick, 1 hit",
                 Probability = 0.20f
             }},
@@ -74,7 +73,6 @@ public static class BrickPresets
                 SupplementaryHitsToDestroy = 0,
                 ScoreValue = 15,
                 Description = "Standard brick, 1 hit",
-                PowerUpType = PowerupType.StickyBall,
                 Probability = 0.15f
             }},
 
@@ -94,9 +92,7 @@ public static class BrickPresets
                 BackgroundColor = Colors.DarkGreen,
                 SupplementaryHitsToDestroy = 1,
                 ScoreValue = 30,
-                PowerUpType = PowerupType.ExtraLife,
                 Description = "Hard brick, 3 hits",
-                Probability = 0.10f
             }},
 
             // Obstacle bricks (indestructible)
@@ -147,8 +143,6 @@ public static class BrickPresets
                 SupplementaryHitsToDestroy = 1,
                 ScoreValue = 50,
                 IsSpecial = true,
-                Description = "Drops extra life power-up (rare)",
-                PowerUpType = PowerupType.ExtraLife,
                 Probability = 0.02f
             }}
         };
