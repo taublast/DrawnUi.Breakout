@@ -7,7 +7,7 @@ using Breakout;
 
 namespace Breakout.Game
 {
-    public partial class MainPage
+    public partial class MainPage : BasePageReloadable
     {
         public MainPage()
         {

@@ -1,5 +1,6 @@
 using Breakout.Helpers;
 using System.Numerics;
+using AppoMobi.Specials;
 
 namespace Breakout.Game
 {
@@ -30,43 +31,51 @@ namespace Breakout.Game
             if (_audioService == null || !soundsOn)
                 return;
 
-            if (position == default)
+            if (State == GameState.DemoPlay && !USE_SOUND_IN_DEMO)
             {
-                position = new Vector3(01f, 1, 1f);
+                return;
             }
 
-            switch (sound)
+            Tasks.StartDelayedAsync(TimeSpan.FromMicroseconds(1), async () =>
             {
-                case Sound.Board:
-                    if (State != GameState.DemoPlay)
+                if (position == default)
+                {
+                    position = new Vector3(01f, 1, 1f);
+                }
+
+                switch (sound)
+                {
+                    case Sound.Board:
                         _audioService.PlaySpatialSound("ball", position, 0.5f);
-                    break;
-                case Sound.Brick:
-                    if (State != GameState.DemoPlay)
+                        break;
+                    case Sound.Brick:
                         _audioService.PlaySpatialSound("board2", position);
-                    break;
-                case Sound.Wall:
-                    if (State != GameState.DemoPlay)
+                        break;
+                    case Sound.Wall:
                         _audioService.PlaySpatialSound("board3", position, 0.5f);
-                    break;
-                case Sound.Oops:
-                    if (State != GameState.DemoPlay)
+                        break;
+                    case Sound.Oops:
                         _audioService.PlaySound("oops", 0.75f);
-                    break;
-                case Sound.Start:
-                    if (State != GameState.DemoPlay)
+                        break;
+                    case Sound.Start:
                         _audioService.PlaySound("start", 0.75f);
-                    break;
-                case Sound.Powerup:
-                    if (State != GameState.DemoPlay)
+                        break;
+                    case Sound.Powerup:
                         _audioService.PlaySound("powerup", 0.6f);
-                    break;
-            }
+                        break;
+                }
+            });
         }
 
         private async Task InitializeAudioAsync()
         {
-            var audioService = new AudioMixerService(Plugin.Maui.Audio.AudioManager.Current);
+            IAudioService audioService;
+
+#if WINDOWS
+            audioService = new AudioMixerService(Plugin.Maui.Audio.AudioManager.Current);
+#else
+            audioService = new SoundFlowAudioService();
+#endif
 
             // Preload
             //will keep

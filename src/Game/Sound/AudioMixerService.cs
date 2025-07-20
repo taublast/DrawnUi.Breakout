@@ -8,7 +8,7 @@ namespace Breakout.Game;
 /// <summary>
 /// Game audio service using Plugin.Maui.Audio's AudioMixer for professional sound management
 /// </summary>
-public class AudioMixerService : IDisposable
+public class AudioMixerService : IAudioService
 {
     #region CONSTANTS
 

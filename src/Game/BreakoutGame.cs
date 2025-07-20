@@ -43,7 +43,9 @@ namespace Breakout.Game
         /// </summary>
         const bool CHEAT_INVULNERABLE = false;
 
-        public static bool USE_SOUND = false;
+        public static bool USE_SOUND = true;
+
+        public static bool USE_SOUND_IN_DEMO = true;
 
         /// <summary>
         /// Compile-time flag to enable raycasting collision detection instead of AABB intersection
@@ -58,7 +60,7 @@ namespace Breakout.Game
         private AIPaddleController _aiController;
         public AIPaddleController AIController => _aiController ??= new AIPaddleController(this, AIDifficulty.Medium);
 
-        public AudioMixerService? _audioService;
+        public IAudioService? _audioService;
 
         public BreakoutGame()
         {
@@ -790,7 +792,6 @@ namespace Breakout.Game
         void CollideBallAndPaddle(PaddleSprite paddle, BallSprite ball)
         {
             PlaySound(Sound.Board);
-
 
             // Determine paddle's horizontal velocity based on current movement input
             float paddleVelocity = 0;

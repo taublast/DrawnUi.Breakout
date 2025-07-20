@@ -22,7 +22,7 @@ internal class GameAudioSource : IGameAudioSource
 
     public Stream GetAudioStream()
     {
-        // Reset position and return the same stream (like DOOM)
+        // Reset position and return the same stream
         _stream.Position = 0;
         return _stream;
     }

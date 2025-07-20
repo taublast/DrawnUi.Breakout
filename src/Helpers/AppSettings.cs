@@ -1,5 +1,4 @@
-﻿#if PREVIEWS
-namespace Breakout.Helpers;
+﻿namespace Breakout.Helpers;
 
 public static class AppSettings
 {
@@ -22,4 +21,3 @@ public static class AppSettings
         Preferences.Default.Set(key, value);
     }
 }
-#endif
