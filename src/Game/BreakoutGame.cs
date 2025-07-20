@@ -1640,7 +1640,10 @@ namespace Breakout.Game
 
             if (powerup.Type == PowerupType.ExtraLife)
             {
-                Lives++;
+                if (Lives < 8)
+                {
+                    Lives++;
+                }
             }
 
             if (Paddle.Powerup != PowerupType.StickyBall)
