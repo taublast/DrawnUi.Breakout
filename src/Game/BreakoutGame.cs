@@ -52,15 +52,6 @@ namespace Breakout.Game
 
         #endregion
 
-        // Pools for bricks (reusable sprites)
-        private ReusableSpritePool<BrickSprite> BricksPool = new(MAX_BRICKS);
-        private ReusableSpritePool<PowerupSprite> PowerupsPool = new(MAX_POWERUPS);
-        private ReusableSpritePool<BulletSprite> PaddleBulletsPool = new(MAX_PADDLE_BULLETS);
-
-        private Queue<SkiaControl> _spritesToBeRemovedLater = new();
-        private object _lockSpritesToBeRemovedLater = new();
-        private List<SkiaControl> _spritesToBeAdded = new(MAX_BRICKS);
-
         #region INITIALIZE
 
         private AIPaddleController _aiController;
@@ -88,7 +79,7 @@ namespace Breakout.Game
                 _ = InitializeAudioAsync();
             }
 
-            _aiController = new AIPaddleController(this, AIDifficulty.Perfect);
+            _aiController = new AIPaddleController(this, AIDifficulty.Hard);
 
             //BackgroundColor = AmstradColors.DarkBlue;
 
@@ -255,6 +246,7 @@ namespace Breakout.Game
             {
                 Super.Log("[FATAL] Out of bricks in the pool, check what you done wrong!!!");
             }
+
             return null;
         }
 
@@ -475,7 +467,7 @@ namespace Breakout.Game
             int maxRow = brickPositions.Max(p => (int)p.Row);
 
             float containerWidth = columns * brickWidth + (columns - 1) * margin;
-            float containerHeight = (maxRow + 1) * brickHeight + maxRow * margin+1;
+            float containerHeight = (maxRow + 1) * brickHeight + maxRow * margin + 1;
 
             // Prepare BricksContainer
             SetupBricksContainer(containerWidth, containerHeight);
@@ -493,38 +485,11 @@ namespace Breakout.Game
 
                 var brick = AddBrickToContainer(presetId, col, row, brickWidth, brickHeight, margin);
 
-                if (brick != null) 
+                if (brick != null)
                 {
                     BrickPresets.ApplyPreset(brick, presetId);
                 }
-                else
-                {
-                    var stop = 1;
-                }
             }
-
-            //// Add bricks using the existing pool and AddBrick method
-            //foreach (var position in brickPositions)
-            //{
-            //    // Use the row and column from position
-            //    int col = (int)position.Column;
-            //    int row = (int)position.Row;
-            //    string presetId = position.PresetId;
-
-            //    // Skip if no preset was assigned
-            //    if (string.IsNullOrEmpty(presetId))
-            //        continue;
-
-            //    // Use existing AddBrick method that handles pooling
-            //    AddBrick(presetId, col, row, brickWidth, brickHeight, margin, BRICKS_SIDE_MARGIN, offsetBricksY);
-
-            //    // Get the brick we just added (it should be the last one in _spritesToBeAdded)
-            //    if (_spritesToBeAdded.Count > 0 && _spritesToBeAdded[_spritesToBeAdded.Count - 1] is BrickSprite brick)
-            //    {
-            //        // Apply the preset to this brick
-            //        BrickPresets.ApplyPreset(brick, presetId);
-            //    }
-            //}
 
             levelReady = false;
 
@@ -622,8 +587,7 @@ namespace Breakout.Game
                             _spritesToBeRemovedLater.Enqueue(brick);
                         }
                     }
-                    else
-                    if (control is IReusableSprite)
+                    else if (control is IReusableSprite)
                     {
                         _spritesToBeRemovedLater.Enqueue(control);
                     }
@@ -746,7 +710,7 @@ namespace Breakout.Game
         private bool _initialized;
         private bool _needPrerender;
 
-        public class ReusableSpritePool<T> where T: IReusableSprite
+        public class ReusableSpritePool<T> where T : IReusableSprite
         {
             protected Dictionary<Guid, T> Pool;
 
@@ -767,6 +731,7 @@ namespace Breakout.Game
                 {
                     return item;
                 }
+
                 return default;
             }
 
@@ -778,10 +743,21 @@ namespace Breakout.Game
                     {
                         return 0;
                     }
+
                     return Pool.Count;
                 }
             }
         }
+
+        // Pools for bricks (reusable sprites)
+        private ReusableSpritePool<BrickSprite> BricksPool = new(MAX_BRICKS);
+        private ReusableSpritePool<PowerupSprite> PowerupsPool = new(MAX_POWERUPS);
+        private ReusableSpritePool<BulletSprite> PaddleBulletsPool = new(MAX_PADDLE_BULLETS);
+        public SKRect GameFieldArea = SKRect.Empty;
+        public SKRect BricksArea = SKRect.Empty;
+        private Queue<SkiaControl> _spritesToBeRemovedLater = new();
+        private object _lockSpritesToBeRemovedLater = new();
+        private List<SkiaControl> _spritesToBeAdded = new(MAX_BRICKS);
 
         // For paddle movement via keys/gestures
         volatile bool _moveLeft, _moveRight;
@@ -1035,7 +1011,7 @@ namespace Breakout.Game
         {
             // Remove the bullet
             RemoveReusable(bullet);
-            
+
             // Handle brick hit logic (same as ball collision)
             if (brick.Undestructible)
             {
@@ -1096,7 +1072,6 @@ namespace Breakout.Game
                     {
                         if (child is BrickSprite brick && brick.IsActive)
                         {
-                            brick.UpdateState(LastFrameTimeNanos);
                             collisionTargets.Add(brick);
                         }
                     }
@@ -1436,15 +1411,6 @@ namespace Breakout.Game
         private GameState _lastStateChecked;
         private float thresholdTapVelocity = 200;
 
-        protected override void OnLayoutChanged()
-        {
-            base.OnLayoutChanged();
-
-            GameFieldArea = GameField.GetHitBox();
-        }
-
-        public SKRect GameFieldArea = SKRect.Empty;
-
         // Gesture handling following the SpaceShooter pattern.
         public override ISkiaGestureListener ProcessGestures(SkiaGesturesParameters args,
             GestureEventProcessingInfo apply)
@@ -1580,7 +1546,7 @@ namespace Breakout.Game
             {
                 PowerupsPool.Return(powerup);
             }
-            
+
             if (sprite is BulletSprite paddleBullet)
             {
                 PaddleBulletsPool.Return(paddleBullet);
@@ -1619,11 +1585,6 @@ namespace Breakout.Game
                 if (powerup != null)
                 {
                     powerup.IsActive = true;
-                    
-                    // Position at center of destroyed brick
-                    powerup.Left = brick.HitBox.Left + (brick.Width - powerup.WidthRequest) / 2;
-                    powerup.Left = brick.HitBox.Left + (brick.Width - powerup.WidthRequest) / 2;
-                    powerup.Top = brick.HitBox.Top;
 
                     // Determine powerup type
                     PowerupType powerupType = PowerupType.None;
@@ -1642,8 +1603,13 @@ namespace Breakout.Game
 
                     if (powerupType != PowerupType.None)
                     {
+                        // Position at center of destroyed brick
+                        powerup.Left = brick.HitBox.Left + (brick.Width - powerup.WidthRequest) / 2 - GameFieldArea.Left;
+                        powerup.Top = brick.HitBox.Top - GameFieldArea.Top;
+
                         powerup.SetPowerupType(powerupType);
                         powerup.ResetAnimationState();
+
                         _spritesToBeAdded.Add(powerup);
                     }
                     else
@@ -1656,16 +1622,16 @@ namespace Breakout.Game
 
         private PowerupType GetRandomPowerupType()
         {
-            var chance = RndExtensions.CreateRandom(0,1);
-            
+            var chance = RndExtensions.CreateRandom(0, 1);
+
             if (chance < 0.1) return PowerupType.ExtraLife;
             if (chance < 0.2) return PowerupType.SlowBall;
             if (chance < 0.3) return PowerupType.FastBall;
             if (chance < 0.4) return PowerupType.ExpandPaddle;
             if (chance < 0.5) return PowerupType.StickyBall;
             if (chance < 1.0) return PowerupType.Destroyer;
-            
-            return PowerupType.None; 
+
+            return PowerupType.None;
         }
 
         private void ApplyPowerupToPaddle(PowerupSprite powerup, PaddleSprite paddle)
@@ -1685,15 +1651,16 @@ namespace Breakout.Game
             //todo PowerupType.MultiBall
 
             Debug.WriteLine($"POWERUP! {powerup.Type}");
-            
+
             paddle.Powerup = powerup.Type;
         }
 
         private bool DetectBulletCollisionsWithRaycast(BulletSprite bullet, float deltaSeconds)
         {
             // Calculate bullet movement
-            Vector2 bulletPosition = new Vector2((float)bullet.HitBox.Left + (float)bullet.HitBox.Width / 2, 
-                                                (float)bullet.HitBox.Top + (float)bullet.HitBox.Height / 2);
+            Vector2 bulletPosition = new Vector2((float)bullet.HitBox.Left + (float)bullet.HitBox.Width / 2,
+                (float)bullet.HitBox.Top + (float)bullet.HitBox.Height / 2);
+
             Vector2 bulletDirection = new Vector2(0, -1); // Moving up
             float bulletRadius = (float)bullet.HitBox.Width / 2;
             float bulletSpeed = BulletSprite.Speed * bullet.SpeedRatio;
@@ -1701,7 +1668,7 @@ namespace Breakout.Game
 
             // Collect brick targets
             var collisionTargets = new List<IWithHitBox>();
-            
+
             foreach (var view in GameField.Views)
             {
                 if (view == BricksContainer)
@@ -1710,7 +1677,6 @@ namespace Breakout.Game
                     {
                         if (child is BrickSprite brick && brick.IsActive)
                         {
-                            brick.UpdateState(LastFrameTimeNanos);
                             collisionTargets.Add(brick);
                         }
                     }
@@ -1718,7 +1684,8 @@ namespace Breakout.Game
             }
 
             // Check for collisions
-            var hit = RaycastCollision.CastRay(bulletPosition, bulletDirection, maxDistance, bulletRadius, collisionTargets);
+            var hit = RaycastCollision.CastRay(bulletPosition, bulletDirection, maxDistance, bulletRadius,
+                collisionTargets);
 
             if (hit.Collided && hit.Target is BrickSprite brickHit)
             {
@@ -1737,16 +1704,17 @@ namespace Breakout.Game
                 if (bullet != null)
                 {
                     bullet.IsActive = true;
-                    
+
                     // Position bullet at center of paddle, above it
                     bullet.Left = Paddle.Left + (Paddle.Width - bullet.Width) / 2;
                     bullet.Top = Paddle.Top - bullet.Height;
-                    
+
                     bullet.ResetAnimationState();
                     _spritesToBeAdded.Add(bullet);
                 }
             }
         }
+
         #endregion
     }
 }

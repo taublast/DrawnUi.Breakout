@@ -1,9 +1,24 @@
 ﻿using System.Diagnostics;
 using AppoMobi.Maui.Gestures;
 using Breakout.Game.Dialogs;
+using SkiaSharp;
 
 namespace Breakout.Game
 {
+
+    public class Bricks : SkiaLayout
+    {
+        public override void InvalidateCacheWithPrevious()
+        {
+            base.InvalidateCacheWithPrevious();
+        }
+
+        protected override bool UseRenderingObject(DrawingContext context, SKRect recordArea)
+        {
+            return base.UseRenderingObject(context, recordArea);
+        }
+    }
+
     public partial class BreakoutGame : MauiGame
     {
         #region UI
@@ -57,9 +72,9 @@ namespace Breakout.Game
                             Children =
                             {
                                 //we place brick inside one layer to check and draw one cache if unchanged
-                                new SkiaLayer()
+                                new Bricks()
                                 {
-                                    BackgroundColor = Color.Parse("#000000"),
+                                    //BackgroundColor = Color.Parse("#000000"),
                                     HorizontalOptions = LayoutOptions.Center,
                                     Margin = new(0,90,0,0),
                                     UseCache = SkiaCacheType.ImageComposite //critical for perf

@@ -19,7 +19,7 @@ public class PowerupSprite : SkiaShape, IWithHitBox, IReusableSprite
     {
         UseCache = SkiaCacheType.Image;
         WidthRequest = 34;
-        HeightRequest = 20;
+        HeightRequest = 18;
         CornerRadius = 4;
         BackgroundColor = Colors.Purple;
         StrokeColor = Colors.White;
@@ -54,7 +54,7 @@ public class PowerupSprite : SkiaShape, IWithHitBox, IReusableSprite
         switch (type)
         {
             case PowerupType.Destroyer:
-                _letterLabel.Text = "D";
+                _letterLabel.Text = "A";
                 BackgroundColor = Colors.Red;
                 _letterLabel.TextColor = WhiteColor;
                 break;
@@ -64,9 +64,9 @@ public class PowerupSprite : SkiaShape, IWithHitBox, IReusableSprite
                 _letterLabel.TextColor = WhiteColor;
                 break;
             case PowerupType.StickyBall:
-                _letterLabel.Text = "S";
+                _letterLabel.Text = "C";
                 BackgroundColor = Colors.Cyan;
-                _letterLabel.TextColor = WhiteColor;
+                _letterLabel.TextColor = BlackColor;
                 break;
             case PowerupType.ShrinkPaddle:
                 _letterLabel.Text = "R";
@@ -89,7 +89,7 @@ public class PowerupSprite : SkiaShape, IWithHitBox, IReusableSprite
                 _letterLabel.TextColor = WhiteColor;
                 break;
             case PowerupType.ExtraLife:
-                _letterLabel.Text = "1";
+                _letterLabel.Text = "L";
                 BackgroundColor = Colors.GreenYellow;
                 _letterLabel.TextColor = BlackColor;
                 break;
@@ -114,14 +114,8 @@ public class PowerupSprite : SkiaShape, IWithHitBox, IReusableSprite
 
     double LetterRotation
     {
-        get
-        {
-            return _letterLabel.RotationX;
-        }
-        set
-        {
-            _letterLabel.RotationX = value;
-        }
+        get { return _letterLabel.RotationX; }
+        set { _letterLabel.RotationX = value; }
     }
 
     public void ResetAnimationState()
@@ -137,9 +131,9 @@ public class PowerupSprite : SkiaShape, IWithHitBox, IReusableSprite
         await FadeToAsync(0, 150);
     }
 
-    public void UpdateState(long time)
+    public void UpdateState(long time, bool force = false)
     {
-        if (_stateUpdated != time)
+        if (force || _stateUpdated != time)
         {
             HitBox = this.GetHitBox();
             _stateUpdated = time;

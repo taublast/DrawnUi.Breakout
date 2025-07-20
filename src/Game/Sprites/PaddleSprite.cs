@@ -78,7 +78,7 @@ public class PaddleSprite : SkiaShape, IWithHitBox //, IReusableSprite
     /// <summary>
     /// Update look upon powerups
     /// </summary>
-    protected void ApplyPowerup(PowerupType powerup )
+    protected void ApplyPowerup(PowerupType powerup)
     {
         //DURATION
         if (powerup == PowerupType.None)
@@ -95,8 +95,7 @@ public class PaddleSprite : SkiaShape, IWithHitBox //, IReusableSprite
         {
             SpeedRatio = Math.Max(0.5f, SpeedRatio * 0.7f);
         }
-        else
-        if (powerup == PowerupType.FastBall)
+        else if (powerup == PowerupType.FastBall)
         {
             SpeedRatio = Math.Max(0.5f, SpeedRatio * 1.3f);
         }
@@ -118,7 +117,7 @@ public class PaddleSprite : SkiaShape, IWithHitBox //, IReusableSprite
         //COLORS
         if (Powerup == PowerupType.Destroyer)
         {
-              BackgroundColor = AmstradColors.Red;
+            BackgroundColor = AmstradColors.Red;
         }
         else
         {
@@ -141,9 +140,9 @@ public class PaddleSprite : SkiaShape, IWithHitBox //, IReusableSprite
     {
     }
 
-    public void UpdateState(long time)
+    public void UpdateState(long time, bool force = false)
     {
-        if (_stateUpdated != time)
+        if (force || _stateUpdated != time)
         {
             HitBox = this.GetHitBox();
             _stateUpdated = time;

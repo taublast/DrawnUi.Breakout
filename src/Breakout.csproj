@@ -2,10 +2,10 @@
 
 	<PropertyGroup>
 
-    <!--<TargetFrameworks>net9.0-windows10.0.19041.0</TargetFrameworks>-->
+    <TargetFrameworks>net9.0-windows10.0.19041.0</TargetFrameworks>
 
-    <TargetFrameworks>net9.0-android;net9.0-ios;net9.0-maccatalyst</TargetFrameworks>
-    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net9.0-windows10.0.19041.0</TargetFrameworks>
+    <!--<TargetFrameworks>net9.0-android;net9.0-ios;net9.0-maccatalyst</TargetFrameworks>
+    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net9.0-windows10.0.19041.0</TargetFrameworks>-->
 
     <OutputType>Exe</OutputType>
     <RootNamespace>Breakout</RootNamespace>
@@ -36,7 +36,7 @@
 
   <!--production-->
   <ItemGroup Condition="'$(UseNuget)' == 'true'">
-    <PackageReference Include="DrawnUi.Maui.Game" Version="1.6.2.7" />
+    <PackageReference Include="DrawnUi.Maui.Game" Version="1.6.2.8" />
   </ItemGroup>
 
 
@@ -72,6 +72,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\README.md" Link="README.md" />
+  </ItemGroup>
+
+  <ItemGroup>
 
     <!--can replace this with usual plugin if PR is merged-->
     <PackageReference Include="AppoMobi.Preview.Plugin.Maui.Audio" Version="3.0.2.1-pre1" />
@@ -98,6 +102,9 @@
       <LastGenOutput>ResStrings.Designer.cs</LastGenOutput>
       <Generator>PublicResXFileCodeGenerator</Generator>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <MauiFont Include="Helpers\AppFonts.cs" />
   </ItemGroup>
 
 </Project>

@@ -27,19 +27,19 @@ public class BrickSprite : SkiaShape, IWithHitBox, IReusableSprite
         };
     }
 
-    public override void OnWillDisposeWithChildren()
-    {
-        base.OnWillDisposeWithChildren();
-    }
-
-    //public Guid Uid { get; } = Guid.NewGuid();
-
+    public bool HitBoxInvalidated { get; set; }
     public bool IsActive { get; set; }
 
     public void ResetAnimationState()
     {
-        try { this.CancelDisappearing?.Cancel(); }
-        catch {  }      
+        try
+        {
+            this.CancelDisappearing?.Cancel();
+        }
+        catch
+        {
+        }
+
         Opacity = 1;
         Scale = 1;
     }
@@ -47,7 +47,7 @@ public class BrickSprite : SkiaShape, IWithHitBox, IReusableSprite
     /// <summary>
     /// Cancellation token for sprite removal animations.
     /// </summary>
-    public CancellationTokenSource CancelDisappearing { get; set; }  
+    public CancellationTokenSource CancelDisappearing { get; set; }
 
     public async Task AnimateDisappearing()
     {
@@ -57,16 +57,21 @@ public class BrickSprite : SkiaShape, IWithHitBox, IReusableSprite
         await FadeToAsync(0, 200, Easing.SpringOut, cancel);
     }
 
-    public void UpdateState(long time)
+    public void UpdateState(long time, bool force = false)
     {
-        if (_stateUpdated != time)
+        if (_stateUpdated != time || force)
         {
             HitBox = this.GetHitBox();
             _stateUpdated = time;
+            HitBoxInvalidated = false;
         }
     }
+
     private long _stateUpdated;
 
+    /// <summary>
+    /// In POINTS
+    /// </summary>
     public SKRect HitBox { get; private set; }
 
     /// <summary>
@@ -81,4 +86,3 @@ public class BrickSprite : SkiaShape, IWithHitBox, IReusableSprite
 
     public BrickPreset Preset { get; set; }
 }
-

@@ -5,6 +5,11 @@ namespace Breakout.Game;
 
 public class BallSprite : SkiaShape, IWithHitBox//, IReusableSprite
 {
+    public override void InvalidateCache()
+    {
+        //base.InvalidateCache(); - disable cache invalidation, we will need it built only once
+    }
+
     //BackgroundColor="#dddddd"
     public BallSprite()
     {
@@ -64,9 +69,9 @@ public class BallSprite : SkiaShape, IWithHitBox//, IReusableSprite
     {
     }
 
-    public void UpdateState(long time)
+    public void UpdateState(long time, bool force=false)
     {
-        if (_stateUpdated != time)
+        if (force || _stateUpdated != time)
         {
             HitBox = this.GetHitBox();
             _stateUpdated = time;

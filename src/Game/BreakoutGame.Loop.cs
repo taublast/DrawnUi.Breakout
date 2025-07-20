@@ -13,6 +13,9 @@ namespace Breakout.Game
 
             float cappedDelta = deltaSeconds;
 
+            GameFieldArea = GameField.GetHitBox();
+            BricksArea = BricksContainer.GetHitBox();
+
             while (GameKeysQueue.Count > 0)
             {
                 ApplyGameKey(GameKeysQueue.Dequeue());
@@ -28,6 +31,14 @@ namespace Breakout.Game
                 // get the current player hit box
                 Ball.UpdateState(LastFrameTimeNanos);
                 var ballRect = Ball.HitBox;
+
+                foreach (var child in BricksContainer.Views)
+                {
+                    if (child is BrickSprite brick && brick.IsActive)
+                    {
+                        brick.UpdateState(LastFrameTimeNanos);
+                    }
+                }
 
                 bool ballCollided = false;
 
@@ -58,9 +69,6 @@ namespace Breakout.Game
                                             {
                                                 if (child is BrickSprite brick && brick.IsActive)
                                                 {
-                                                    //calculate hitbox
-                                                    brick.UpdateState(LastFrameTimeNanos);
-
                                                     if (ballRect.IntersectsWith(brick.HitBox, out var overlap))
                                                     {
                                                         CollideBallAndBrick(brick, ball, overlap);
@@ -250,8 +258,6 @@ namespace Breakout.Game
                                         {
                                             if (child is BrickSprite brick && brick.IsActive)
                                             {
-                                                brick.UpdateState(LastFrameTimeNanos);
-
                                                 if (bulletRect.IntersectsWith(brick.HitBox))
                                                 {
                                                     CollideBulletAndBrick(bullet, brick);

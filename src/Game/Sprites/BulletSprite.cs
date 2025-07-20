@@ -4,14 +4,20 @@ namespace Breakout.Game;
 
 public class BulletSprite : SkiaLayout, IWithHitBox, IReusableSprite
 {
-    public static float Speed = 400f;
+    public override void InvalidateCache()
+    {
+        //base.InvalidateCache(); - disable cache invalidation, we will need it built only once
+    }
+
+    public static float Speed = 500f;
 
     public static BulletSprite Create()
     {
         return new BulletSprite
         {
+            Tag = "Bullet",
             WidthRequest = BreakoutGame.PADDLE_WIDTH,
-            UseCache = SkiaCacheType.Operations,
+            UseCache = SkiaCacheType.Image,
             SpeedRatio = 1,
             ZIndex = 2,
             HeightRequest = 16,
@@ -53,9 +59,9 @@ public class BulletSprite : SkiaLayout, IWithHitBox, IReusableSprite
         await FadeToAsync(0, 100);
     }
 
-    public void UpdateState(long time)
+    public void UpdateState(long time, bool force = false)
     {
-        if (_stateUpdated != time)
+        if (force || _stateUpdated != time)
         {
             HitBox = this.GetHitBox();
             _stateUpdated = time;

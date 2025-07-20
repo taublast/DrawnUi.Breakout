@@ -8,7 +8,7 @@ public interface IWithHitBox
     /// Calculate hitbox etc for the current frame
     /// </summary>
     /// <param name="time"></param>
-    void UpdateState(long time);
+    void UpdateState(long time, bool forceRecalculate=false);
 
     /// <summary>
     /// Precalculated
