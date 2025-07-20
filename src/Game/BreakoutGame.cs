@@ -1590,8 +1590,8 @@ namespace Breakout.Game
                     PowerupType powerupType = PowerupType.None;
                     if (brick.Preset != null && brick.Preset.PowerUpType != PowerupType.None)
                     {
-                        var chance = RndExtensions.CreateRandom(0, 1);
-                        if (chance < 0.5)  
+                        var chance = RndExtensions.Rnd.NextDouble(0, 1, 0.01);
+                        if (chance < 0.5)
                         {
                             powerupType = brick.Preset.PowerUpType;
                         }
@@ -1604,7 +1604,8 @@ namespace Breakout.Game
                     if (powerupType != PowerupType.None)
                     {
                         // Position at center of destroyed brick
-                        powerup.Left = brick.HitBox.Left + (brick.Width - powerup.WidthRequest) / 2 - GameFieldArea.Left;
+                        powerup.Left = brick.HitBox.Left + (brick.Width - powerup.WidthRequest) / 2 -
+                                       GameFieldArea.Left;
                         powerup.Top = brick.HitBox.Top - GameFieldArea.Top;
 
                         powerup.SetPowerupType(powerupType);
@@ -1622,7 +1623,7 @@ namespace Breakout.Game
 
         private PowerupType GetRandomPowerupType()
         {
-            var chance = RndExtensions.CreateRandom(0, 1);
+            var chance = RndExtensions.Rnd.NextDouble(0, 1, 0.01);
 
             if (chance < 0.04) return PowerupType.ExtraLife;
             if (chance < 0.10) return PowerupType.SlowBall;
@@ -1631,7 +1632,7 @@ namespace Breakout.Game
             if (chance < 0.28) return PowerupType.StickyBall;
             if (chance < 0.30) return PowerupType.Destroyer;
 
-            return PowerupType.None; 
+            return PowerupType.None;
         }
 
         private void ApplyPowerupToPaddle(PowerupSprite powerup, PaddleSprite paddle)
