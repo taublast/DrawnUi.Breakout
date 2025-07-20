@@ -74,7 +74,7 @@ public class PowerupSprite : SkiaShape, IWithHitBox, IReusableSprite
                 _letterLabel.TextColor = BlackColor;
                 break;
             case PowerupType.SlowBall:
-                _letterLabel.Text = "L";
+                _letterLabel.Text = "S";
                 BackgroundColor = Colors.White;
                 _letterLabel.TextColor = BlackColor;
                 break;
