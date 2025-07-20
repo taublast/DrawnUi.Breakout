@@ -2,19 +2,8 @@ using SkiaSharp;
 
 namespace Breakout.Game;
 
-public class BulletSprite : SkiaLayout, IWithHitBox, IReusableSprite
+public class BulletSprite : StableCacheLayout, IWithHitBox, IReusableSprite
 {
-    public override void InvalidateCache()
-    {
-        //base.InvalidateCache(); - disable cache invalidation, we will need it built only once
-    }
-
-    protected override void OnCacheDestroyed()
-    {
-        base.OnCacheDestroyed();
-    }
-
-
     public static float Speed = 500f;
 
     public static BulletSprite Create()

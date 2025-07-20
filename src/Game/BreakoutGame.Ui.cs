@@ -5,20 +5,6 @@ using SkiaSharp;
 
 namespace Breakout.Game
 {
-
-    public class Bricks : SkiaLayout
-    {
-        public override void InvalidateCacheWithPrevious()
-        {
-            base.InvalidateCacheWithPrevious();
-        }
-
-        protected override bool UseRenderingObject(DrawingContext context, SKRect recordArea)
-        {
-            return base.UseRenderingObject(context, recordArea);
-        }
-    }
-
     public partial class BreakoutGame : MauiGame
     {
         #region UI
@@ -73,7 +59,7 @@ namespace Breakout.Game
                             Children =
                             {
                                 //we place brick inside one layer to check and draw one cache if unchanged
-                                new Bricks()
+                                new SkiaLayout()
                                 {
                                     //BackgroundColor = Color.Parse("#000000"),
                                     HorizontalOptions = LayoutOptions.Center,
@@ -198,9 +184,11 @@ namespace Breakout.Game
                         }.Assign(out GameField),
 
                         //CONTROLS
-                        new SkiaLayer()
+                        new StableCacheLayout()
                         {
                             HeightRequest = 80,
+                            HorizontalOptions = LayoutOptions.Fill,
+                            UseCache = SkiaCacheType.GPU,
                             BackgroundColor = Color.Parse("#66000000"),
                             Children =
                             {
@@ -228,6 +216,45 @@ namespace Breakout.Game
                                     //    this.ShowOptions();
                                     //}
                                 }),
+
+
+                                //ARROWS
+                                new GridArrows(this)
+                                {
+                                    Margin = new (80,0,16,0),
+                                    HorizontalOptions = LayoutOptions.Fill,
+                                    VerticalOptions = LayoutOptions.Fill,
+                                    UseCache = SkiaCacheType.Operations,
+                                    ColumnSpacing = 20,
+                                    Children=
+                                    {
+                                        new SkiaSvg()
+                                        {
+                                            Opacity = 0.75,
+                                            TintColor = UiElements.ColorPrimary,
+                                            UseCache = SkiaCacheType.Image,
+                                            SvgString = App.Current.Resources.Get<string>("SvgLeft"),
+                                            WidthRequest = 56,
+                                            LockRatio = 1,
+                                            HorizontalOptions = LayoutOptions.End,
+                                            VerticalOptions = LayoutOptions.Center,
+                                        },
+                                        new SkiaSvg()
+                                        {
+                                            HorizontalOptions = LayoutOptions.Start,
+                                            TintColor = UiElements.ColorPrimary,
+                                            Opacity = 0.75,
+                                            UseCache = SkiaCacheType.Image,
+                                            SvgString = App.Current.Resources.Get<string>("SvgRight"),
+                                            WidthRequest = 56,
+                                            LockRatio = 1,
+                                            VerticalOptions = LayoutOptions.Center,
+                                        }.WithColumn(1)
+
+
+                                    }
+                                }.WithColumnDefinitions("50*, 50*"),
+
 
                                 /*
                                 new SkiaSvg()
