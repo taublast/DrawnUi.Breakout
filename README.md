@@ -30,6 +30,11 @@ A cross-platform game to play on **iOS, MacCatalyst, Android and Windows**.
 ## Development Notes
 * `MainPage.HotPreview.cs` contains all the HotPreview items. Read an article about [how to use HotPreview](). 
 
+* We use `Soundflow` on mobile and Plugin.Maui.Audio` on Windows.
+* Couln't use Soundflow on Windows as
+it prohibited app from closing when clicking on Close button 
+and was crashing with "Activating a single-threaded class from MTA is not supported" when calling `Dispatcher.Dispatch(() => { DeviceDisplay.Current.KeepScreenOn = true; });`.
+
 ## CREDITS
 
 * **Glassy App Icons** by `Laura Reen` licenced under CC Attribution License
