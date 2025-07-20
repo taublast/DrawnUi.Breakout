@@ -1509,13 +1509,15 @@ namespace Breakout.Game
 
                 if (!Ball.IsMoving)
                 {
-                    //move the bal too with us
+                    //move the ball too with us
                     Ball.MoveOffset(deltaX, 0);
+                    
+                    // Ensure ball doesn't exit game field bounds when stuck to paddle
+                    var ballLeftLimit = -Width / 2f + Ball.Width / 2f;
+                    var ballRightLimit = Width / 2f - Ball.Width / 2f;
+                    Ball.Left = Math.Clamp(Ball.Left, ballLeftLimit, ballRightLimit);
                 }
 
-                //PlayerShield.Left = clampedX;
-                //PlayerShieldExplosion.Left = clampedX;
-                //HealthBar.Left = clampedX;
                 Paddle.Repaint();
                 Ball.Repaint();
             }
@@ -1639,6 +1641,12 @@ namespace Breakout.Game
         {
             PlaySound(Sound.Powerup);
 
+            // Reset previous powerup effects before applying new one
+            if (paddle.Powerup != PowerupType.None && paddle.Powerup != powerup.Type)
+            {
+                ResetPowerupEffects(paddle);
+            }
+
             if (powerup.Type == PowerupType.ExtraLife)
             {
                 if (Lives < 8)
@@ -1647,16 +1655,38 @@ namespace Breakout.Game
                 }
             }
 
-            if (Paddle.Powerup != PowerupType.StickyBall)
+            // Apply ball speed effects (should be on ball, not paddle)
+            if (powerup.Type == PowerupType.SlowBall)
+            {
+                Ball.SpeedRatio = 0.6f;
+            }
+            else if (powerup.Type == PowerupType.FastBall)
+            {
+                Ball.SpeedRatio = 1.4f;
+            }
+
+            // Handle sticky ball logic
+            if (Paddle.Powerup == PowerupType.StickyBall && powerup.Type != PowerupType.StickyBall)
+            {
+                Ball.IsMoving = true;
+            }
+            else if (powerup.Type != PowerupType.StickyBall)
             {
                 Ball.IsMoving = true;
             }
 
-            //todo PowerupType.MultiBall
-
             Debug.WriteLine($"POWERUP! {powerup.Type}");
 
             paddle.Powerup = powerup.Type;
+        }
+
+        private void ResetPowerupEffects(PaddleSprite paddle)
+        {
+            // Reset ball speed
+            Ball.SpeedRatio = 1.0f;
+            
+            // Reset paddle effects
+            paddle.Powerup = PowerupType.None;
         }
 
         private bool DetectBulletCollisionsWithRaycast(BulletSprite bullet, float deltaSeconds)

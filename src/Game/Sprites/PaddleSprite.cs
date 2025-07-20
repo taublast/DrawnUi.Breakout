@@ -90,19 +90,8 @@ public class PaddleSprite : SkiaShape, IWithHitBox //, IReusableSprite
             PowerupDuration = 15;
         }
 
-        //SPEED
-        if (powerup == PowerupType.SlowBall)
-        {
-            SpeedRatio = Math.Max(0.5f, SpeedRatio * 0.7f);
-        }
-        else if (powerup == PowerupType.FastBall)
-        {
-            SpeedRatio = Math.Max(0.5f, SpeedRatio * 1.3f);
-        }
-        else
-        {
-            SpeedRatio = 1;
-        }
+        // Remove incorrect speed logic - ball speed should be handled in BreakoutGame
+        // SpeedRatio should remain 1 for paddle
 
         //SIZE
         if (Powerup == PowerupType.ExpandPaddle)

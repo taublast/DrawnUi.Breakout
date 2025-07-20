@@ -307,7 +307,8 @@ namespace Breakout.Game
                         Paddle.PowerupDuration -= cappedDelta;
                         if (Paddle.PowerupDuration <= 0)
                         {
-                            // Remove powerup effect
+                            // Reset all powerup effects when timer expires
+                            ResetPowerupEffects(Paddle);
                             Paddle.Powerup = PowerupType.None;
                         }
                     }
