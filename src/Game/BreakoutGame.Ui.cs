@@ -58,13 +58,12 @@ namespace Breakout.Game
                             //HeightRequest = 500,
                             Children =
                             {
-                                //we place brick inside one layer to check and draw one cache if unchanged
+                                //all bricks inside one layer draw cached if unchanged
                                 new SkiaLayout()
                                 {
-                                    //BackgroundColor = Color.Parse("#000000"),
+                                    UseCache = SkiaCacheType.ImageComposite, //critical for perf
                                     HorizontalOptions = LayoutOptions.Center,
                                     Margin = new(0,90,0,0),
-                                    UseCache = SkiaCacheType.ImageComposite //critical for perf
                                 }.Assign(out BricksContainer),
 
                                 new BallSprite()

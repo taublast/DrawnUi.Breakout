@@ -76,7 +76,10 @@ namespace Breakout.Game
                 State = GameState.Paused;
                 _moveLeft = false;
                 _moveRight = false;
-                GameDialog.Show(this, null, ResStrings.StatePaused.ToUpperInvariant(), null, () => { TogglePause(); });
+                GameDialog.Show(this, null, ResStrings.StatePaused.ToUpperInvariant(), null, () =>
+                {
+                    TogglePause();
+                });
             }
         }
 
