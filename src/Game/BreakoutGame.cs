@@ -30,7 +30,7 @@ namespace Breakout.Game
         public const float BRICKS_SIDE_MARGIN = 16f;
         public const float BRICKS_TOP_MARGIN = 90f;
 
-        public const int LIVES = 5;
+        public const int LIVES = 3;
 
         public const int MAXLVL = 12;
         public const int DEMO_MAXLVL = 3;
@@ -1423,7 +1423,7 @@ namespace Breakout.Game
             }
             else if (powerup.Type == PowerupType.FastBall)
             {
-                Ball.SpeedRatio = 1.5f;
+                Ball.SpeedRatio = 1.75f;
             }
 
             // Handle sticky ball logic
