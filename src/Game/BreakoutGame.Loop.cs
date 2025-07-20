@@ -212,8 +212,7 @@ namespace Breakout.Game
 
                                     if (powerupRect.IntersectsWith(paddle.HitBox))
                                     {
-                                        // Apply powerup to paddle
-                                        ApplyPowerupToPaddle(powerup, paddle);
+                                        ApplyPowerUp(powerup);
                                         RemoveReusable(powerup);
                                         break;
                                     }
@@ -247,7 +246,7 @@ namespace Breakout.Game
                             }
                             else
                             {
-                                // Traditional AABB collision for bullets vs bricks
+                                // Traditional AABB collision for bullets vs bricks and powerups
                                 var bulletRect = bullet.HitBox;
 
                                 foreach (var view in GameField.Views)
@@ -266,8 +265,18 @@ namespace Breakout.Game
                                                 }
                                             }
                                         }
-
                                         if (bulletHit) break;
+                                    }
+                                    // Check collision with powerups
+                                    else if (view is PowerupSprite fallingPowerup && fallingPowerup.IsActive)
+                                    {
+                                        if (bulletRect.IntersectsWith(fallingPowerup.HitBox))
+                                        {
+                                            RemoveReusable(bullet);
+                                            RemoveReusable(fallingPowerup);
+                                            bulletHit = true;
+                                            break;
+                                        }
                                     }
                                 }
                             }
@@ -307,9 +316,8 @@ namespace Breakout.Game
                         Paddle.PowerupDuration -= cappedDelta;
                         if (Paddle.PowerupDuration <= 0)
                         {
-                            // Reset all powerup effects when timer expires
-                            ResetPowerupEffects(Paddle);
-                            Paddle.Powerup = PowerupType.None;
+                            // timer expired
+                            ResetPowerUp();
                         }
                     }
 

@@ -5,6 +5,7 @@ using Breakout.Game.Dialogs;
 using SkiaSharp;
 using System.Diagnostics;
 using System.Numerics;
+using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
 using static Breakout.Game.BreakoutGame;
 
@@ -1224,6 +1225,15 @@ namespace Breakout.Game
         {
             Paddle.Left = 0;
             ResetBall();
+
+            ResetPowerUp();
+        }
+
+        void ResetPowerUp()
+        {
+            Ball.SpeedRatio = 1.0f;
+            Paddle.Powerup = PowerupType.None;
+            Paddle.PowerupDuration = 0;
         }
 
         public void ResetBall()
@@ -1637,14 +1647,14 @@ namespace Breakout.Game
             return PowerupType.None;
         }
 
-        private void ApplyPowerupToPaddle(PowerupSprite powerup, PaddleSprite paddle)
+        private void ApplyPowerUp(PowerupSprite powerup)
         {
             PlaySound(Sound.Powerup);
 
             // Reset previous powerup effects before applying new one
-            if (paddle.Powerup != PowerupType.None && paddle.Powerup != powerup.Type)
+            if (Paddle.Powerup != PowerupType.None && Paddle.Powerup != powerup.Type)
             {
-                ResetPowerupEffects(paddle);
+                ResetPowerUp();
             }
 
             if (powerup.Type == PowerupType.ExtraLife)
@@ -1677,16 +1687,7 @@ namespace Breakout.Game
 
             Debug.WriteLine($"POWERUP! {powerup.Type}");
 
-            paddle.Powerup = powerup.Type;
-        }
-
-        private void ResetPowerupEffects(PaddleSprite paddle)
-        {
-            // Reset ball speed
-            Ball.SpeedRatio = 1.0f;
-            
-            // Reset paddle effects
-            paddle.Powerup = PowerupType.None;
+            Paddle.Powerup = powerup.Type;
         }
 
         private bool DetectBulletCollisionsWithRaycast(BulletSprite bullet, float deltaSeconds)
@@ -1715,16 +1716,31 @@ namespace Breakout.Game
                         }
                     }
                 }
+                // Add powerups as targets too
+                else if (view is PowerupSprite powerup && powerup.IsActive)
+                {
+                    collisionTargets.Add(powerup);
+                }
             }
 
             // Check for collisions
             var hit = RaycastCollision.CastRay(bulletPosition, bulletDirection, maxDistance, bulletRadius,
                 collisionTargets);
 
-            if (hit.Collided && hit.Target is BrickSprite brickHit)
+            if (hit.Collided)
             {
-                CollideBulletAndBrick(bullet, brickHit);
-                return true;
+                if (hit.Target is BrickSprite brickHit)
+                {
+                    CollideBulletAndBrick(bullet, brickHit);
+                    return true;
+                }
+                else if (hit.Target is PowerupSprite powerupHit)
+                {
+                    // Remove both bullet and powerup
+                    RemoveReusable(bullet);
+                    RemoveReusable(powerupHit);
+                    return true;
+                }
             }
 
             return false;
