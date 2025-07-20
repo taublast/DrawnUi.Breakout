@@ -16,7 +16,7 @@
     <!-- Display name -->
     <ApplicationTitle>Breakout</ApplicationTitle>
 
-    <!--<UseNuget>true</UseNuget>-->
+    <UseNuget>true</UseNuget>
     
     <!-- App Identifier -->
     <ApplicationId>com.mauigame.breakout</ApplicationId>
