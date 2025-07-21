@@ -400,6 +400,10 @@ namespace Breakout.Game
         /// </summary>
         protected override void OnPaused()
         {
+            if (_audioService != null)
+            {
+                _audioService.IsMuted = true;
+            }
             PauseGame();
             StopLoop();
         }
@@ -409,6 +413,10 @@ namespace Breakout.Game
         /// </summary>
         protected override void OnResumed()
         {
+            if (_audioService != null)
+            {
+                _audioService.IsMuted = false;
+            }
             if (State == GameState.Playing || State == GameState.DemoPlay)
             {
                 StartLoop();
