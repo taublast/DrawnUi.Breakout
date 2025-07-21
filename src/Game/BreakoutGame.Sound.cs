@@ -16,7 +16,9 @@ namespace Breakout.Game
             Wall,
             Oops,
             Start,
-            Powerup
+            PowerUp,
+            PowerDown,
+            Attack,
         }
 
         public void EnableSounds(bool state)
@@ -60,8 +62,14 @@ namespace Breakout.Game
                     case Sound.Start:
                         _audioService.PlaySound("start", 0.75f);
                         break;
-                    case Sound.Powerup:
-                        _audioService.PlaySound("powerup", 0.6f);
+                    case Sound.PowerUp:
+                        //_audioService.PlaySound("powerup", 0.5f);
+                        break;
+                    case Sound.PowerDown:
+                        //_audioService.PlaySound("powerdown", 0.33f);
+                        break;
+                    case Sound.Attack:
+                        _audioService.PlaySound("aggro", 0.66f);
                         break;
                 }
             });
@@ -81,6 +89,11 @@ namespace Breakout.Game
             //will keep
             await audioService.PreloadSoundAsync("oops", "Fx/ballout.mp3");
             await audioService.PreloadSoundAsync("collide", "Fx/bricksynth.wav");
+            await audioService.PreloadSoundAsync("aggro", "Fx/powerup27.mp3");
+
+            //todo maybe
+            //await audioService.PreloadSoundAsync("powerdown", "Fx/????.mp3");
+            //await audioService.PreloadSoundAsync("powerup", "Fx/????.mp3");
 
             //maybe
             await audioService.PreloadSoundAsync("brick", "Sounds/tik.wav");
@@ -96,21 +109,22 @@ namespace Breakout.Game
             await audioService.PreloadSoundAsync("one", "Sounds/one.wav");
             await audioService.PreloadSoundAsync("two", "Sounds/two.wav");
 
-            // Preload background music
-
-            await audioService.PreloadSoundAsync("demo", "Music/demoHypnoticPuzzle4.mp3");
-            await audioService.PreloadSoundAsync("play", "Music/lvl1PixelCityGroovin.mp3");
+            // Background music files will be streamed directly for memory efficiency
+            // Both SoundFlow and AudioMixer now support streaming from files
 
             _audioService = audioService;
 
             var soundsOn = AppSettings.Get(AppSettings.SoundsOn, AppSettings.SoundsOnDefault);
             EnableSounds(soundsOn);
+        }
 
+        public void SetupBackgroundMusic()
+        {
             var musicOn = AppSettings.Get(AppSettings.MusicOn, AppSettings.MusicOnDefault);
             SetupBackgroundMusic(musicOn);
         }
 
-        public void SetupBackgroundMusic(bool isOn)
+        protected void SetupBackgroundMusic(bool isOn)
         {
             if (!isOn)
             {
@@ -120,11 +134,11 @@ namespace Breakout.Game
             {
                 if (State == GameState.Playing)
                 {
-                    StartBackgroundMusic(Level);
+                    PlayMusicLooped(Level);
                 }
                 else
                 {
-                    StartBackgroundMusic(0);
+                    PlayMusicLooped(0);
                 }
             }
         }
@@ -140,23 +154,23 @@ namespace Breakout.Game
         }
 
         /// <summary>
-        /// Starts the background music loop
+        /// Starts the background music loop using efficient file streaming
         /// </summary>
-        public void StartBackgroundMusic(int lvl)
+        public void PlayMusicLooped(int lvl)
         {
             if (_audioService == null || !AppSettings.Get(AppSettings.MusicOn, AppSettings.MusicOnDefault))
             {
                 return;
             }
 
-            _audioService.StopBackgroundMusic();
+            // Stream background music directly from files (memory efficient)
             if (lvl > 0)
             {
-                _audioService?.StartBackgroundMusic("play", 0.5f);
+                _audioService.StartBackgroundMusicFromFile("Music/lvl1PixelCityGroovin.mp3", 1.0f);
             }
             else
             {
-                _audioService?.StartBackgroundMusic("demo", 0.5f);
+                _audioService.StartBackgroundMusicFromFile("Music/demoHypnoticPuzzle4.mp3", 0.5f);
             }
         }
 

@@ -198,6 +198,30 @@ public class AudioMixerService : IAudioService
 
     #region BACKGROUND MUSIC
 
+    public async void StartBackgroundMusicFromFile(string filePath, float volume = 1.0f)
+    {
+        StopBackgroundMusic(); // Stop any existing background music
+
+        _backgroundMusicVolume = Math.Clamp(volume, 0f, 1f);
+
+        try
+        {
+            // Stream directly from file using Plugin.Maui.Audio
+            var fileStream = await FileSystem.OpenAppPackageFileAsync(filePath);
+            _backgroundMusicPlayer = _audioManager.CreatePlayer(fileStream);
+            _backgroundMusicPlayer.Loop = true;
+            UpdateBackgroundMusicVolume();
+            _backgroundMusicPlayer.Play();
+
+            Debug.WriteLine($"Started background music streaming from '{filePath}' using AudioMixer");
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error starting background music from file '{filePath}': {ex}");
+        }
+    }
+
+
     /// <summary>
     /// Starts background music playback
     /// </summary>

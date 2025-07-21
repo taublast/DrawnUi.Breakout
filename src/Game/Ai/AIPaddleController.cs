@@ -432,30 +432,30 @@ namespace Breakout.Game.Ai
         /// </summary>
         private bool CheckForPowerupsToCollect()
         {
-            PowerupSprite targetPowerup = null;
+            PowerUpSprite targetPowerUp = null;
             double closestDistance = double.MaxValue;
 
             // Find ANY powerup that can be reached
             foreach (var view in _game.GameField.Views)
             {
-                if (view is PowerupSprite powerup && powerup.IsActive)
+                if (view is PowerUpSprite powerup && powerup.IsActive)
                 {
                     var distance = Math.Abs(powerup.Left - _game.Paddle.Left);
-                    var timeToReachPaddle = (powerup.Top - _game.Paddle.Top) / PowerupSprite.FallSpeed;
+                    var timeToReachPaddle = (powerup.Top - _game.Paddle.Top) / PowerUpSprite.FallSpeed;
                     
                     // Go for ANY powerup that's reachable - MUCH MORE AGGRESSIVE
                     if (timeToReachPaddle > 0.1f && distance < closestDistance)
                     {
                         closestDistance = distance;
-                        targetPowerup = powerup;
+                        targetPowerUp = powerup;
                     }
                 }
             }
 
             // If we found any powerup, go for it aggressively
-            if (targetPowerup != null)
+            if (targetPowerUp != null)
             {
-                _targetX = targetPowerup.Left;
+                _targetX = targetPowerUp.Left;
                 MovePaddleTowardTarget();
                 return true; // Signal that we're going for a powerup
             }
@@ -463,32 +463,6 @@ namespace Breakout.Game.Ai
             return false; // No powerups to collect
         }
 
-        /// <summary>
-        /// Determines if a powerup type is worth collecting
-        /// </summary>
-        private bool IsUsefulPowerup(PowerupType type)
-        {
-            switch (type)
-            {
-                case PowerupType.Destroyer:
-                    return true; // Always useful for shooting
-                case PowerupType.ExpandPaddle:
-                    return _game.Paddle.Powerup != PowerupType.ExpandPaddle; // Don't collect if already have it
-                case PowerupType.StickyBall:
-                    return true; // Useful for control
-                case PowerupType.ExtraLife:
-                    return true; // Always useful
-                case PowerupType.SlowBall:
-                    return _game.Ball.SpeedRatio > 1.0f; // Only if ball is fast
-                case PowerupType.FastBall:
-                    return false; // AI doesn't want faster ball
-                case PowerupType.ShrinkPaddle:
-                    return false; // Never want this
-                case PowerupType.MultiBall:
-                    return true; // Could be useful
-                default:
-                    return false;
-            }
-        }
+
     }
 }

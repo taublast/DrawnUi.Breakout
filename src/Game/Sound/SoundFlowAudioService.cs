@@ -1,11 +1,12 @@
-using System.Diagnostics;
-using System.Numerics;
 using AppoMobi.Specials;
 using SoundFlow.Abstracts;
 using SoundFlow.Backends.MiniAudio;
 using SoundFlow.Components;
 using SoundFlow.Enums;
+using SoundFlow.Interfaces;
 using SoundFlow.Providers;
+using System.Diagnostics;
+using System.Numerics;
 
 namespace Breakout.Game;
 
@@ -87,7 +88,7 @@ public class SoundFlowAudioService : IAudioService
     private readonly Mixer _masterMixer;
 
     // Background music tracking
-    private SoundPlayer _backgroundMusicPlayer;
+    private SoundPlayerBase _backgroundMusicPlayer;
     private float _backgroundMusicVolume = 0.3f;
 
     // Sound effect management
@@ -241,6 +242,64 @@ public class SoundFlowAudioService : IAudioService
     #endregion
 
     #region BACKGROUND MUSIC
+
+ 
+
+    public class SFPlayer : SoundPlayerBase
+    {
+        /// <summary>A sound player that plays audio from a data provider.</summary>
+        public SFPlayer(ISoundDataProvider dataProvider) : base (dataProvider)
+        {
+
+        }
+
+        protected override void OnPlaybackEnded()
+        {
+            base.OnPlaybackEnded();
+
+            if (IsLooping && State != PlaybackState.Playing)
+            {
+                Seek(0);
+                Play();
+            }
+        }
+
+        /// <inheritdoc />
+        public override string Name { get; set; }
+    }
+
+    /// <summary>
+    /// Starts background music playback directly from file (streaming, memory-efficient)
+    /// </summary>
+    /// <param name="filePath">Path to the background music file</param>
+    /// <param name="volume">Volume level (0.0 to 1.0)</param>
+    public async void StartBackgroundMusicFromFile(string filePath, float volume = 1.0f)
+    {
+        StopBackgroundMusic(); // Stop any existing background music
+
+        _backgroundMusicVolume = Math.Clamp(volume, 0f, 1f);
+
+        try
+        {
+            // Stream directly from file instead of loading into memory
+            var fileStream = await FileSystem.OpenAppPackageFileAsync(filePath);
+            var dataProvider = new StreamDataProvider(fileStream);
+            _backgroundMusicPlayer = new SFPlayer(dataProvider);
+
+            _backgroundMusicPlayer.IsLooping = true;
+            UpdateBackgroundMusicVolume();
+
+            _masterMixer.AddComponent(_backgroundMusicPlayer);
+            _backgroundMusicPlayer.Play();
+
+            Debug.WriteLine($"Started background music streaming from '{filePath}'");
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error starting background music from file '{filePath}': {ex}");
+        }
+    }
+
 
     /// <summary>
     /// Starts background music playback

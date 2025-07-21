@@ -188,7 +188,7 @@ namespace Breakout.Game
                         }
                     }
 
-                    else if (x is PowerupSprite powerup && powerup.IsActive)
+                    else if (x is PowerUpSprite powerup && powerup.IsActive)
                     {
                         // Update powerup state and position
                         powerup.UpdateState(LastFrameTimeNanos);
@@ -212,7 +212,7 @@ namespace Breakout.Game
 
                                     if (powerupRect.IntersectsWith(paddle.HitBox))
                                     {
-                                        ApplyPowerUp(powerup);
+                                        ApplyPowerUp(powerup.Type);
                                         RemoveReusable(powerup);
                                         break;
                                     }
@@ -222,7 +222,7 @@ namespace Breakout.Game
                             // Move powerup down if still active
                             if (powerup.IsActive)
                             {
-                                powerup.Top += PowerupSprite.FallSpeed * cappedDelta;
+                                powerup.Top += PowerUpSprite.FallSpeed * cappedDelta;
                             }
                         }
                     }
@@ -265,10 +265,11 @@ namespace Breakout.Game
                                                 }
                                             }
                                         }
+
                                         if (bulletHit) break;
                                     }
                                     // Check collision with powerups
-                                    else if (view is PowerupSprite fallingPowerup && fallingPowerup.IsActive)
+                                    else if (view is PowerUpSprite fallingPowerup && fallingPowerup.IsActive)
                                     {
                                         if (bulletRect.IntersectsWith(fallingPowerup.HitBox))
                                         {
@@ -334,6 +335,42 @@ namespace Breakout.Game
                 }
             }
 
+            // Ensure ball never exits game field bounds 
+            #region fix raycast
+            var ballLeftLimit = -GameField.Width / 2f + Ball.Width / 2f;
+            var ballRightLimit = GameField.Width / 2f - Ball.Width / 2f;
+            var wasLeft = Ball.Left;
+            Ball.Left = Math.Clamp(Ball.Left, ballLeftLimit, ballRightLimit);
+
+            // If ball was clamped horizontally, reflect its horizontal direction
+            if (wasLeft != Ball.Left && Ball.IsMoving)
+            {
+                Ball.Angle = MathF.PI - Ball.Angle; // Reflect horizontally
+                PlaySound(Sound.Wall, new Vector3(Ball.Left < 0 ? -1.0f : 1.0f, 0f, -1f));
+            }
+
+            var ballTopLimit = -GameField.Height + Ball.Height;
+            var ballBottomLimit = 0;
+            var wasTop = Ball.Top;
+            Ball.Top = Math.Clamp(Ball.Top, ballTopLimit, ballBottomLimit);
+
+            // If ball was clamped vertically, reflect its vertical direction with slight randomization
+            if (wasTop != Ball.Top && Ball.IsMoving)
+            {
+                // Reflect vertically
+                Ball.Angle = -Ball.Angle;
+
+                // Add slight randomization to prevent infinite vertical bouncing
+                var randomOffset = (Random.Shared.NextSingle() - 0.5f) * 0.2f; // ±0.1 radians (~±6 degrees)
+                Ball.Angle += randomOffset;
+
+                // Ensure angle doesn't become too horizontal (use existing clamping)
+                Ball.Angle = BallSprite.ClampAngleFromHorizontal(Ball.Angle);
+
+                PlaySound(Sound.Wall, new Vector3(0f, Ball.Top < -GameField.Height / 2f ? -1.0f : 1.0f, -1f));
+            }
+            #endregion
+            
             ProcessSpritesToBeRemoved();
 
             if (_spritesToBeAdded.Count > 0)

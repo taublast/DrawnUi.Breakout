@@ -2,15 +2,15 @@ using SkiaSharp;
 
 namespace Breakout.Game;
 
-public class PowerupSprite : SkiaShape, IWithHitBox, IReusableSprite
+public class PowerUpSprite : SkiaShape, IWithHitBox, IReusableSprite
 {
     public static float FallSpeed = BreakoutGame.POWERUP_SPEED;
 
     private SkiaLabel _letterLabel;
 
-    public static PowerupSprite Create()
+    public static PowerUpSprite Create()
     {
-        var powerup = new PowerupSprite();
+        var powerup = new PowerUpSprite();
         powerup.Initialize();
         return powerup;
     }
@@ -93,12 +93,15 @@ public class PowerupSprite : SkiaShape, IWithHitBox, IReusableSprite
                 BackgroundColor = Colors.GreenYellow;
                 _letterLabel.TextColor = BlackColor;
                 break;
+
             default:
                 _letterLabel.Text = "?";
                 BackgroundColor = Colors.White;
                 _letterLabel.TextColor = BlackColor;
                 break;
         }
+
+        StrokeColor = BackgroundColor.MakeLighter(50f);
     }
 
     public void UpdateRotation(float deltaTime)

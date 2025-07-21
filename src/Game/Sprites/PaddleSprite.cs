@@ -87,7 +87,7 @@ public class PaddleSprite : SkiaShape, IWithHitBox //, IReusableSprite
         }
         else
         {
-            PowerupDuration = 15;
+            PowerupDuration = BreakoutGame.POWERUP_DURATION;
         }
 
         // Remove incorrect speed logic - ball speed should be handled in BreakoutGame
@@ -107,6 +107,11 @@ public class PaddleSprite : SkiaShape, IWithHitBox //, IReusableSprite
         if (Powerup == PowerupType.Destroyer)
         {
             BackgroundColor = AmstradColors.Red;
+        }
+        else
+        if (Powerup == PowerupType.StickyBall)
+        {
+            BackgroundColor = Colors.DarkCyan;
         }
         else
         {

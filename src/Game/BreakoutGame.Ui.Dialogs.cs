@@ -323,11 +323,11 @@ namespace Breakout.Game
                                         {
                                             if (PreviousState == GameState.Playing)
                                             {
-                                                StartBackgroundMusic(Level);
+                                                PlayMusicLooped(Level);
                                             }
                                             else
                                             {
-                                                StartBackgroundMusic(0);
+                                                PlayMusicLooped(0);
                                             }
                                         }
                                         else

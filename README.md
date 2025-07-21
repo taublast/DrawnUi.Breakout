@@ -25,7 +25,8 @@ A cross-platform game to play on **iOS, MacCatalyst, Android and Windows**.
 * All game field content is built with vector shapes and scalable to infinity
 * Uses [HotPreview](https://github.com/BretJohnson/hot-preview) to dynamically preview levels/states/languages/sprites and much more
 * Uses [Soundflow](https://github.com/LSXPrime/SoundFlow) and [Plugin.Maui.Audio](https://github.com/jfversluis/Plugin.Maui.Audio) for sound
-* Uses [DrawnUI for .NET MAUI]() for gestures/layout/bindings/fluent/rendering and more
+* Uses [DrawnUI for .NET MAUI]() for layout/gestures/fluent/bindings/rendering pipeline
+* Uses [SkiaSharp]() for making this all possible
 
 ## Development Notes
 * `MainPage.HotPreview.cs` contains all the HotPreview items. Read an article about [how to use HotPreview](https://github.com/BretJohnson/hot-preview). 
@@ -35,10 +36,12 @@ A cross-platform game to play on **iOS, MacCatalyst, Android and Windows**.
 it prohibited app from closing when clicking on Close button 
 and was crashing with "Activating a single-threaded class from MTA is not supported" when calling `Dispatcher.Dispatch(() => { DeviceDisplay.Current.KeepScreenOn = true; });`.
 
-## CREDITS
+## Credits
 
-* **Glassy App Icons** by `Laura Reen` licenced under CC Attribution License
-* todo music
+* **Music** - All by `Eric Matyas` ([Soundimage.org](https://Soundimage.org)) please visit his site if you need high quality gaming audio content
+* **Sound FX** - Those by `Eric Matyas` ([Soundimage.org](https://Soundimage.org)): powerup27
+* **Glassy App Icons** - The settings button by `Laura Reen`, fell in love with the settings icon, licensed under CC Attribution
+
 
 ### Optional Maybe ToDo
 

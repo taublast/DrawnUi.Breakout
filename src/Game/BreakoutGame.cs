@@ -34,9 +34,11 @@ namespace Breakout.Game
 
         public const int MAXLVL = 12;
         public const int DEMO_MAXLVL = 3;
+        public const int POWERUP_MAX_BULLETS = 10;
+        public const int POWERUP_DURATION = 10;
 
-        public const int MAX_POWERUPS = 12;
-        public const int MAX_PADDLE_BULLETS = 64;
+        public const int MAX_POWERUPS_IN_POOL = 12;
+        public const int MAX_BULLETS_IN_POOL = 64;
 
         /// <summary>
         /// For long running profiling
@@ -165,13 +167,13 @@ namespace Breakout.Game
             }
 
             // Pool powerups for reuse
-            for (int i = 0; i < MAX_POWERUPS; i++)
+            for (int i = 0; i < MAX_POWERUPS_IN_POOL; i++)
             {
                 AddToPoolPowerupSprite();
             }
 
             // Pool paddle bullets for reuse
-            for (int i = 0; i < MAX_PADDLE_BULLETS; i++)
+            for (int i = 0; i < MAX_BULLETS_IN_POOL; i++)
             {
                 AddToPoolPaddleBulletSprite();
             }
@@ -352,6 +354,10 @@ namespace Breakout.Game
             });
         }
 
+        private int CollectedPowerUps;
+        private int CollectedPowerUpsSpeedy;
+        private int BulletsAvailable;
+
         /// <summary>
         /// Start a precise level number in player mode
         /// </summary>
@@ -372,6 +378,9 @@ namespace Breakout.Game
             }
 
             _levelCompletionPending = 0;
+            CollectedPowerUps = 0;
+            CollectedPowerUpsSpeedy = 0;
+            BulletsAvailable = POWERUP_MAX_BULLETS;
 
             ClearSpritesOnBoard();
             ProcessSpritesToBeRemoved();
@@ -506,6 +515,8 @@ namespace Breakout.Game
                 _moveLeft = false;
                 _moveRight = false;
             }
+
+            SetupBackgroundMusic();
         }
 
         void SetupBricksContainer(float width, float height)
@@ -521,17 +532,15 @@ namespace Breakout.Game
         public void StartNewGameDemo()
         {
             PreviousState = GameState.DemoPlay;
-            StartNewGame();
             State = GameState.DemoPlay;
-            StartBackgroundMusic(0);
+            StartNewGame();
         }
 
         public void StartNewGamePlayer()
         {
             PreviousState = GameState.Playing;
-            StartNewGame();
             State = GameState.Playing;
-            StartBackgroundMusic(1);
+            StartNewGame();
         }
 
 
@@ -648,7 +657,7 @@ namespace Breakout.Game
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         void AddToPoolPowerupSprite()
         {
-            var powerup = PowerupSprite.Create();
+            var powerup = PowerUpSprite.Create();
             PowerupsPool.Return(powerup);
         }
 
@@ -748,8 +757,8 @@ namespace Breakout.Game
 
         // Pools for bricks (reusable sprites)
         private ReusableSpritePool<BrickSprite> BricksPool = new(MAX_BRICKS);
-        private ReusableSpritePool<PowerupSprite> PowerupsPool = new(MAX_POWERUPS);
-        private ReusableSpritePool<BulletSprite> PaddleBulletsPool = new(MAX_PADDLE_BULLETS);
+        private ReusableSpritePool<PowerUpSprite> PowerupsPool = new(MAX_POWERUPS_IN_POOL);
+        private ReusableSpritePool<BulletSprite> PaddleBulletsPool = new(MAX_BULLETS_IN_POOL);
         public SKRect GameFieldArea = SKRect.Empty;
         public SKRect BricksArea = SKRect.Empty;
         private Queue<SkiaControl> _spritesToBeRemovedLater = new();
@@ -760,6 +769,12 @@ namespace Breakout.Game
         volatile bool _moveLeft, _moveRight;
         private bool _wasPanning;
         private bool _isPressed;
+
+        // Ball stuck detection
+        private Vector2 _lastBallPosition;
+        private float _ballStuckTimer;
+        private const float BALL_STUCK_THRESHOLD = 2.0f; // seconds
+        private const float BALL_STUCK_DISTANCE = 5.0f; // pixels
         private GameState _lastState;
         private GameState _state;
 
@@ -1224,7 +1239,10 @@ namespace Breakout.Game
 
         public void ResetPaddle()
         {
+            _moveLeft = false;
+            _moveRight = false;
             Paddle.Left = 0;
+
             ResetBall();
 
             ResetPowerUp();
@@ -1273,15 +1291,7 @@ namespace Breakout.Game
                 {
                     //move the ball too with us
                     Ball.MoveOffset(deltaX, 0);
-                    
-                    // Ensure ball doesn't exit game field bounds when stuck to paddle
-                    var ballLeftLimit = -Width / 2f + Ball.Width / 2f;
-                    var ballRightLimit = Width / 2f - Ball.Width / 2f;
-                    Ball.Left = Math.Clamp(Ball.Left, ballLeftLimit, ballRightLimit);
                 }
-
-                Paddle.Repaint();
-                Ball.Repaint();
             }
         }
 
@@ -1306,7 +1316,7 @@ namespace Breakout.Game
                 BricksPool.Return(enemy);
             }
 
-            if (sprite is PowerupSprite powerup)
+            if (sprite is PowerUpSprite powerup)
             {
                 PowerupsPool.Return(powerup);
             }
@@ -1399,17 +1409,45 @@ namespace Breakout.Game
             return PowerupType.None;
         }
 
-        private void ApplyPowerUp(PowerupSprite powerup)
+        private void ApplyPowerUp(PowerupType powerUpType)
         {
-            PlaySound(Sound.Powerup);
+
+            if (powerUpType != PowerupType.None)
+            {
+                CollectedPowerUps++;
+                if (powerUpType == PowerupType.Destroyer || powerUpType == PowerupType.FastBall ||
+                    powerUpType == PowerupType.MultiBall)
+                {
+                    CollectedPowerUpsSpeedy++;
+                    if (CollectedPowerUpsSpeedy == 1)
+                    {
+                        _audioService.StartBackgroundMusicFromFile("Music/MonkeyDrama.mp3", 1.0f);
+                    }
+                }
+            }
+
+            if (powerUpType == PowerupType.Destroyer)
+            {
+                PlaySound(Sound.Attack);
+            }
+            else if (powerUpType == PowerupType.None)
+            {
+                PlaySound(Sound.PowerDown);
+            }
+            else
+            {
+                PlaySound(Sound.PowerUp);
+            }
 
             // Reset previous powerup effects before applying new one
-            if (Paddle.Powerup != PowerupType.None && Paddle.Powerup != powerup.Type)
+            if (Paddle.Powerup != PowerupType.None && Paddle.Powerup != powerUpType)
             {
                 ResetPowerUp();
             }
 
-            if (powerup.Type == PowerupType.ExtraLife)
+
+
+            if (powerUpType == PowerupType.ExtraLife)
             {
                 if (Lives < 8)
                 {
@@ -1418,28 +1456,28 @@ namespace Breakout.Game
             }
 
             // Apply ball speed effects (should be on ball, not paddle)
-            if (powerup.Type == PowerupType.SlowBall)
+            if (powerUpType == PowerupType.SlowBall)
             {
                 Ball.SpeedRatio = 0.5f;
             }
-            else if (powerup.Type == PowerupType.FastBall)
+            else if (powerUpType == PowerupType.FastBall)
             {
                 Ball.SpeedRatio = 1.75f;
             }
 
             // Handle sticky ball logic
-            if (Paddle.Powerup == PowerupType.StickyBall && powerup.Type != PowerupType.StickyBall)
+            if (Paddle.Powerup == PowerupType.StickyBall && powerUpType != PowerupType.StickyBall)
             {
                 Ball.IsMoving = true;
             }
-            else if (powerup.Type != PowerupType.StickyBall)
+            else if (powerUpType != PowerupType.StickyBall)
             {
                 Ball.IsMoving = true;
             }
 
-            Debug.WriteLine($"POWERUP! {powerup.Type}");
+            Debug.WriteLine($"POWERUP! {powerUpType}");
 
-            Paddle.Powerup = powerup.Type;
+            Paddle.Powerup = powerUpType;
         }
 
         private bool DetectBulletCollisionsWithRaycast(BulletSprite bullet, float deltaSeconds)
@@ -1469,7 +1507,7 @@ namespace Breakout.Game
                     }
                 }
                 // Add powerups as targets too
-                else if (view is PowerupSprite powerup && powerup.IsActive)
+                else if (view is PowerUpSprite powerup && powerup.IsActive)
                 {
                     collisionTargets.Add(powerup);
                 }
@@ -1486,7 +1524,7 @@ namespace Breakout.Game
                     CollideBulletAndBrick(bullet, brickHit);
                     return true;
                 }
-                else if (hit.Target is PowerupSprite powerupHit)
+                else if (hit.Target is PowerUpSprite powerupHit)
                 {
                     // Remove both bullet and powerup
                     RemoveReusable(bullet);
@@ -1514,6 +1552,11 @@ namespace Breakout.Game
                     bullet.ResetAnimationState();
                     _spritesToBeAdded.Add(bullet);
                 }
+            }
+            BulletsAvailable--;
+            if (BulletsAvailable <= 0)
+            {
+                ApplyPowerUp(PowerupType.None);
             }
         }
 
