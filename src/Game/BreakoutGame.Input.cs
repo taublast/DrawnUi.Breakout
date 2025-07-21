@@ -200,11 +200,6 @@ namespace Breakout.Game
                 return consumed;
             }
 
-            if (State == GameState.DemoPlay && args.Type == TouchActionResult.Down)
-            {
-                State = GameState.Playing;
-            }
-
             if (State == GameState.Playing)
             {
                 var velocityX = (float)(args.Event.Distance.Velocity.X / RenderingScale);

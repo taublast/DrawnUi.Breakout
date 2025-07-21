@@ -250,18 +250,20 @@ public class SoundFlowAudioService : IAudioService
         /// <summary>A sound player that plays audio from a data provider.</summary>
         public SFPlayer(ISoundDataProvider dataProvider) : base (dataProvider)
         {
-
+            _dataProvider = dataProvider;
         }
 
-        protected override void OnPlaybackEnded()
-        {
-            base.OnPlaybackEnded();
+        private readonly ISoundDataProvider _dataProvider;
 
-            if (IsLooping && State != PlaybackState.Playing)
+        protected override void HandleEndOfStream(Span<float> remainingOutputBuffer)
+        {
+            if (!_dataProvider.CanSeek)
             {
-                Seek(0);
-                Play();
+                //basically we wouldn't be able to loop as we don't know the end
+                var check = $"{Time} / {Duration}  {LoopStartSamples} / {LoopEndSamples}  |  {LoopEndSeconds}";
+                Debug.WriteLine(check);
             }
+            base.HandleEndOfStream(remainingOutputBuffer);
         }
 
         /// <inheritdoc />

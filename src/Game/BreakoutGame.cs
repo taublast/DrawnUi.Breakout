@@ -328,6 +328,8 @@ namespace Breakout.Game
 
         public async void GameComplete()
         {
+            PlaySound(Sound.Joy);
+
             var levelCompleteContent =
                 UiElements.DialogPrompt(string.Format(ResStrings.MessageGameComplete, Score));
 
@@ -504,16 +506,25 @@ namespace Breakout.Game
             levelReady = false;
 
             // Preserve demo state if we're in demo mode, otherwise set to Playing
-            if (State != GameState.DemoPlay)
+            if (PreviousState == GameState.Playing)
             {
                 State = GameState.Playing;
+            }
+
+            if (State!= GameState.Playing)
+            {
+                State = GameState.DemoPlay;
             }
 
             if (State == GameState.DemoPlay)
             {
                 AIController.ResetTimers();
-                _moveLeft = false;
-                _moveRight = false;
+            }
+            else
+            {
+                //PLAYER!
+                State = GameState.Playing; //last one bulletrpoof
+                PlaySound(Sound.Start);
             }
 
             SetupBackgroundMusic();
@@ -1421,7 +1432,7 @@ namespace Breakout.Game
                     CollectedPowerUpsSpeedy++;
                     if (CollectedPowerUpsSpeedy == 1)
                     {
-                        _audioService.StartBackgroundMusicFromFile("Music/MonkeyDrama.mp3", 1.0f);
+                        PlaySpeedyMusic();
                     }
                 }
             }

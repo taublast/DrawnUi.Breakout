@@ -19,6 +19,10 @@ namespace Breakout.Game
             PowerUp,
             PowerDown,
             Attack,
+            Dialog,
+            Selection,
+            Joy,
+            Sad
         }
 
         public void EnableSounds(bool state)
@@ -27,53 +31,6 @@ namespace Breakout.Game
         }
 
         private bool soundsOn;
-
-        public void PlaySound(Sound sound, System.Numerics.Vector3 position = default)
-        {
-            if (_audioService == null || !soundsOn)
-                return;
-
-            if (State == GameState.DemoPlay && !USE_SOUND_IN_DEMO)
-            {
-                return;
-            }
-
-            Tasks.StartDelayedAsync(TimeSpan.FromMicroseconds(1), async () =>
-            {
-                if (position == default)
-                {
-                    position = new Vector3(01f, 1, 1f);
-                }
-
-                switch (sound)
-                {
-                    case Sound.Board:
-                        _audioService.PlaySpatialSound("ball", position, 0.5f);
-                        break;
-                    case Sound.Brick:
-                        _audioService.PlaySpatialSound("board2", position);
-                        break;
-                    case Sound.Wall:
-                        _audioService.PlaySpatialSound("board3", position, 0.5f);
-                        break;
-                    case Sound.Oops:
-                        _audioService.PlaySound("oops", 0.75f);
-                        break;
-                    case Sound.Start:
-                        _audioService.PlaySound("start", 0.75f);
-                        break;
-                    case Sound.PowerUp:
-                        //_audioService.PlaySound("powerup", 0.5f);
-                        break;
-                    case Sound.PowerDown:
-                        //_audioService.PlaySound("powerdown", 0.33f);
-                        break;
-                    case Sound.Attack:
-                        _audioService.PlaySound("aggro", 0.66f);
-                        break;
-                }
-            });
-        }
 
         private async Task InitializeAudioAsync()
         {
@@ -90,7 +47,10 @@ namespace Breakout.Game
             await audioService.PreloadSoundAsync("oops", "Fx/ballout.mp3");
             await audioService.PreloadSoundAsync("collide", "Fx/bricksynth.wav");
             await audioService.PreloadSoundAsync("aggro", "Fx/powerup27.mp3");
-
+            await audioService.PreloadSoundAsync("dlg", "Fx/quirky26.mp3");
+            await audioService.PreloadSoundAsync("sel", "Fx/quirky7.mp3");
+            await audioService.PreloadSoundAsync("joy", "Fx/synthchime2.mp3");
+            await audioService.PreloadSoundAsync("sad", "Fx/bells1.mp3");
             //todo maybe
             //await audioService.PreloadSoundAsync("powerdown", "Fx/????.mp3");
             //await audioService.PreloadSoundAsync("powerup", "Fx/????.mp3");
@@ -112,10 +72,87 @@ namespace Breakout.Game
             // Background music files will be streamed directly for memory efficiency
             // Both SoundFlow and AudioMixer now support streaming from files
 
+            // Preload background music
+            //we need to preload as Soundflow actually has a problem to get valid Length when reading from mobile file
+            //so in the future we could play from file when its fixed
+            await audioService.PreloadSoundAsync("demo", "Music/demoHypnoticPuzzle4.mp3");
+            await audioService.PreloadSoundAsync("play", "Music/lvl1PixelCityGroovin.mp3");
+            await audioService.PreloadSoundAsync("speedy", "Music/MonkeyDrama.mp3");
+
             _audioService = audioService;
 
             var soundsOn = AppSettings.Get(AppSettings.SoundsOn, AppSettings.SoundsOnDefault);
             EnableSounds(soundsOn);
+        }
+
+
+        public void PlaySound(Sound sound, System.Numerics.Vector3 position = default)
+        {
+            if (_audioService == null || !soundsOn)
+                return;
+
+            if (State == GameState.DemoPlay && !USE_SOUND_IN_DEMO)
+            {
+                return;
+            }
+
+            Tasks.StartDelayedAsync(TimeSpan.FromMicroseconds(1), async () =>
+            {
+                if (position == default)
+                {
+                    position = new Vector3(01f, 1, 1f);
+                }
+
+                switch (sound)
+                {
+                case Sound.Board:
+                _audioService.PlaySpatialSound("ball", position, 0.5f);
+                break;
+                case Sound.Brick:
+                _audioService.PlaySpatialSound("board2", position);
+                break;
+                case Sound.Wall:
+                _audioService.PlaySpatialSound("board3", position, 0.5f);
+                break;
+                case Sound.Oops:
+                _audioService.PlaySound("oops", 0.75f);
+                break;
+                case Sound.Joy:
+                _audioService.PlaySound("joy", 0.95f);
+                break;
+                case Sound.Sad:
+                _audioService.PlaySound("sad", 0.95f);
+                break;
+                case Sound.Dialog:
+                _audioService.PlaySound("dlg", 0.75f);
+                break;
+                case Sound.Selection:
+                _audioService.PlaySound("sel", 0.75f);
+                break;
+                case Sound.Start:
+                _audioService.PlaySound("start", 0.75f);
+                break;
+                case Sound.PowerUp:
+                //_audioService.PlaySound("powerup", 0.5f);
+                break;
+                case Sound.PowerDown:
+                //_audioService.PlaySound("powerdown", 0.33f);
+                break;
+                case Sound.Attack:
+                _audioService.PlaySound("aggro", 0.66f);
+                break;
+                }
+            });
+        }
+
+
+        public void PlaySpeedyMusic()
+        {
+            if (State == GameState.Playing)
+            {
+                //_audioService.StartBackgroundMusicFromFile("Music/MonkeyDrama.mp3", 1.0f);
+                _audioService?.StartBackgroundMusic("speedy", 1.0f);
+            }
         }
 
         public void SetupBackgroundMusic()
@@ -166,11 +203,13 @@ namespace Breakout.Game
             // Stream background music directly from files (memory efficient)
             if (lvl > 0)
             {
-                _audioService.StartBackgroundMusicFromFile("Music/lvl1PixelCityGroovin.mp3", 1.0f);
+                //_audioService.StartBackgroundMusicFromFile("Music/lvl1PixelCityGroovin.mp3", 1.0f);
+                _audioService?.StartBackgroundMusic("play", 1.0f);
             }
             else
             {
-                _audioService.StartBackgroundMusicFromFile("Music/demoHypnoticPuzzle4.mp3", 0.5f);
+                //_audioService.StartBackgroundMusicFromFile("Music/demoHypnoticPuzzle4.mp3", 0.5f);
+                _audioService?.StartBackgroundMusic("demo", 1.0f);
             }
         }
 

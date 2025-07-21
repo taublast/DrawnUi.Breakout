@@ -29,24 +29,31 @@ namespace Breakout.Game
 
         void ShowGameOverDialog()
         {
+            PlaySound(Sound.Sad);
+
             // Show game over dialog
             var gameOverContent = UiElements.DialogPrompt(string.Format(ResStrings.MessageGameOver, Score));
 
             GameDialog.Show(this, gameOverContent, ResStrings.BtnPlayAgain.ToUpperInvariant(),
-                onOk: () => ResetGame());
+                onOk: () =>
+                {
+                    State = GameState.Playing;
+                    ResetGame();
+                });
         }
 
         async void ShowLevelCompleteDialog()
         {
+            PlaySound(Sound.Joy);
+
             // Show level complete dialog
             var levelCompleteContent =
                 UiElements.DialogPrompt(string.Format(ResStrings.MessageLevelComplete, Level - 1, Score, Level));
             if (await GameDialog.ShowAsync(this, levelCompleteContent, ResStrings.BtnContinue.ToUpperInvariant()))
             {
                 // Start the new level
-                StartNewLevel();
                 State = GameState.Playing;
-                StartLoop();
+                StartNewLevel();
             }
         }
 
@@ -55,6 +62,8 @@ namespace Breakout.Game
         /// </summary>
         public void ShowOptions()
         {
+            PlaySound(Sound.Dialog);
+
             _ = GameDialog.PopAll(this);
 
             // Pause the game if currently playing

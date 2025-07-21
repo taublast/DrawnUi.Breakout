@@ -23,11 +23,6 @@ namespace Breakout.Game
 
             if ((State == GameState.DemoPlay || State == GameState.Playing) && levelReady)
             {
-                if (CheckStateChanged())
-                {
-                    PlaySound(Sound.Start);
-                }
-
                 // get the current player hit box
                 Ball.UpdateState(LastFrameTimeNanos);
                 var ballRect = Ball.HitBox;
