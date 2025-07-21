@@ -4,7 +4,8 @@ A cross-platform game to play on **iOS, MacCatalyst, Android and Windows**.
 
 ## Game Features
 * 12 levels of Breakout madness!
-* Fight paddle bosses after destroying the bricks!
+* Catch powerups destroying the bricks!
+* If you are lucky enough shoot at bricks in Destroyer mode!
 
 ## App Features
 * Cross-platform for iOS, MacCatalyst, Android and Windows with hardware acceleration
