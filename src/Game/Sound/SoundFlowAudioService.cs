@@ -1,3 +1,5 @@
+#if ANDROID
+
 using AppoMobi.Specials;
 using SoundFlow.Abstracts;
 using SoundFlow.Backends.MiniAudio;
@@ -625,3 +627,5 @@ public class SoundFlowAudioService : IAudioService
 
     #endregion
 }
+
+#endif

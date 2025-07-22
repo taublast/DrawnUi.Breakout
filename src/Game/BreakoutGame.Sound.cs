@@ -36,7 +36,7 @@ namespace Breakout.Game
         {
             IAudioService audioService;
 
-#if WINDOWS
+#if !ANDROID
             audioService = new AudioMixerService(Plugin.Maui.Audio.AudioManager.Current);
 #else
             audioService = new SoundFlowAudioService();
