@@ -573,4 +573,10 @@ Puntaje final: {0}
   <data name="NewGame" xml:space="preserve">
     <value>Nuevo juego</value>
   </data>
+  <data name="PressMode" xml:space="preserve">
+    <value>Modo Presionador</value>
+  </data>
+  <data name="PressHud" xml:space="preserve">
+    <value>Presionar HUD</value>
+  </data>
 </root>

@@ -318,12 +318,12 @@ namespace Breakout.Game
                     }
 
                     // movement control
-                    if (_moveLeft)
+                    if (IsMovingLeft)
                     {
                         UpdatePlayerPosition(Paddle.Left - PADDLE_SPEED * cappedDelta);
                     }
 
-                    if (_moveRight)
+                    if (IsMovingRight)
                     {
                         UpdatePlayerPosition(Paddle.Left + PADDLE_SPEED * cappedDelta);
                     }

@@ -997,6 +997,24 @@ namespace Breakout.Resources.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Press HUD.
+        /// </summary>
+        public static string PressHud {
+            get {
+                return ResourceManager.GetString("PressHud", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Press Mode.
+        /// </summary>
+        public static string PressMode {
+            get {
+                return ResourceManager.GetString("PressMode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Price.
         /// </summary>
         public static string Price {

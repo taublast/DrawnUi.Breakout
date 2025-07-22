@@ -1,0 +1,69 @@
+﻿namespace Breakout.Game
+{
+    public partial class BreakoutGame : MauiGame
+    {
+
+        /// <summary>
+        /// A keyboard key was pressed
+        /// </summary>
+        /// <param name="mauiKey"></param>
+        public override void OnKeyDown(MauiKey mauiKey)
+        {
+            var gameKey = MapToGame(mauiKey);
+
+            if (State == GameState.Playing && gameKey == GameKey.Demo)
+            {
+                State = GameState.DemoPlay;
+                //ToggleDemoMode();
+                return;
+            }
+
+            if (State == GameState.DemoPlay &&
+                (gameKey == GameKey.Left || gameKey == GameKey.Right || gameKey == GameKey.Fire))
+            {
+                State = GameState.Playing;
+            }
+
+            ApplyGameKey(gameKey);
+        }
+
+
+        /// <summary>
+        /// A keyboard key was released
+        /// </summary>
+        /// <param name="mauiKey"></param>
+        public override void OnKeyUp(MauiKey mauiKey)
+        {
+            var gameKey = MapToGame(mauiKey);
+
+            if (gameKey == GameKey.Pause)
+            {
+                if (TogglePause())
+                    return;
+            }
+
+            if (mauiKey == MauiKey.KeyN)
+            {
+                StartNewLevel();
+                return;
+            }
+
+            if (mauiKey == MauiKey.KeyR)
+            {
+                // Toggle collision detection system
+                USE_RAYCAST_COLLISION = !USE_RAYCAST_COLLISION;
+                System.Diagnostics.Debug.WriteLine(
+                    $"Collision system switched to: {(USE_RAYCAST_COLLISION ? "RAYCAST" : "AABB")}");
+                return;
+            }
+
+            if (State == GameState.Playing || State == GameState.DemoPlay)
+            {
+                if (gameKey == GameKey.Left)
+                    IsMovingLeft = false;
+                else if (gameKey == GameKey.Right)
+                    IsMovingRight = false;
+            }
+        }
+    }
+}

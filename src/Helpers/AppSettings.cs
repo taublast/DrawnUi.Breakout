@@ -11,6 +11,9 @@ public static class AppSettings
     public static readonly string SoundsOn = "fx";
     public static readonly bool SoundsOnDefault = true;
 
+    public static readonly string InputPressEnabled = "press";
+    public static readonly bool InputPressEnabledDefault = false;
+
     public static T Get<T>(string key, T defaultValue)
     {
         return Preferences.Default.Get(key, defaultValue);

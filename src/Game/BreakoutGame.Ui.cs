@@ -210,7 +210,7 @@ namespace Breakout.Game
 
 
                                 //ARROWS
-                                new GridArrows(this)
+                                new HudArrows(this)
                                 {
                                     Margin = new (80,0,16,0),
                                     HorizontalOptions = LayoutOptions.Fill,
@@ -240,8 +240,9 @@ namespace Breakout.Game
                                             WidthRequest = 56,
                                             LockRatio = 1,
                                             VerticalOptions = LayoutOptions.Center,
-                                        }.WithColumn(1)
-
+                                        }.WithColumn(1),
+                                        
+                                        //we will add hotspots in code-behind
 
                                     }
                                 }.WithColumnDefinitions("50*, 50*"),

@@ -77,6 +77,8 @@ namespace Breakout.Game
 
             Instance = this;
 
+            InitializeInput();
+
             InitDialogs();
 
             if (USE_SOUND)
@@ -124,7 +126,7 @@ namespace Breakout.Game
                 }
 
                 //we have some GPU cache used so we need the canvas to be fully created before we would start
-                Initialize(); //game loop will be started inside
+                Prepare(); //game loop will be started inside
             }).ConfigureAwait(false);
         }
 
@@ -146,7 +148,7 @@ namespace Breakout.Game
             });
         }
 
-        void Initialize()
+        void Prepare()
         {
             if (!Superview.HasHandler || _initialized)
                 return;
@@ -777,9 +779,9 @@ namespace Breakout.Game
         private List<SkiaControl> _spritesToBeAdded = new(MAX_BRICKS);
 
         // For paddle movement via keys/gestures
-        volatile bool _moveLeft, _moveRight;
-        private bool _wasPanning;
-        private bool _isPressed;
+        volatile bool IsMovingLeft, IsMovingRight;
+        private bool WasPanning;
+        private bool IsPressed;
 
         // Ball stuck detection
         private Vector2 _lastBallPosition;
@@ -821,9 +823,9 @@ namespace Breakout.Game
 
             // Determine paddle's horizontal velocity based on current movement input
             float paddleVelocity = 0;
-            if (_moveLeft)
+            if (IsMovingLeft)
                 paddleVelocity = -PADDLE_SPEED;
-            else if (_moveRight)
+            else if (IsMovingRight)
                 paddleVelocity = PADDLE_SPEED;
 
             // Calculate where on the paddle the ball hit (normalized position from -1 to 1)
@@ -1250,8 +1252,8 @@ namespace Breakout.Game
 
         public void ResetPaddle()
         {
-            _moveLeft = false;
-            _moveRight = false;
+            IsMovingLeft = false;
+            IsMovingRight = false;
             Paddle.Left = 0;
 
             ResetBall();

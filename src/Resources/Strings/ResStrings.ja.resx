@@ -573,4 +573,10 @@
   <data name="NewGame" xml:space="preserve">
     <value>新しいゲーム</value>
   </data>
+  <data name="PressMode" xml:space="preserve">
+    <value>プレスモード</value>
+  </data>
+  <data name="PressHud" xml:space="preserve">
+    <value>プレスモード</value>
+  </data>
 </root>

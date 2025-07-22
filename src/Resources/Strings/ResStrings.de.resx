@@ -573,4 +573,10 @@ Du bist ein Breakout-Meister!</value>
   <data name="NewGame" xml:space="preserve">
     <value>Neues Spiel</value>
   </data>
+  <data name="PressMode" xml:space="preserve">
+    <value>Drückenmodus</value>
+  </data>
+  <data name="PressHud" xml:space="preserve">
+    <value>Drücken HUD</value>
+  </data>
 </root>

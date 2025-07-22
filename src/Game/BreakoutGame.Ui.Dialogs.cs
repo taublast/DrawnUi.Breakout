@@ -69,8 +69,8 @@ namespace Breakout.Game
             // Pause the game if currently playing
             var lastState = State;
             State = GameState.Paused;
-            _moveLeft = false;
-            _moveRight = false;
+            IsMovingLeft = false;
+            IsMovingRight = false;
 
             // Create options dialog content
             var optionsContent = CreateOptionsDialogContent();
@@ -344,6 +344,45 @@ namespace Breakout.Game
                                             StopBackgroundMusic();
                                         }
                                     }
+                                }),
+                        }
+                    },
+
+                    // Press input mode for HUD
+                    new SkiaLayout()
+                    {
+                        Type = LayoutType.Row,
+                        Spacing = 15,
+                        HorizontalOptions = LayoutOptions.Fill,
+                        Children = new List<SkiaControl>
+                        {
+                            new SkiaRichLabel()
+                            {
+                                Text = ResStrings.PressHud.ToUpperInvariant(),
+                                FontFamily = AppFonts.Default,
+                                FontSize = 18,
+                                TextColor = AmstradColors.White,
+                                VerticalOptions = LayoutOptions.Center,
+                                HorizontalOptions = LayoutOptions.Start,
+                                UseCache = SkiaCacheType.Operations,
+                            },
+
+                            new GameSwitch()
+                                {
+                                    HorizontalOptions = LayoutOptions.End,
+                                    VerticalOptions = LayoutOptions.Center,
+                                }
+                                .Initialize(me =>
+                                {
+                                    if (_audioService != null)
+                                    {
+                                        me.IsToggled = AppSettings.Get(AppSettings.InputPressEnabled,
+                                            AppSettings.InputPressEnabledDefault);
+                                    }
+                                })
+                                .OnToggled((me, state) =>
+                                {
+                                    SetInputPressMode(state);
                                 }),
                         }
                     },
