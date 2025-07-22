@@ -83,6 +83,8 @@ namespace Breakout.Game
 
             var soundsOn = AppSettings.Get(AppSettings.SoundsOn, AppSettings.SoundsOnDefault);
             EnableSounds(soundsOn);
+
+            SetupBackgroundMusic();
         }
 
 
