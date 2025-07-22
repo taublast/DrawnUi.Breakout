@@ -1,4 +1,5 @@
-﻿using AppoMobi.Maui.Gestures;
+﻿using System.Diagnostics;
+using AppoMobi.Maui.Gestures;
 using AppoMobi.Specials;
 using Breakout.Game.Dialogs;
 using Breakout.Helpers;
@@ -7,6 +8,11 @@ using System.Globalization;
 
 namespace Breakout.Game
 {
+    public interface IInputController
+    {
+        void ProcessState();
+    }
+
     public partial class BreakoutGame : MauiGame
     {
         #region GESTURES AND KEYS
@@ -14,6 +20,31 @@ namespace Breakout.Game
         protected void InitializeInput()
         {
             SetInputPressMode(AppSettings.Get(AppSettings.InputPressEnabled, AppSettings.InputPressEnabledDefault));
+        }
+
+        public void ProcessInput()
+        {
+            foreach (var inputController in InputControllers)
+            {
+                inputController.ProcessState();
+            }
+
+            while (GameKeysQueue.Count > 0)
+            {
+                ApplyGameKey(GameKeysQueue.Dequeue());
+            }
+        }
+
+        protected List<IInputController> InputControllers = new();
+
+        public void AddInputController(IInputController controller)
+        {
+            InputControllers.Add(controller);
+        }
+
+        public void RemoveInputController(IInputController controller)
+        {
+            InputControllers.Remove(controller);
         }
 
         /// <summary>
@@ -66,7 +97,6 @@ namespace Breakout.Game
         }
 
 
-
         public override ISkiaGestureListener ProcessGestures(SkiaGesturesParameters args,
             GestureEventProcessingInfo apply)
         {
@@ -92,24 +122,28 @@ namespace Breakout.Game
             {
                 var velocityX = (float)(args.Event.Distance.Velocity.X / RenderingScale);
 
-                if (args.Type == TouchActionResult.Panning)
+                if (!InputPressMode)
                 {
-                    WasPanning = true;
-
-                    if (velocityX < 0)
+                    if (args.Type == TouchActionResult.Panning)
                     {
-                        IsMovingLeft = true;
-                        IsMovingRight = false;
-                    }
-                    else if (velocityX > 0)
-                    {
-                        IsMovingRight = true;
-                        IsMovingLeft = false;
-                    }
+                        WasPanning = true;
 
-                    return this;
+                        if (velocityX < 0)
+                        {
+                            IsMovingLeft = true;
+                            IsMovingRight = false;
+                        }
+                        else if (velocityX > 0)
+                        {
+                            IsMovingRight = true;
+                            IsMovingLeft = false;
+                        }
+
+                        return this;
+                    }
                 }
-                else if (args.Type == TouchActionResult.Down)
+
+                if (args.Type == TouchActionResult.Down)
                 {
                     WasPanning = false;
                     IsPressed = true;
@@ -122,6 +156,7 @@ namespace Breakout.Game
                         }
                     }
                 }
+
                 else if (args.Type == TouchActionResult.Tapped)
                 {
                     if (State == GameState.Playing)
@@ -129,6 +164,7 @@ namespace Breakout.Game
                         GameKeysQueue.Enqueue(GameKey.Fire);
                     }
                 }
+
                 else if (args.Type == TouchActionResult.Up)
                 {
                     IsPressed = false;
@@ -149,10 +185,7 @@ namespace Breakout.Game
                 State = GameState.Paused;
                 IsMovingLeft = false;
                 IsMovingRight = false;
-                GameDialog.Show(this, null, ResStrings.StatePaused.ToUpperInvariant(), null, () =>
-                {
-                    TogglePause();
-                });
+                GameDialog.Show(this, null, ResStrings.StatePaused.ToUpperInvariant(), null, () => { TogglePause(); });
             }
         }
 
@@ -208,6 +241,33 @@ namespace Breakout.Game
             return GameKey.Unset;
         }
 
+        /*
+        /// <summary>
+        /// Maps a GameKey to its primary MauiKey equivalent
+        /// </summary>
+        /// <param name="gameKey">The game key to map</param>
+        /// <returns>The corresponding MauiKey</returns>
+        public MauiKey MapToKeyboard(GameKey gameKey)
+        {
+            switch (gameKey)
+            {
+                case GameKey.Fire:
+                    return MauiKey.Space;
+                case GameKey.Pause:
+                    return MauiKey.KeyP;
+                case GameKey.Left:
+                    return MauiKey.ArrowLeft;
+                case GameKey.Right:
+                    return MauiKey.ArrowRight;
+                case GameKey.Demo:
+                    return MauiKey.KeyD;
+                case GameKey.Unset:
+                default:
+                    return MauiKey.Unknown;
+            }
+        }
+        */
+
         protected void SetInputPressMode(bool state)
         {
             AppSettings.Set(AppSettings.InputPressEnabled, state);
@@ -217,6 +277,5 @@ namespace Breakout.Game
         public bool InputPressMode { get; protected set; }
 
         #endregion
-
     }
 }

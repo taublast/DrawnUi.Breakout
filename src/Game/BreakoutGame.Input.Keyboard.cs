@@ -18,8 +18,7 @@
                 return;
             }
 
-            if (State == GameState.DemoPlay &&
-                (gameKey == GameKey.Left || gameKey == GameKey.Right || gameKey == GameKey.Fire))
+            if (State == GameState.DemoPlay && gameKey == GameKey.Fire)
             {
                 State = GameState.Playing;
             }

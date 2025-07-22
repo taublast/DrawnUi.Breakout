@@ -16,10 +16,7 @@ namespace Breakout.Game
             GameFieldArea = GameField.GetHitBox();
             BricksArea = BricksContainer.GetHitBox();
 
-            while (GameKeysQueue.Count > 0)
-            {
-                ApplyGameKey(GameKeysQueue.Dequeue());
-            }
+            ProcessInput();
 
             if ((State == GameState.DemoPlay || State == GameState.Playing) && levelReady)
             {
