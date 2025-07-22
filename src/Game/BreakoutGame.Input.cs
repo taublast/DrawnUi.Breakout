@@ -27,7 +27,19 @@ namespace Breakout.Game
 
             while (GameKeysQueue.Count > 0)
             {
-                ApplyGameKey(GameKeysQueue.Dequeue());
+                var gameKey = GameKeysQueue.Dequeue();
+
+                if (GameDialog.IsAnyDialogOpen(this))
+                {
+                    var topDialog = GameDialog.GetTopDialog(this);
+                    if (topDialog is IGameKeyHandler handler && handler.ProcessKey(gameKey))
+                    {
+                        continue; 
+                    }
+                }
+
+                // If dialog didn't consume apply to game
+                ApplyGameKey(gameKey);
             }
         }
 

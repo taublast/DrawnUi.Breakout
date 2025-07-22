@@ -1,3 +1,5 @@
+using Breakout.Game.Input;
+
 namespace Breakout.Game.Dialogs
 {
     /// <summary>
@@ -26,7 +28,7 @@ namespace Breakout.Game.Dialogs
     /// A standalone dialog class with customizable templates and animations.
     /// Displays content with optional OK and Cancel buttons.
     /// </summary>
-    public class GameDialog : SkiaLayout
+    public class GameDialog : SkiaLayout, IGameKeyHandler
     {
         // Navigation stack: container -> dialog
         private static readonly Dictionary<SkiaLayout, Stack<GameDialog>> _navigationStacks = new();
@@ -537,5 +539,19 @@ namespace Breakout.Game.Dialogs
             await CloseWithCancelAsync(animate: true);
         }
 
+        public bool ProcessKey(GameKey key)
+        {
+            
+            //todo for controls..
+
+            //for test just handle OK
+            if (key == GameKey.Fire)
+            {
+                OnOkClicked();
+                return true;
+            }
+
+            return false;
+        }
     }
 }
