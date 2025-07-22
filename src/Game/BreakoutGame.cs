@@ -47,7 +47,7 @@ namespace Breakout.Game
 
         public static bool USE_SOUND = true;
 
-        public static bool USE_SOUND_IN_DEMO = true;
+        public static bool USE_SOUND_IN_DEMO = false;
 
         /// <summary>
         /// Compile-time flag to enable raycasting collision detection instead of AABB intersection
