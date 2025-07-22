@@ -18,6 +18,11 @@ namespace Breakout.Game
             SetInputPressMode(AppSettings.Get(AppSettings.InputPressEnabled, AppSettings.InputPressEnabledDefault));
         }
 
+        public virtual void SendKey(GameKey key)
+        {
+            GameKeysQueue.Enqueue(key);
+        }
+
         public void ProcessInput()
         {
             foreach (var inputController in InputControllers)
