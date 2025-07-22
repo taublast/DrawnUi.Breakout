@@ -388,7 +388,8 @@ namespace Breakout.Game
             {
                 levelReady = true; //we have added all sprites, can play now
             }
-            else if (State == GameState.LevelComplete)
+            else 
+            if (State == GameState.LevelComplete)
             {
                 LevelComplete();
             }
@@ -423,6 +424,7 @@ namespace Breakout.Game
         }
 
         private int _levelCompletionPending = 0;
+        private bool _levelCompletionPrompt = false;
 
         #endregion
     }
