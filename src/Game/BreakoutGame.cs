@@ -104,6 +104,11 @@ namespace Breakout.Game
 
             _audioService?.Dispose();
 
+            foreach (var inputController in InputControllers)
+            {
+                inputController.Dispose();
+            }
+
             base.OnWillDisposeWithChildren();
         }
 
