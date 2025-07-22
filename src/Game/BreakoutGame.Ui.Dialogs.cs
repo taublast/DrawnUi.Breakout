@@ -212,7 +212,7 @@ namespace Breakout.Game
                     },
 
                     // LANGUAGE setting row
-                    new SkiaLayout()
+                    new OptionWithTappable("LangFlag")
                     {
                         Type = LayoutType.Row,
                         Spacing = 15,
@@ -233,6 +233,7 @@ namespace Breakout.Game
                             },
                             new DisplayFlag()
                                 {
+                                    Tag="LangFlag",
                                     HorizontalOptions = LayoutOptions.End,
                                     VerticalOptions = LayoutOptions.Center,
                                 }
@@ -249,7 +250,7 @@ namespace Breakout.Game
                     },
 
                     // SOUND setting row
-                    new SkiaLayout()
+                    new OptionWithTappable("SoundSwitch")
                     {
                         Type = LayoutType.Row,
                         Spacing = 15,
@@ -269,6 +270,7 @@ namespace Breakout.Game
                             },
                             new GameSwitch()
                                 {
+                                    Tag="SoundSwitch",
                                     HorizontalOptions = LayoutOptions.End,
                                     VerticalOptions = LayoutOptions.Center,
                                 }
@@ -291,8 +293,8 @@ namespace Breakout.Game
                         }
                     },
 
-                    // Music setting row
-                    new SkiaLayout()
+                    // Music setting row - selectable
+                    new OptionWithTappable("MusicSwitch")
                     {
                         Type = LayoutType.Row,
                         Spacing = 15,
@@ -313,6 +315,7 @@ namespace Breakout.Game
 
                             new GameSwitch()
                                 {
+                                    Tag = "MusicSwitch",
                                     HorizontalOptions = LayoutOptions.End,
                                     VerticalOptions = LayoutOptions.Center,
                                 }
@@ -350,7 +353,7 @@ namespace Breakout.Game
                     },
 
                     // Press input mode for HUD
-                    new SkiaLayout()
+                    new OptionWithTappable("HudSwitch")
                     {
                         Type = LayoutType.Row,
                         Spacing = 15,
@@ -370,6 +373,7 @@ namespace Breakout.Game
 
                             new GameSwitch()
                                 {
+                                    Tag="HudSwitch",
                                     HorizontalOptions = LayoutOptions.End,
                                     VerticalOptions = LayoutOptions.Center,
                                 }

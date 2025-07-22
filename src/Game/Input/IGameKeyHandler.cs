@@ -1,5 +1,3 @@
- 
-
 namespace Breakout.Game.Input
 {
     /// <summary>
@@ -10,6 +8,6 @@ namespace Breakout.Game.Input
         /// <summary>
         /// Process a game key input. Return true if handled, false to pass through.
         /// </summary>
-        bool ProcessKey(GameKey key);
+        bool HandleGameKey(GameKey key);
     }
 }

@@ -37,9 +37,9 @@ namespace Breakout.Game
                 if (GameDialog.IsAnyDialogOpen(this))
                 {
                     var topDialog = GameDialog.GetTopDialog(this);
-                    if (topDialog is IGameKeyHandler handler && handler.ProcessKey(gameKey))
+                    if (topDialog is IGameKeyHandler handler && handler.HandleGameKey(gameKey))
                     {
-                        continue; 
+                        continue;
                     }
                 }
 
@@ -246,6 +246,12 @@ namespace Breakout.Game
 
                 case MauiKey.ArrowRight:
                     return GameKey.Right;
+
+                case MauiKey.ArrowDown:
+                    return GameKey.Down;
+
+                case MauiKey.ArrowUp:
+                    return GameKey.Up;
 
                 case MauiKey.KeyD:
                     return GameKey.Demo;

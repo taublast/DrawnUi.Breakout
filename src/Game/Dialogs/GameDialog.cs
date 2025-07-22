@@ -1,4 +1,5 @@
 using Breakout.Game.Input;
+using SkiaSharp;
 
 namespace Breakout.Game.Dialogs
 {
@@ -164,6 +165,8 @@ namespace Breakout.Game.Dialogs
         {
             if (_isClosing) return;
             _isClosing = true;
+
+            SelectionIndicatorRect = SKRect.Empty;
 
             if (animate)
             {
@@ -470,17 +473,6 @@ namespace Breakout.Game.Dialogs
 
         #endregion
 
-        protected void SetupDialog()
-        {
-            // Main dialog container
-            HorizontalOptions = LayoutOptions.Fill;
-            VerticalOptions = LayoutOptions.Fill;
-            ZIndex = 200;
-
-            // Always use template system (default is Game template which recreates original design)
-            SetupDialogWithTemplate();
-        }
-
         public static GameDialog GetTopDialog(SkiaLayout parentContainer)
         {
             if (!_navigationStacks.ContainsKey(parentContainer))
@@ -539,19 +531,175 @@ namespace Breakout.Game.Dialogs
             await CloseWithCancelAsync(animate: true);
         }
 
-        public bool ProcessKey(GameKey key)
+        /// <summary>
+        /// Finds all child views that implement IGameKeyHandler interface in the view hierarchy
+        /// </summary>
+        /// <returns>List of all found views implementing IGameKeyHandler</returns>
+        public List<IGameKeyHandler> FindAllKeyHandlers(SkiaControl parent)
         {
-            
-            //todo for controls..
+            var handlers = new List<IGameKeyHandler>();
 
-            //for test just handle OK
+            if (parent is IGameKeyHandler selfHandler)
+                handlers.Add(selfHandler);
+
+            foreach (var view in parent.Views)
+            {
+                if (view is IGameKeyHandler handler)
+                    handlers.Add(handler);
+
+                // Manually recurse through child's Views
+                var childHandlers = GetKeyHandlersFromViews(view.Views);
+                handlers.AddRange(childHandlers);
+            }
+
+            return handlers;
+        }
+
+        private List<IGameKeyHandler> GetKeyHandlersFromViews(IEnumerable<SkiaControl> views)
+        {
+            var handlers = new List<IGameKeyHandler>();
+
+            foreach (var view in views)
+            {
+                if (view is IGameKeyHandler handler)
+                    handlers.Add(handler);
+
+                var childHandlers = GetKeyHandlersFromViews(view.Views);
+                handlers.AddRange(childHandlers);
+            }
+
+            return handlers;
+        }
+
+        protected void SetupDialog()
+        {
+            // Main dialog container
+            HorizontalOptions = LayoutOptions.Fill;
+            VerticalOptions = LayoutOptions.Fill;
+            ZIndex = 200;
+
+            // Always use template system (default is Game template which recreates original design)
+            SetupDialogWithTemplate();
+
+            var frameHandlers = FindAllKeyHandlers(_dialogFrame);
+            foreach (var handler in frameHandlers)
+            {
+                KeyHandlers.Add(handler);
+            }
+
+            SelectionIndicator = new SkiaShape()
+            {
+                StrokeColor = Colors.Gold,
+                StrokeWidth = 3,
+                UseCache = SkiaCacheType.Operations,
+            };
+        }
+
+
+        private List<IGameKeyHandler> KeyHandlers = new();
+        private IGameKeyHandler SelectedKeyHandler;
+        SKRect SelectionIndicatorRect = SKRect.Empty;
+        SkiaShape SelectionIndicator;
+
+        public bool HandleGameKey(GameKey key)
+        {
             if (key == GameKey.Fire)
             {
+                if (SelectedKeyHandler != null)
+                {
+                    var handled = SelectedKeyHandler.HandleGameKey(key);
+                    return true;
+                }
+
                 OnOkClicked();
                 return true;
             }
 
+            if (KeyHandlers.Count > 0)
+            {
+                if (key == GameKey.Left || key == GameKey.Up)
+                {
+                    SelectPreviousHandler();
+                }
+                else if (key == GameKey.Right || key == GameKey.Down)
+                {
+                    SelectNextHandler();
+                }
+
+                return true;
+            }
+
             return false;
+        }
+
+        void SelectGameKeyHandler(IGameKeyHandler selected)
+        {
+            SelectionIndicatorRect = SKRect.Empty;
+            if (selected != null)
+            {
+                SelectedKeyHandler = selected;
+                if (SelectedKeyHandler is SkiaControl control)
+                {
+                    var expand = control.DrawingRect;
+                    var ex = 3 * RenderingScale;
+                    expand.Inflate(ex, ex);
+                    SelectionIndicatorRect = expand;
+                    var width = SelectionIndicatorRect.Width / RenderingScale;
+                    var height = SelectionIndicatorRect.Height / RenderingScale;
+                    SelectionIndicator.WidthRequest = width;
+                    SelectionIndicator.HeightRequest = height;
+                }
+            }
+        }
+
+        protected override void Paint(DrawingContext ctx)
+        {
+            base.Paint(ctx);
+
+            if (SelectionIndicatorRect != SKRect.Empty)
+            {
+                if (SelectionIndicator.NeedMeasure)
+                {
+                    SelectionIndicator.Measure((float)SelectionIndicator.WidthRequest,
+                        (float)SelectionIndicator.HeightRequest, RenderingScale);
+                    SelectionIndicator.Arrange(SelectionIndicatorRect, (float)SelectionIndicator.WidthRequest,
+                        (float)SelectionIndicator.HeightRequest, RenderingScale);
+                }
+
+                SelectionIndicator.Render(ctx.WithDestination(SelectionIndicatorRect));
+            }
+        }
+
+        private void SelectPreviousHandler()
+        {
+            if (KeyHandlers.Count == 0) return;
+
+            // Find current index and move to previous
+            int currentIndex = SelectedKeyHandler != null ? KeyHandlers.IndexOf(SelectedKeyHandler) : 0;
+            int newIndex = currentIndex - 1;
+
+            // Wrap around to end if at beginning
+            if (newIndex < 0)
+                newIndex = KeyHandlers.Count - 1;
+
+            // Select new handler
+            SelectGameKeyHandler(KeyHandlers[newIndex]);
+        }
+
+        private void SelectNextHandler()
+        {
+            if (KeyHandlers.Count == 0) return;
+
+            // Find current index and move to next
+            int currentIndex = SelectedKeyHandler != null ? KeyHandlers.IndexOf(SelectedKeyHandler) : -1;
+            int newIndex = currentIndex + 1;
+
+            // Wrap around to beginning if at end
+            if (newIndex >= KeyHandlers.Count)
+                newIndex = 0;
+
+            // Select new handler
+            SelectGameKeyHandler(KeyHandlers[newIndex]);
         }
     }
 }

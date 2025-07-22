@@ -94,15 +94,15 @@ public class HudController : IInputController
         {
             // Both pressed - prioritize the most recent one
             // For now, right takes priority when both are pressed
-            _game.ApplyGameKey(GameKey.Right);
+            _game.SendKey(GameKey.Right);
         }
         else if (_leftPressed)
         {
-            _game.ApplyGameKey(GameKey.Left);
+            _game.SendKey(GameKey.Left);
         }
         else if (_rightPressed)
         {
-            _game.ApplyGameKey(GameKey.Right);
+            _game.SendKey(GameKey.Right);
         }
     }
 
