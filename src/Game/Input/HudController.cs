@@ -115,4 +115,9 @@ public class HudController : IInputController
         _rightPressed = false;
         _touchSides.Clear();
     }
+
+    public void Dispose()
+    {
+ 
+    }
 }
