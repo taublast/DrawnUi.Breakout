@@ -30,34 +30,34 @@ public class GameControllerInput : IInputController
         
         if (_gameController.LeftStick.XAxis.Value < -0.001f)
         {
-            _game.ApplyGameKey(GameKey.Left);
+            _game.SendKey(GameKey.Left);
         }
         else if (_gameController.LeftStick.XAxis.Value > 0.001f)
         {
-            _game.ApplyGameKey(GameKey.Right);
+            _game.SendKey(GameKey.Right);
         }
         else
         {
-            _game.ApplyGameKey(GameKey.Stop);
+            _game.SendKey(GameKey.Stop);
         }
         
         if (_gameController.LeftStick.YAxis.Value < -0.001f)
         {
-            _game.ApplyGameKey(GameKey.Down);
+            _game.SendKey(GameKey.Down);
         }
         else if (_gameController.LeftStick.YAxis.Value > 0.001f)
         {
-            _game.ApplyGameKey(GameKey.Up);
+            _game.SendKey(GameKey.Up);
         }
 
         if (_gameController.South.Value)
         {
-            _game.ApplyGameKey(GameKey.Fire);
+            _game.SendKey(GameKey.Fire);
         }
         
         if (_gameController.Pause.Value)
         {
-            _game.ApplyGameKey(GameKey.Pause);
+            _game.SendKey(GameKey.Pause);
         }
     }
 
