@@ -32,8 +32,6 @@ public partial class App : Application
         base.OnSleep();
 
         Dispatcher.Dispatch(() => { DeviceDisplay.Current.KeepScreenOn = false; });
-
-        Breakout.Game.BreakoutGame.Instance?.Pause();
     }
 
     protected override void OnResume()
@@ -41,7 +39,5 @@ public partial class App : Application
         base.OnResume();
 
         Dispatcher.Dispatch(() => { DeviceDisplay.Current.KeepScreenOn = true; });
-
-        Breakout.Game.BreakoutGame.Instance?.Resume();
     }
 }

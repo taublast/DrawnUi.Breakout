@@ -88,18 +88,33 @@ namespace Breakout.Game
 
             _aiController = new AIPaddleController(this, AIDifficulty.Hard);
 
-            //BackgroundColor = AmstradColors.DarkBlue;
 
-            //FrameTimeInterpolator.TargetFps = 35;
+            //pause/resume loop background music etc
+            Super.OnNativeAppResumed += Super_OnNativeAppResumed;
+            Super.OnNativeAppPaused += Super_OnNativeAppPaused;
         }
 
         #endregion
 
         public override void OnWillDisposeWithChildren()
         {
+            Super.OnNativeAppResumed += Super_OnNativeAppResumed;
+            
+            Super.OnNativeAppPaused += Super_OnNativeAppPaused;
+
             _audioService?.Dispose();
 
             base.OnWillDisposeWithChildren();
+        }
+
+        private void Super_OnNativeAppPaused(object sender, EventArgs e)
+        {
+            Pause();
+        }
+
+        private void Super_OnNativeAppResumed(object sender, EventArgs e)
+        {
+            Resume();
         }
 
         /// <summary>

@@ -404,7 +404,9 @@ namespace Breakout.Game
             {
                 _audioService.IsMuted = true;
             }
+            
             PauseGame();
+            
             StopLoop();
         }
 
@@ -417,10 +419,8 @@ namespace Breakout.Game
             {
                 _audioService.IsMuted = false;
             }
-            if (State == GameState.Playing || State == GameState.DemoPlay)
-            {
-                StartLoop();
-            }
+
+            StartLoop();
         }
 
         private int _levelCompletionPending = 0;
