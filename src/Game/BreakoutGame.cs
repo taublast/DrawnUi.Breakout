@@ -294,6 +294,8 @@ namespace Breakout.Game
                 return;
             }
 
+            _levelCompletionPrompt = true;
+
             // Store current game state before changing levels
             // Note: State is already GameState.LevelComplete at this point, so check PreviousState
             var wasInDemoMode = PreviousState == GameState.DemoPlay;
