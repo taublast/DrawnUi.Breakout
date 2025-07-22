@@ -407,9 +407,6 @@ namespace Breakout.Game
 
             _levelCompletionPrompt = false;
             _levelCompletionPending = 0;
-            CollectedPowerUps = 0;
-            CollectedPowerUpsSpeedy = 0;
-            BulletsAvailable = POWERUP_MAX_BULLETS;
 
             ClearSpritesOnBoard();
             ProcessSpritesToBeRemoved();
@@ -1226,26 +1223,31 @@ namespace Breakout.Game
                     }
                     else
                     {
-                        Lives--;
-                        if (Lives <= 0)
-                        {
-                            if (State == GameState.DemoPlay)
-                            {
-                                // In demo mode, restart from level 1 without showing dialog
-                                RestartDemoMode();
-                            }
-                            else
-                            {
-                                this.GameLost();
-                            }
-                        }
-                        else
-                        {
-                            ResetBall();
-                        }
+                        LooseLife();
                     }
 
                     break;
+            }
+        }
+
+        void LooseLife()
+        {
+            Lives--;
+            if (Lives <= 0)
+            {
+                if (State == GameState.DemoPlay)
+                {
+                    // In demo mode, restart from level 1 without showing dialog
+                    RestartDemoMode();
+                }
+                else
+                {
+                    this.GameLost();
+                }
+            }
+            else
+            {
+                ResetPaddle();
             }
         }
 
@@ -1277,6 +1279,10 @@ namespace Breakout.Game
 
         public void ResetPaddle()
         {
+            CollectedPowerUps = 0;
+            CollectedPowerUpsSpeedy = 0;
+            BulletsAvailable = POWERUP_MAX_BULLETS;
+
             IsMovingLeft = false;
             IsMovingRight = false;
             Paddle.Left = 0;
