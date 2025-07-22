@@ -34,14 +34,6 @@ namespace Breakout.Game
 
             Children = new List<SkiaControl>()
             {
-                //background image for different window size
-                //can place background image..
-                new SkiaLayer()
-                {
-                    UseCache = SkiaCacheType.Operations,
-                    VerticalOptions = LayoutOptions.Fill,
-                },
-
                 //game and controls below
                 new SkiaStack()
                 {

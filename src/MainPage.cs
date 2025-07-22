@@ -11,18 +11,17 @@ namespace Breakout.Game
     {
         public MainPage()
         {
-            Instance = this;
+            Instance = this; // To change of this instance, to be accessed from AppLanguage helper
 
             AppLanguage.ApplySelected();
         }
 
-        /// <summary>
-        /// To change language of this one
-        /// </summary>
+       
         public static MainPage Instance;
 
         Canvas Canvas;
 
+        // This is called by constructor and .NET HotReload
         public override void Build()
         {
             Canvas?.Dispose();

@@ -3,12 +3,8 @@ using SkiaSharp;
 
 namespace Breakout.Game;
 
-public class BallSprite : SkiaShape, IWithHitBox//, IReusableSprite
+public class BallSprite : SkiaShape, IWithHitBox//, IReusableSprite when we implement multiball would be reusable from pool
 {
-    public override void InvalidateCache()
-    {
-        //base.InvalidateCache(); - disable cache invalidation, we will need it built only once
-    }
 
     //BackgroundColor="#dddddd"
     public BallSprite()
