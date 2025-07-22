@@ -1,3 +1,4 @@
+using Breakout.Game.Input;
 using SkiaSharp;
 
 namespace Breakout.Game;

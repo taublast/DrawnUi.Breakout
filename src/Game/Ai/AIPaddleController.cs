@@ -1,3 +1,5 @@
+using Breakout.Game.Input;
+
 namespace Breakout.Game.Ai
 {
     /// <summary>
