@@ -32,9 +32,8 @@ namespace Breakout.Game
                     }
                 }
 
-                bool ballCollided = false;
-
                 // collision detection
+                bool ballCollided = false;
                 foreach (var x in this.GameField.Views.ToList())
                 {
                     //collide ball vs everything and update ball position
@@ -283,6 +282,7 @@ namespace Breakout.Game
                     }
                 }
 
+                //check we broke all bricks
                 if ((State == GameState.Playing || State == GameState.DemoPlay) &&
                     (BricksLeftToBreak == 0))
                 {
@@ -296,11 +296,13 @@ namespace Breakout.Game
                     }
                 }
 
+                //update ai
                 if (State == GameState.DemoPlay)
                 {
                     AIController.UpdateAI(cappedDelta);
                 }
 
+                //update player state and position
                 if (State == GameState.Playing || State == GameState.DemoPlay)
                 {
                     // Update paddle powerup duration

@@ -293,9 +293,6 @@ namespace Breakout.Game
             // Note: State is already GameState.LevelComplete at this point, so check PreviousState
             var wasInDemoMode = PreviousState == GameState.DemoPlay;
 
-            // Stop the game loop
-            StopLoop();
-
             if (wasInDemoMode)
             {
                 // In demo mode, auto-continue to next level without showing dialog
@@ -1412,12 +1409,12 @@ namespace Breakout.Game
         {
             var chance = RndExtensions.Rnd.NextDouble(0, 1, 0.01);
 
-            if (chance < 0.04) return PowerupType.ExtraLife;
-            if (chance < 0.10) return PowerupType.SlowBall;
-            if (chance < 0.16) return PowerupType.FastBall;
-            if (chance < 0.22) return PowerupType.ExpandPaddle;
-            if (chance < 0.28) return PowerupType.StickyBall;
-            if (chance < 0.30) return PowerupType.Destroyer;
+            if (chance < 0.05) return PowerupType.ExtraLife;
+            if (chance < 0.10) return PowerupType.Destroyer;
+            if (chance < 0.20) return PowerupType.SlowBall;
+            if (chance < 0.30) return PowerupType.FastBall;
+            if (chance < 0.40) return PowerupType.ExpandPaddle;
+            if (chance < 0.50) return PowerupType.StickyBall;
 
             return PowerupType.None;
         }

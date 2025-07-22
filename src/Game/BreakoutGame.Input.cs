@@ -5,14 +5,10 @@ using Breakout.Game.Dialogs;
 using Breakout.Helpers;
 using DrawnUi.Controls;
 using System.Globalization;
+using Breakout.Game.Input;
 
 namespace Breakout.Game
 {
-    public interface IInputController
-    {
-        void ProcessState();
-    }
-
     public partial class BreakoutGame : MauiGame
     {
         #region GESTURES AND KEYS
@@ -60,7 +56,7 @@ namespace Breakout.Game
         /// You could use this to simulate key presses from game controller/anything
         /// </summary>
         /// <param name="gameKey"></param>
-        public void ApplyGameKey(GameKey gameKey)
+        public virtual void ApplyGameKey(GameKey gameKey)
         {
             // For playing state, set movement flags
             if (State == GameState.Playing || State == GameState.DemoPlay)

@@ -11,18 +11,6 @@
         {
             var gameKey = MapToGame(mauiKey);
 
-            if (State == GameState.Playing && gameKey == GameKey.Demo)
-            {
-                State = GameState.DemoPlay;
-                //ToggleDemoMode();
-                return;
-            }
-
-            if (State == GameState.DemoPlay && gameKey == GameKey.Fire)
-            {
-                State = GameState.Playing;
-            }
-
             ApplyGameKey(gameKey);
         }
 
