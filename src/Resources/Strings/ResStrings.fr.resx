@@ -526,7 +526,7 @@
     <value>Rejouer</value>
   </data>
   <data name="StartGame" xml:space="preserve">
-    <value>Commencer le jeu</value>
+    <value>Commencer</value>
   </data>
   <data name="Score" xml:space="preserve">
     <value>Score</value>
@@ -577,6 +577,6 @@ Vous êtes un maître de Breakout !</value>
     <value>Mode Pression</value>
   </data>
   <data name="PressHud" xml:space="preserve">
-    <value>Presser HUD</value>
+    <value>Pression HUD</value>
   </data>
 </root>
