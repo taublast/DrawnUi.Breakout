@@ -13,7 +13,7 @@ namespace Breakout.Game
         {
             var gameKey = MapToGame(mauiKey);
 
-            ApplyGameKey(gameKey);
+            GameKeysQueue.Enqueue(gameKey);
         }
 
 
