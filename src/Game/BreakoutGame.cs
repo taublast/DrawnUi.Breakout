@@ -88,18 +88,38 @@ namespace Breakout.Game
 
             _aiController = new AIPaddleController(this, AIDifficulty.Hard);
 
-            //BackgroundColor = AmstradColors.DarkBlue;
 
-            //FrameTimeInterpolator.TargetFps = 35;
+            //pause/resume loop background music etc
+            Super.OnNativeAppResumed += Super_OnNativeAppResumed;
+            Super.OnNativeAppPaused += Super_OnNativeAppPaused;
         }
 
         #endregion
 
         public override void OnWillDisposeWithChildren()
         {
+            Super.OnNativeAppResumed += Super_OnNativeAppResumed;
+            
+            Super.OnNativeAppPaused += Super_OnNativeAppPaused;
+
             _audioService?.Dispose();
 
+            foreach (var inputController in InputControllers)
+            {
+                inputController.Dispose();
+            }
+
             base.OnWillDisposeWithChildren();
+        }
+
+        private void Super_OnNativeAppPaused(object sender, EventArgs e)
+        {
+            Pause();
+        }
+
+        private void Super_OnNativeAppResumed(object sender, EventArgs e)
+        {
+            Resume();
         }
 
         /// <summary>
@@ -387,9 +407,6 @@ namespace Breakout.Game
 
             _levelCompletionPrompt = false;
             _levelCompletionPending = 0;
-            CollectedPowerUps = 0;
-            CollectedPowerUpsSpeedy = 0;
-            BulletsAvailable = POWERUP_MAX_BULLETS;
 
             ClearSpritesOnBoard();
             ProcessSpritesToBeRemoved();
@@ -1206,26 +1223,31 @@ namespace Breakout.Game
                     }
                     else
                     {
-                        Lives--;
-                        if (Lives <= 0)
-                        {
-                            if (State == GameState.DemoPlay)
-                            {
-                                // In demo mode, restart from level 1 without showing dialog
-                                RestartDemoMode();
-                            }
-                            else
-                            {
-                                this.GameLost();
-                            }
-                        }
-                        else
-                        {
-                            ResetBall();
-                        }
+                        LooseLife();
                     }
 
                     break;
+            }
+        }
+
+        void LooseLife()
+        {
+            Lives--;
+            if (Lives <= 0)
+            {
+                if (State == GameState.DemoPlay)
+                {
+                    // In demo mode, restart from level 1 without showing dialog
+                    RestartDemoMode();
+                }
+                else
+                {
+                    this.GameLost();
+                }
+            }
+            else
+            {
+                ResetPaddle();
             }
         }
 
@@ -1257,6 +1279,10 @@ namespace Breakout.Game
 
         public void ResetPaddle()
         {
+            CollectedPowerUps = 0;
+            CollectedPowerUpsSpeedy = 0;
+            BulletsAvailable = POWERUP_MAX_BULLETS;
+
             IsMovingLeft = false;
             IsMovingRight = false;
             Paddle.Left = 0;

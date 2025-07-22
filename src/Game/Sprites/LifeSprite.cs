@@ -1,4 +1,6 @@
-﻿namespace Breakout.Game;
+﻿using Breakout.Game.Input;
+
+namespace Breakout.Game;
 
 public class LifeSprite : SkiaShape
 {

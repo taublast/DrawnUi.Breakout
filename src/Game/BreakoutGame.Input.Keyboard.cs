@@ -1,4 +1,6 @@
-﻿namespace Breakout.Game
+﻿using Breakout.Game.Input;
+
+namespace Breakout.Game
 {
     public partial class BreakoutGame : MauiGame
     {
