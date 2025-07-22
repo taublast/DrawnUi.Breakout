@@ -1,9 +1,11 @@
-﻿﻿using Breakout.Game.Dialogs;
+﻿using Breakout.Game.Dialogs;
 using DrawnUi.Controls;
 using DrawnUi.Views;
-using HotPreview;
 using System.Globalization;
 using Breakout;
+#if PREVIEWS
+using HotPreview;
+#endif
 
 namespace Breakout.Game
 {
@@ -16,8 +18,11 @@ namespace Breakout.Game
             AppLanguage.ApplySelected();
         }
 
-       
+        //for AppLanguage etc access
         public static MainPage Instance;
+
+        //for previews
+        public static SkiaViewSwitcher? ViewsContainer;
 
         Canvas Canvas;
 
@@ -79,7 +84,9 @@ namespace Breakout.Game
             this.Content = Canvas;
         }
 
+#if PREVIEWS
         [AutoGeneratePreview(false)]
+#endif
         public class RescalingCanvas : Canvas
         {
             public float GameScale { get; set; } = 1;
@@ -99,9 +106,5 @@ namespace Breakout.Game
                 base.Draw(context);
             }
         }
-
     }
-
-
-
 }

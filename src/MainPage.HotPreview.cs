@@ -1,11 +1,13 @@
-﻿using Breakout.Game.Dialogs;
+﻿#if PREVIEWS
+
+using Breakout.Game.Dialogs;
 using DrawnUi.Controls;
 using DrawnUi.Views;
 using HotPreview;
 
 namespace Breakout.Game
 {
-#if PREVIEWS
+
 
     public partial class MainPage : BasePageReloadable
     {
@@ -119,8 +121,6 @@ namespace Breakout.Game
 
         #endregion
 
-        public static SkiaViewSwitcher? ViewsContainer;
-
         public static SkiaLayout CreatePreviewWrapper(SkiaControl control, string comments)
         {
             return new SkiaStack()
@@ -197,5 +197,6 @@ namespace Breakout.Game
         }
     }
 
-#endif
 }
+
+#endif

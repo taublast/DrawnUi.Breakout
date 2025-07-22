@@ -25,7 +25,7 @@ A cross-platform game to play on **iOS, MacCatalyst, Android and Windows**.
 * Compatible with .NET HotReload, built with Fluent C#
 * All game field content is built with vector shapes and scalable to infinity
 * Windows: x64 can run both MSIX-packaged and "Steam-friendly" unpackaged mode
-* Uses [HotPreview](https://github.com/BretJohnson/hot-preview) to dynamically preview levels/states/languages/sprites and much more
+* Uses [Hot Preview](https://github.com/BretJohnson/hot-preview) to dynamically preview levels/states/languages/sprites and much more
 * Uses [Soundflow](https://github.com/LSXPrime/SoundFlow) and [Plugin.Maui.Audio](https://github.com/jfversluis/Plugin.Maui.Audio) for sound
 * Uses [DrawnUI for .NET MAUI]() for layout/gestures/fluent/bindings/rendering pipeline
 * Uses [SkiaSharp](https://github.com/mono/SkiaSharp) to make this all possible

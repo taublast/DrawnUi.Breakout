@@ -9,8 +9,9 @@ public partial class App : Application
     public App()
     {
         InitializeComponent();
-
+#if PREVIEWS
         PreviewService.Initialize();
+#endif
     }
 
     protected override Window CreateWindow(IActivationState? activationState)
