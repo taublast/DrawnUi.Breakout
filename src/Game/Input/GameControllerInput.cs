@@ -19,19 +19,6 @@ public class GameControllerInput : IInputController
     private void OnGameControllerConnected(object sender, GameControllerConnectedEventArgs args)
     {
         _gameController = args.GameController;
-
-        _gameController.ButtonChanged += GameControllerOnButtonChanged;
-        _gameController.ValueChanged += GameControllerOnValueChanged;
-    }
-
-    private void GameControllerOnValueChanged(object sender, GameControllerValueChangedEventArgs e)
-    {
-        
-    }
-
-    private void GameControllerOnButtonChanged(object sender, GameControllerButtonChangedEventArgs e)
-    {
-        
     }
 
     public void ProcessState()
@@ -49,5 +36,35 @@ public class GameControllerInput : IInputController
         {
             _game.ApplyGameKey(GameKey.Right);
         }
+        else
+        {
+            _game.ApplyGameKey(GameKey.Stop);
+        }
+        
+        if (_gameController.LeftStick.YAxis.Value < -0.001f)
+        {
+            _game.ApplyGameKey(GameKey.Down);
+        }
+        else if (_gameController.LeftStick.YAxis.Value > 0.001f)
+        {
+            _game.ApplyGameKey(GameKey.Up);
+        }
+
+        if (_gameController.South.Value)
+        {
+            _game.ApplyGameKey(GameKey.Fire);
+        }
+        
+        if (_gameController.Pause.Value)
+        {
+            _game.ApplyGameKey(GameKey.Pause);
+        }
+    }
+
+    public void Dispose()
+    {
+        _game?.Dispose();
+        
+        GameControllerManager.Current.GameControllerConnected -= OnGameControllerConnected;
     }
 }
