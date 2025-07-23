@@ -8,6 +8,7 @@ A cross-platform game to play on **iOS, MacCatalyst, Android and Windows**.
 * If you are lucky enough shoot at bricks in Destroyer mode!
 * Auto-generated levels
 * Available in 9 languages
+* Play with touch/keyboard/mouse/apple controllers
 
 ## App Features
 * Cross-platform for iOS, MacCatalyst, Android and Windows with hardware acceleration
@@ -20,6 +21,7 @@ A cross-platform game to play on **iOS, MacCatalyst, Android and Windows**.
 * Raycast collision detection
 * Layered rendering
 * Dialogs with glass-style transparent backdrops
+* Input controllers support
 
 ## Development Features
 * Compatible with .NET HotReload, built with Fluent C#
