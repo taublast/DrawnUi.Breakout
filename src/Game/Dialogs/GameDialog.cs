@@ -607,7 +607,7 @@ namespace Breakout.Game.Dialogs
                         }
 
                         //tap single default button/control
-                        OnOkClicked();
+                        OnOkClicked?.Invoke();
                         UpdateLastActionTime();
                     }
                 }
