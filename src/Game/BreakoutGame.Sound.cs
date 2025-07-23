@@ -78,6 +78,7 @@ namespace Breakout.Game
             await audioService.PreloadSoundAsync("demo", "Music/demoHypnoticPuzzle4.mp3");
             await audioService.PreloadSoundAsync("play", "Music/lvl1PixelCityGroovin.mp3");
             await audioService.PreloadSoundAsync("speedy", "Music/MonkeyDrama.mp3");
+            await audioService.PreloadSoundAsync("tronic", "Music/TechnoTronic.mp3");
 
             _audioService = audioService;
 
@@ -148,9 +149,22 @@ namespace Breakout.Game
         }
 
 
+        public void PlaySpecialMusic()
+        {
+            var musicOn = AppSettings.Get(AppSettings.MusicOn, AppSettings.MusicOnDefault);
+
+            if (musicOn && State == GameState.Playing)
+            {
+                //_audioService.StartBackgroundMusicFromFile("Music/MonkeyDrama.mp3", 1.0f);
+                _audioService?.StartBackgroundMusic("tronic", 1.0f);
+            }
+        }
+
         public void PlaySpeedyMusic()
         {
-            if (State == GameState.Playing)
+            var musicOn = AppSettings.Get(AppSettings.MusicOn, AppSettings.MusicOnDefault);
+
+            if (musicOn && State == GameState.Playing)
             {
                 //_audioService.StartBackgroundMusicFromFile("Music/MonkeyDrama.mp3", 1.0f);
                 _audioService?.StartBackgroundMusic("speedy", 1.0f);

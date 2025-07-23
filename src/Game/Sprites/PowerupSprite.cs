@@ -93,6 +93,11 @@ public class PowerUpSprite : SkiaShape, IWithHitBox, IReusableSprite
                 BackgroundColor = Colors.GreenYellow;
                 _letterLabel.TextColor = BlackColor;
                 break;
+            case PowerupType.Fireball:
+                _letterLabel.Text = "B";
+                BackgroundColor = Colors.OrangeRed;
+                _letterLabel.TextColor = Colors.Yellow;
+                break;
 
             default:
                 _letterLabel.Text = "?";

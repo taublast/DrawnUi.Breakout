@@ -592,7 +592,7 @@ namespace Breakout.Game.Dialogs
                 if (CanProcessAction())
                 {
 
-                    if (SelectedKeyHandler == null && KeyHandlers.Count > 0)
+                    if (SelectedKeyHandler == null && KeyHandlers.Count > 1)
                     {
                         SelectNextHandler();
                         UpdateLastDirectionalActionTime();
@@ -605,6 +605,8 @@ namespace Breakout.Game.Dialogs
                             UpdateLastActionTime();
                             return true;
                         }
+
+                        //tap single default button/control
                         OnOkClicked();
                         UpdateLastActionTime();
                     }

@@ -39,6 +39,7 @@ namespace Breakout.Game
 
         public const int MAX_POWERUPS_IN_POOL = 12;
         public const int MAX_BULLETS_IN_POOL = 64;
+        public const int MAX_BALLS_IN_POOL = 8;
 
         /// <summary>
         /// For long running profiling
@@ -198,6 +199,12 @@ namespace Breakout.Game
             for (int i = 0; i < MAX_BULLETS_IN_POOL; i++)
             {
                 AddToPoolPaddleBulletSprite();
+            }
+
+            // Pool balls for multiball powerup
+            for (int i = 0; i < MAX_BALLS_IN_POOL; i++)
+            {
+                AddToPoolBallSprite();
             }
 
             // Set initial timestamp
@@ -411,10 +418,14 @@ namespace Breakout.Game
             ClearSpritesOnBoard();
             ProcessSpritesToBeRemoved();
 
-            Ball.IsMoving = false;
-            Ball.SpeedRatio = 1 + 0.2f * (Level - 1);
-
             ResetPaddle();
+
+            // Then set ball properties
+            if (Ball != null)
+            {
+                Ball.IsMoving = false;
+                Ball.SpeedRatio = 1 + 0.2f * (Level - 1);
+            }
 
             // Set formation and presets based on level
             FormationType formation;
@@ -653,7 +664,10 @@ namespace Breakout.Game
 
             // Reset ball and continue demo
             ResetBall();
-            Ball.IsMoving = false;
+            if (Ball != null)
+            {
+                Ball.IsMoving = false;
+            }
 
             // Set demo state before starting new level
             State = GameState.DemoPlay;
@@ -701,6 +715,13 @@ namespace Breakout.Game
         {
             var bullet = BulletSprite.Create();
             PaddleBulletsPool.Return(bullet);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        void AddToPoolBallSprite()
+        {
+            var ball = BallSprite.Create();
+            BallsPool.Return(ball);
         }
 
         private int _level = 1;
@@ -790,10 +811,11 @@ namespace Breakout.Game
             }
         }
 
-        // Pools for bricks (reusable sprites)
+        // Pools for reusable sprites
         private ReusableSpritePool<BrickSprite> BricksPool = new(MAX_BRICKS);
         private ReusableSpritePool<PowerUpSprite> PowerupsPool = new(MAX_POWERUPS_IN_POOL);
         private ReusableSpritePool<BulletSprite> PaddleBulletsPool = new(MAX_BULLETS_IN_POOL);
+        private ReusableSpritePool<BallSprite> BallsPool = new(MAX_BALLS_IN_POOL);
         public SKRect GameFieldArea = SKRect.Empty;
         public SKRect BricksArea = SKRect.Empty;
         private Queue<SkiaControl> _spritesToBeRemovedLater = new();
@@ -937,7 +959,10 @@ namespace Breakout.Game
 
             if (Paddle.Powerup == PowerupType.StickyBall)
             {
-                Ball.IsMoving = false;
+                // Make THIS specific ball sticky (the one that just collided)
+                ball.IsMoving = false;
+                // Position sticky ball above paddle
+                ball.SetOffsetY(Paddle.Top - ball.HeightRequest);
             }
         }
 
@@ -954,7 +979,7 @@ namespace Breakout.Game
         /// <summary>
         /// Handles collision between ball and brick
         /// </summary>
-        void CollideBallAndBrick(BrickSprite brick, BallSprite ball, SKRect overlap)
+        void CollideBallAndBrick(BrickSprite brick, BallSprite ball, SKRect overlap, bool isFireball = false)
         {
             // Get brick dimensions and position
             var brickRect = brick.HitBox;
@@ -977,33 +1002,37 @@ namespace Breakout.Game
                     break;
             }
 
-            CollideBallAndBrick(brick, ball, face, penetration);
+            CollideBallAndBrick(brick, ball, face, penetration, isFireball);
         }
 
-        void CollideBallAndBrick(BrickSprite brick, BallSprite ball, CollisionFace face, float overlap)
+        void CollideBallAndBrick(BrickSprite brick, BallSprite ball, CollisionFace face, float overlap, bool isFireball = false)
         {
             var offset = overlap * 1.1;
 
-            switch (face)
+            // Only bounce if not in fireball mode
+            if (!isFireball)
             {
-                case CollisionFace.Top:
-                    ball.Angle = -ball.Angle;
-                    ball.Top -= offset;
-                    break;
-                case CollisionFace.Bottom:
-                    // Vertical collision - reflect vertically
-                    ball.Angle = -ball.Angle;
-                    ball.Top += offset;
-                    break;
+                switch (face)
+                {
+                    case CollisionFace.Top:
+                        ball.Angle = -ball.Angle;
+                        ball.Top -= offset;
+                        break;
+                    case CollisionFace.Bottom:
+                        // Vertical collision - reflect vertically
+                        ball.Angle = -ball.Angle;
+                        ball.Top += offset;
+                        break;
 
-                case CollisionFace.Left:
-                    ball.Left -= offset;
-                    ball.Angle = MathF.PI - ball.Angle;
-                    break;
-                case CollisionFace.Right:
-                    ball.Left += offset;
-                    ball.Angle = MathF.PI - ball.Angle;
-                    break;
+                    case CollisionFace.Left:
+                        ball.Left -= offset;
+                        ball.Angle = MathF.PI - ball.Angle;
+                        break;
+                    case CollisionFace.Right:
+                        ball.Left += offset;
+                        ball.Angle = MathF.PI - ball.Angle;
+                        break;
+                }
             }
 
             // After calculating new angle in collision response
@@ -1015,9 +1044,19 @@ namespace Breakout.Game
             // Handle brick hit logic based on properties
             if (brick.Undestructible)
             {
-                PlaySound(Sound.Wall);
-                // Don't remove undestructible bricks
-                return;
+                if (isFireball)
+                {
+                    // Fireball can pass through undestructible bricks too!
+                    PlaySound(Sound.Brick); // Different sound for fireball
+                    // Don't remove undestructible bricks, but don't return either
+                    // Let fireball continue through
+                }
+                else
+                {
+                    PlaySound(Sound.Wall);
+                    // Don't remove undestructible bricks
+                    return;
+                }
             }
 
             PlaySound(Sound.Brick);
@@ -1196,21 +1235,21 @@ namespace Breakout.Game
                 case CollisionFace.Left:
                     // Check for shallow angle and use larger penetration if needed
                     var leftPenetration = MathF.Abs(MathF.Cos(ball.Angle)) < 0.15f ? 6.0f : 2.0f;
-                    Ball.MoveOffset(leftPenetration * 1.1f, 0);
+                    ball.MoveOffset(leftPenetration * 1.1f, 0);
                     ball.Angle = MathF.PI - ball.Angle;
                     PlaySound(Sound.Wall, new Vector3(-1.0f, 0f, -1f));
                     break;
                 case CollisionFace.Right:
-                    // Check for shallow angle and use larger penetration if needed  
+                    // Check for shallow angle and use larger penetration if needed
                     var rightPenetration = MathF.Abs(MathF.Cos(ball.Angle)) < 0.15f ? 6.0f : 2.0f;
-                    Ball.MoveOffset(-rightPenetration * 1.1f, 0);
+                    ball.MoveOffset(-rightPenetration * 1.1f, 0);
                     ball.Angle = MathF.PI - ball.Angle;
                     PlaySound(Sound.Wall, new Vector3(2.0f, 0f, -1f));
                     break;
                 case CollisionFace.Bottom:
                     // Ball hit TOP wall (collision face is bottom of the wall)
                     var topPenetration = 2.0f;
-                    Ball.MoveOffset(0, topPenetration * 1.1f);
+                    ball.MoveOffset(0, topPenetration * 1.1f);
                     ball.Angle = -ball.Angle;
                     PlaySound(Sound.Wall);
                     break;
@@ -1219,11 +1258,20 @@ namespace Breakout.Game
                     PlaySound(Sound.Oops);
                     if (CHEAT_INVULNERABLE)
                     {
-                        ResetBall();
+                        // In cheat mode, just reset the ball position
+                        ball.Top = GameField.Height - ball.Height - 10;
+                        ball.Angle = -ball.Angle;
                     }
                     else
                     {
-                        LooseLife();
+                        // Remove this ball from play (multiball-aware)
+                        RemoveBall(ball);
+
+                        // Check if all balls are gone
+                        if (ActiveBalls.Count == 0)
+                        {
+                            LooseLife();
+                        }
                     }
 
                     break;
@@ -1247,7 +1295,7 @@ namespace Breakout.Game
             }
             else
             {
-                ResetPaddle();
+                ResetPaddle(false);
             }
         }
 
@@ -1261,7 +1309,7 @@ namespace Breakout.Game
                 // Use the SAME collision logic as traditional system
                 // Calculate a small penetration value to match traditional behavior
                 float fakePenetration = 2.0f; // Small value to simulate overlap
-                CollideBallAndBrick(brick, ball, hit.Face, fakePenetration);
+                CollideBallAndBrick(brick, ball, hit.Face, fakePenetration, ball.IsFireball);
             }
             else if (hit.Target is PaddleSprite paddle)
             {
@@ -1274,10 +1322,13 @@ namespace Breakout.Game
 
         public void AlightBallWithPaddleSurface()
         {
-            Ball.SetOffsetY(Paddle.Top - Ball.HeightRequest);
+            if (Ball != null)
+            {
+                Ball.SetOffsetY(Paddle.Top - Ball.HeightRequest);
+            }
         }
 
-        public void ResetPaddle()
+        public void ResetPaddle(bool center=true)
         {
             CollectedPowerUps = 0;
             CollectedPowerUpsSpeedy = 0;
@@ -1285,7 +1336,9 @@ namespace Breakout.Game
 
             IsMovingLeft = false;
             IsMovingRight = false;
-            Paddle.Left = 0;
+
+            if (center)
+                Paddle.Left = 0;
 
             ResetBall();
 
@@ -1294,7 +1347,13 @@ namespace Breakout.Game
 
         void ResetPowerUp()
         {
-            Ball.SpeedRatio = 1.0f;
+            // Reset speed and fireball mode for all active balls
+            foreach (var ball in ActiveBalls)
+            {
+                ball.SpeedRatio = 1.0f;
+                ball.IsFireball = false;
+            }
+
             Paddle.Powerup = PowerupType.None;
             Paddle.PowerupDuration = 0;
         }
@@ -1303,19 +1362,27 @@ namespace Breakout.Game
         {
             //PlaySound(Sound.Start);
 
-            Ball.SpeedRatio = 1;
-            // Position the ball above the paddle's center
-            Ball.SetOffsetX(Paddle.Left);
+            // Clear all existing balls
+            ClearAllBalls();
 
-            AlightBallWithPaddleSurface();
+            // Add a single primary ball
+            var primaryBall = AddBall();
+            if (primaryBall != null)
+            {
+                primaryBall.SpeedRatio = 1;
+                // Position the ball above the paddle's center
+                primaryBall.SetOffsetX(Paddle.Left);
 
-            // Random angle between -60� and -120� (upward)
-            float randomAngle = (float)(new Random().NextDouble() * (MathF.PI / 3) - MathF.PI / 6 - MathF.PI / 2);
+                AlightBallWithPaddleSurface();
 
-            Ball.Angle = randomAngle;
+                // Random angle between -60� and -120� (upward)
+                float randomAngle = (float)(new Random().NextDouble() * (MathF.PI / 3) - MathF.PI / 6 - MathF.PI / 2);
 
-            Ball.IsMoving = false;
-            Ball.IsActive = true;
+                primaryBall.Angle = randomAngle;
+
+                primaryBall.IsMoving = false;
+                primaryBall.IsActive = true;
+            }
         }
 
         #region HELPER METHODS
@@ -1331,10 +1398,13 @@ namespace Breakout.Game
             {
                 Paddle.Left = clampedX;
 
-                if (!Ball.IsMoving)
+                // Move ALL sticky balls with the paddle
+                foreach (var ball in ActiveBalls)
                 {
-                    //move the ball too with us
-                    Ball.MoveOffset(deltaX, 0);
+                    if (!ball.IsMoving)
+                    {
+                        ball.MoveOffset(deltaX, 0);
+                    }
                 }
             }
         }
@@ -1445,10 +1515,12 @@ namespace Breakout.Game
 
             if (chance < 0.05) return PowerupType.ExtraLife;
             if (chance < 0.10) return PowerupType.Destroyer;
-            if (chance < 0.20) return PowerupType.SlowBall;
-            if (chance < 0.30) return PowerupType.FastBall;
-            if (chance < 0.40) return PowerupType.ExpandPaddle;
-            if (chance < 0.50) return PowerupType.StickyBall;
+            if (chance < 0.15) return PowerupType.MultiBall;
+            if (chance < 0.20) return PowerupType.Fireball;
+            if (chance < 0.30) return PowerupType.SlowBall;
+            if (chance < 0.40) return PowerupType.FastBall;
+            if (chance < 0.50) return PowerupType.ExpandPaddle;
+            if (chance < 0.60) return PowerupType.StickyBall;
 
             return PowerupType.None;
         }
@@ -1459,13 +1531,21 @@ namespace Breakout.Game
             if (powerUpType != PowerupType.None)
             {
                 CollectedPowerUps++;
-                if (powerUpType == PowerupType.Destroyer || powerUpType == PowerupType.FastBall ||
-                    powerUpType == PowerupType.MultiBall)
+                if (powerUpType == PowerupType.Destroyer || powerUpType == PowerupType.FastBall)
                 {
                     CollectedPowerUpsSpeedy++;
                     if (CollectedPowerUpsSpeedy == 1)
                     {
                         PlaySpeedyMusic();
+                    }
+                }
+                else //rare
+                if (powerUpType == PowerupType.MultiBall)
+                {
+                    CollectedPowerUpsSpeedy++;
+                    if (CollectedPowerUpsSpeedy == 1)
+                    {
+                        PlaySpecialMusic();
                     }
                 }
             }
@@ -1499,29 +1579,107 @@ namespace Breakout.Game
                 }
             }
 
-            // Apply ball speed effects (should be on ball, not paddle)
+            // Apply ball speed effects to all active balls
             if (powerUpType == PowerupType.SlowBall)
             {
-                Ball.SpeedRatio = 0.5f;
+                foreach (var ball in ActiveBalls)
+                {
+                    ball.SpeedRatio = 0.5f;
+                }
             }
             else if (powerUpType == PowerupType.FastBall)
             {
-                Ball.SpeedRatio = 1.75f;
+                foreach (var ball in ActiveBalls)
+                {
+                    ball.SpeedRatio *= 1.5f;
+                }
+            }
+            else if (powerUpType == PowerupType.MultiBall)
+            {
+                ActivateMultiball();
+            }
+            else if (powerUpType == PowerupType.Fireball)
+            {
+                ActivateFireball();
             }
 
-            // Handle sticky ball logic
+            // Handle sticky ball logic - release all balls when switching away from sticky
             if (Paddle.Powerup == PowerupType.StickyBall && powerUpType != PowerupType.StickyBall)
             {
-                Ball.IsMoving = true;
+                foreach (var ball in ActiveBalls)
+                {
+                    ball.IsMoving = true;
+                }
             }
             else if (powerUpType != PowerupType.StickyBall)
             {
-                Ball.IsMoving = true;
+                foreach (var ball in ActiveBalls)
+                {
+                    ball.IsMoving = true;
+                }
             }
 
             Debug.WriteLine($"POWERUP! {powerUpType}");
 
             Paddle.Powerup = powerUpType;
+        }
+
+        /// <summary>
+        /// Activates multiball powerup by spawning additional balls
+        /// </summary>
+        private void ActivateMultiball()
+        {
+            if (Ball == null || !Ball.IsActive) return;
+
+            // Make sure primary ball starts moving (override sticky ball)
+            Ball.IsMoving = true;
+
+            // Spawn 2 additional balls (total of 3 balls)
+            const int additionalBalls = 2;
+            const float angleSpread = MathF.PI / 4; // 45 degrees spread
+
+            for (int i = 0; i < additionalBalls; i++)
+            {
+                var newBall = AddBall();
+                if (newBall != null)
+                {
+                    // Position new ball at primary ball location
+                    newBall.Left = Ball.Left;
+                    newBall.Top = Ball.Top;
+
+                    // Copy primary ball properties
+                    newBall.SpeedRatio = Ball.SpeedRatio;
+                    newBall.IsMoving = true; // Always start moving, ignore sticky ball
+                    newBall.IsActive = true;
+                    newBall.IsFireball = Ball.IsFireball; // Inherit fireball state
+
+                    // Calculate spread angle
+                    float baseAngle = Ball.Angle;
+                    float spreadOffset = (i + 1) * (angleSpread / (additionalBalls + 1)) - angleSpread / 2;
+                    newBall.Angle = baseAngle + spreadOffset;
+
+                    // Ensure angle is valid
+                    newBall.Angle = BallSprite.ClampAngleFromHorizontal(newBall.Angle);
+
+                    Debug.WriteLine($"Multiball: Spawned ball {i + 1} at angle {newBall.Angle * 180 / MathF.PI:F1}°");
+                }
+            }
+
+            Debug.WriteLine($"Multiball activated! Total balls: {ActiveBalls.Count}");
+        }
+
+        /// <summary>
+        /// Activates fireball powerup making all balls destructive and able to pass through bricks
+        /// </summary>
+        private void ActivateFireball()
+        {
+            // Make all active balls fireballs
+            foreach (var ball in ActiveBalls)
+            {
+                ball.IsFireball = true;
+            }
+
+            Debug.WriteLine($"Fireball activated! All {ActiveBalls.Count} balls are now fireballs");
         }
 
         private bool DetectBulletCollisionsWithRaycast(BulletSprite bullet, float deltaSeconds)

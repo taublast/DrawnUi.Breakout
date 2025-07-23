@@ -20,9 +20,11 @@ namespace Breakout.Game
 
             if ((State == GameState.DemoPlay || State == GameState.Playing) && levelReady)
             {
-                // get the current player hit box
-                Ball.UpdateState(LastFrameTimeNanos);
-                var ballRect = Ball.HitBox;
+                // Update all active balls
+                foreach (var ball in ActiveBalls)
+                {
+                    ball.UpdateState(LastFrameTimeNanos);
+                }
 
                 foreach (var child in BricksContainer.Views)
                 {
@@ -32,36 +34,46 @@ namespace Breakout.Game
                     }
                 }
 
-                // collision detection
-                bool ballCollided = false;
-                foreach (var x in this.GameField.Views.ToList())
+                // collision detection for all active balls
+                foreach (var ball in ActiveBalls.ToList())
                 {
-                    //collide ball vs everything and update ball position
-                    if (x is BallSprite ball && ball.IsActive)
+                    if (!ball.IsActive) continue;
+
+                    bool ballCollided = false;
+                    var ballRect = ball.HitBox;
+
+                    //bricks
+                    if (ball.IsMoving)
                     {
-                        //bricks
-                        if (ball.IsMoving)
+                        if (USE_RAYCAST_COLLISION)
                         {
-                            if (USE_RAYCAST_COLLISION)
+                            // Use raycast collision detection
+                            ballCollided = DetectCollisionsWithRaycast(ball, cappedDelta);
+                        }
+                        else
+                        {
+                            // Use traditional AABB collision detection
+                            if (!ballCollided && ball.IsActive)
                             {
-                                // Use raycast collision detection
-                                ballCollided = DetectCollisionsWithRaycast(ball, cappedDelta);
-                            }
-                            else
-                            {
-                                // Use traditional AABB collision detection
-                                if (!ballCollided && ball.IsActive)
+                                foreach (var view in GameField.Views)
                                 {
-                                    foreach (var view in GameField.Views)
+                                    if (view == BricksContainer)
                                     {
-                                        if (view == BricksContainer)
+                                        foreach (var child in BricksContainer.Views)
                                         {
-                                            foreach (var child in BricksContainer.Views)
+                                            if (child is BrickSprite brick && brick.IsActive)
                                             {
-                                                if (child is BrickSprite brick && brick.IsActive)
+                                                if (ballRect.IntersectsWith(brick.HitBox, out var overlap))
                                                 {
-                                                    if (ballRect.IntersectsWith(brick.HitBox, out var overlap))
+                                                    if (ball.IsFireball)
                                                     {
+                                                        // Fireball mode: destroy brick but don't bounce
+                                                        CollideBallAndBrick(brick, ball, overlap, isFireball: true);
+                                                        // Don't set ballCollided = true, so ball continues through
+                                                    }
+                                                    else
+                                                    {
+                                                        // Normal mode: destroy brick and bounce
                                                         CollideBallAndBrick(brick, ball, overlap);
                                                         ballCollided = true;
                                                         break;
@@ -73,6 +85,7 @@ namespace Breakout.Game
                                 }
                             }
                         }
+                    }
 
                         //maybe GameState would change after all of that
                         if (BricksLeftToBreak == 0)
@@ -111,7 +124,7 @@ namespace Breakout.Game
                                 if (ballRect.Left < 0)
                                 {
                                     var penetration = -ballRect.Left;
-                                    Ball.MoveOffset(penetration * 1.1f, 0);
+                                    ball.MoveOffset(penetration * 1.1f, 0);
                                     ball.Angle = MathF.PI - ball.Angle;
                                     PlaySound(Sound.Wall, new Vector3(-1.0f, 0f, -1f));
                                     ballCollided = true;
@@ -120,7 +133,7 @@ namespace Breakout.Game
                                 else if (ballRect.Right > Width)
                                 {
                                     var penetration = ballRect.Right - Width;
-                                    Ball.MoveOffset(-penetration * 1.1f, 0);
+                                    ball.MoveOffset(-penetration * 1.1f, 0);
                                     ball.Angle = MathF.PI - ball.Angle;
                                     PlaySound(Sound.Wall, new Vector3(2.0f, 0f, -1f));
                                     ballCollided = true;
@@ -130,7 +143,7 @@ namespace Breakout.Game
                                 if (ballRect.Top < 0)
                                 {
                                     var penetration = -ballRect.Top;
-                                    Ball.MoveOffset(0, penetration * 1.1f);
+                                    ball.MoveOffset(0, penetration * 1.1f);
                                     ball.Angle = -ball.Angle;
                                     PlaySound(Sound.Wall);
                                     ballCollided = true;
@@ -142,30 +155,36 @@ namespace Breakout.Game
                                     PlaySound(Sound.Oops);
                                     if (CHEAT_INVULNERABLE)
                                     {
-                                        ResetBall();
+                                        // In cheat mode, just reset the ball position
+                                        ball.Top = GameField.Height - ball.Height - 10;
+                                        ball.Angle = -ball.Angle;
                                     }
                                     else
                                     {
-                                        //RemoveReusable(ball); //todo could have many balls lol
+                                        // Remove this ball from play
+                                        RemoveBall(ball);
 
-                                        //just 1 ball we have
-                                        Lives--;
-                                        if (Lives <= 0)
+                                        // Check if all balls are gone
+                                        if (ActiveBalls.Count == 0)
                                         {
-                                            if (State == GameState.DemoPlay)
+                                            Lives--;
+                                            if (Lives <= 0)
                                             {
-                                                // In demo mode, restart from level 1 without showing dialog
-                                                RestartDemoMode();
+                                                if (State == GameState.DemoPlay)
+                                                {
+                                                    // In demo mode, restart from level 1 without showing dialog
+                                                    RestartDemoMode();
+                                                }
+                                                else
+                                                {
+                                                    GameLost();
+                                                }
                                             }
                                             else
                                             {
-                                                GameLost();
+                                                ResetBall();
+                                                //State = GameState.Paused;
                                             }
-                                        }
-                                        else
-                                        {
-                                            ResetBall();
-                                            //State = GameState.Paused;
                                         }
                                     }
                                 }
@@ -177,9 +196,12 @@ namespace Breakout.Game
                                 ball.UpdatePosition(cappedDelta);
                             }
                         }
-                    }
+                }
 
-                    else if (x is PowerUpSprite powerup && powerup.IsActive)
+                // Handle powerups separately
+                foreach (var x in this.GameField.Views.ToList())
+                {
+                    if (x is PowerUpSprite powerup && powerup.IsActive)
                     {
                         // Update powerup state and position
                         powerup.UpdateState(LastFrameTimeNanos);
@@ -329,41 +351,44 @@ namespace Breakout.Game
                 }
             }
 
-            // Ensure ball never exits game field bounds 
-            #region fix raycast
-            var ballLeftLimit = -GameField.Width / 2f + Ball.Width / 2f;
-            var ballRightLimit = GameField.Width / 2f - Ball.Width / 2f;
-            var wasLeft = Ball.Left;
-            Ball.Left = Math.Clamp(Ball.Left, ballLeftLimit, ballRightLimit);
-
-            // If ball was clamped horizontally, reflect its horizontal direction
-            if (wasLeft != Ball.Left && Ball.IsMoving)
+            // Ensure all balls never exit game field bounds (raycast collision fallback)
+            foreach (var ball in ActiveBalls.ToList())
             {
-                Ball.Angle = MathF.PI - Ball.Angle; // Reflect horizontally
-                PlaySound(Sound.Wall, new Vector3(Ball.Left < 0 ? -1.0f : 1.0f, 0f, -1f));
+                if (!ball.IsActive) continue;
+
+                var ballLeftLimit = -GameField.Width / 2f + ball.Width / 2f;
+                var ballRightLimit = GameField.Width / 2f - ball.Width / 2f;
+                var wasLeft = ball.Left;
+                ball.Left = Math.Clamp(ball.Left, ballLeftLimit, ballRightLimit);
+
+                // If ball was clamped horizontally, reflect its horizontal direction
+                if (wasLeft != ball.Left && ball.IsMoving)
+                {
+                    ball.Angle = MathF.PI - ball.Angle; // Reflect horizontally
+                    PlaySound(Sound.Wall, new Vector3(ball.Left < 0 ? -1.0f : 1.0f, 0f, -1f));
+                }
+
+                var ballTopLimit = -GameField.Height + ball.Height;
+                var ballBottomLimit = 0;
+                var wasTop = ball.Top;
+                ball.Top = Math.Clamp(ball.Top, ballTopLimit, ballBottomLimit);
+
+                // If ball was clamped vertically, reflect its vertical direction with slight randomization
+                if (wasTop != ball.Top && ball.IsMoving)
+                {
+                    // Reflect vertically
+                    ball.Angle = -ball.Angle;
+
+                    // Add slight randomization to prevent infinite vertical bouncing
+                    var randomOffset = (Random.Shared.NextSingle() - 0.5f) * 0.2f; // ±0.1 radians (~±6 degrees)
+                    ball.Angle += randomOffset;
+
+                    // Ensure angle doesn't become too horizontal (use existing clamping)
+                    ball.Angle = BallSprite.ClampAngleFromHorizontal(ball.Angle);
+
+                    PlaySound(Sound.Wall, new Vector3(0f, ball.Top < -GameField.Height / 2f ? -1.0f : 1.0f, -1f));
+                }
             }
-
-            var ballTopLimit = -GameField.Height + Ball.Height;
-            var ballBottomLimit = 0;
-            var wasTop = Ball.Top;
-            Ball.Top = Math.Clamp(Ball.Top, ballTopLimit, ballBottomLimit);
-
-            // If ball was clamped vertically, reflect its vertical direction with slight randomization
-            if (wasTop != Ball.Top && Ball.IsMoving)
-            {
-                // Reflect vertically
-                Ball.Angle = -Ball.Angle;
-
-                // Add slight randomization to prevent infinite vertical bouncing
-                var randomOffset = (Random.Shared.NextSingle() - 0.5f) * 0.2f; // ±0.1 radians (~±6 degrees)
-                Ball.Angle += randomOffset;
-
-                // Ensure angle doesn't become too horizontal (use existing clamping)
-                Ball.Angle = BallSprite.ClampAngleFromHorizontal(Ball.Angle);
-
-                PlaySound(Sound.Wall, new Vector3(0f, Ball.Top < -GameField.Height / 2f ? -1.0f : 1.0f, -1f));
-            }
-            #endregion
             
             ProcessSpritesToBeRemoved();
 

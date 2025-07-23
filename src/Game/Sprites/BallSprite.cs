@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace Breakout.Game;
 
-public class BallSprite : SkiaShape, IWithHitBox//, IReusableSprite when we implement multiball would be reusable from pool
+public class BallSprite : SkiaShape, IWithHitBox, IReusableSprite
 {
 
     //BackgroundColor="#dddddd"
@@ -36,6 +36,38 @@ public class BallSprite : SkiaShape, IWithHitBox//, IReusableSprite when we impl
     }
 
     public bool IsActive { get; set; }
+
+    private bool _isFireball = false;
+    public bool IsFireball
+    {
+        get => _isFireball;
+        set
+        {
+            if (_isFireball != value)
+            {
+                _isFireball = value;
+                UpdateFireballAppearance();
+            }
+        }
+    }
+
+    private void UpdateFireballAppearance()
+    {
+        if (_isFireball)
+        {
+            // Fireball appearance: red/orange with fiery glow
+            BackgroundColor = Colors.Red;
+            StrokeColor = Colors.Orange;
+            StrokeWidth = 3;
+        }
+        else
+        {
+            // Normal ball appearance
+            BackgroundColor = Colors.Aqua;
+            StrokeColor = Colors.White;
+            StrokeWidth = 2;
+        }
+    }
 
     public float Angle
     {

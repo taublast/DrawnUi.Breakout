@@ -11,10 +11,62 @@ namespace Breakout.Game
     {
         #region UI
 
-        public BallSprite Ball;
+        // Ball management for multiball support
+        private List<BallSprite> _activeBalls = new();
+        public BallSprite Ball => _activeBalls.FirstOrDefault(); // Primary ball for compatibility
+        public IReadOnlyList<BallSprite> ActiveBalls => _activeBalls.AsReadOnly();
+
         public PaddleSprite Paddle;
         public SkiaLayout GameField;
         private SkiaLayout BricksContainer;
+
+        #region BALL MANAGEMENT
+
+        /// <summary>
+        /// Adds a new ball to the game from the pool
+        /// </summary>
+        public BallSprite AddBall()
+        {
+            if (BallsPool.Count > 0)
+            {
+                var ball = BallsPool.Get();
+                if (ball != null)
+                {
+                    ball.IsActive = true;
+                    _activeBalls.Add(ball);
+                    GameField.AddSubView(ball);
+                    return ball;
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Removes a ball from the game and returns it to the pool
+        /// </summary>
+        public void RemoveBall(BallSprite ball)
+        {
+            if (ball != null && _activeBalls.Remove(ball))
+            {
+                ball.IsActive = false;
+                GameField.RemoveSubView(ball);
+                BallsPool.Return(ball);
+            }
+        }
+
+        /// <summary>
+        /// Removes all balls and returns them to the pool
+        /// </summary>
+        public void ClearAllBalls()
+        {
+            foreach (var ball in _activeBalls.ToList())
+            {
+                RemoveBall(ball);
+            }
+            _activeBalls.Clear();
+        }
+
+        #endregion
 
         /// <summary>
         /// Need this when we change language
@@ -60,10 +112,7 @@ namespace Breakout.Game
                                     Margin = new(0,90,0,0),
                                 }.Assign(out BricksContainer),
 
-                                new BallSprite()
-                                {
-                                    ZIndex = 4
-                                }.Assign(out Ball),
+                                // Ball will be created via AddBall() method during ResetBall()
 
                                 new PaddleSprite()
                                 {

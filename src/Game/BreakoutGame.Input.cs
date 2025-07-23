@@ -118,10 +118,19 @@ namespace Breakout.Game
             {
                 if (gameKey == GameKey.Fire)
                 {
-                    if (!Ball.IsMoving)
+                    // Check if any balls are not moving (sticky)
+                    bool hasStickyballs = ActiveBalls.Any(ball => !ball.IsMoving);
+
+                    if (hasStickyballs)
                     {
-                        //serve the ball!
-                        Ball.IsMoving = true;
+                        // Release ALL sticky balls
+                        foreach (var ball in ActiveBalls)
+                        {
+                            if (!ball.IsMoving)
+                            {
+                                ball.IsMoving = true;
+                            }
+                        }
                     }
                     else if (Paddle.Powerup == PowerupType.Destroyer)
                     {

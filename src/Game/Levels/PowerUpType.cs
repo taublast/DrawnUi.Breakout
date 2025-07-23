@@ -13,5 +13,6 @@ public enum PowerupType
     SlowBall,
     FastBall,
     MultiBall,
-    ExtraLife
+    ExtraLife,
+    Fireball
 }
