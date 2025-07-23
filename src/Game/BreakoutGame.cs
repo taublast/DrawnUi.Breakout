@@ -1344,7 +1344,6 @@ namespace Breakout.Game
         {
             CollectedPowerUps = 0;
             CollectedPowerUpsSpeedy = 0;
-            BulletsAvailable = POWERUP_MAX_BULLETS;
 
             IsMovingLeft = false;
             IsMovingRight = false;
@@ -1564,6 +1563,7 @@ namespace Breakout.Game
 
             if (powerUpType == PowerupType.Destroyer)
             {
+                BulletsAvailable = POWERUP_MAX_BULLETS;
                 PlaySound(Sound.Attack);
             }
             else if (powerUpType == PowerupType.None)
