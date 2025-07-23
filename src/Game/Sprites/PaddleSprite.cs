@@ -100,6 +100,11 @@ public class PaddleSprite : SkiaShape, IWithHitBox //, IReusableSprite
             WidthRequest = BreakoutGame.PADDLE_WIDTH * 1.33;
         }
         else
+        if (Powerup == PowerupType.ShrinkPaddle)
+        {
+            WidthRequest = BreakoutGame.PADDLE_WIDTH / 1.33;
+        }
+        else
         {
             WidthRequest = BreakoutGame.PADDLE_WIDTH;
         }

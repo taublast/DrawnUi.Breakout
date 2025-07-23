@@ -1527,11 +1527,12 @@ namespace Breakout.Game
             if (chance < 0.05) return PowerupType.ExtraLife;
             if (chance < 0.10) return PowerupType.Destroyer;
             if (chance < 0.15) return PowerupType.MultiBall;
-            if (chance < 0.17) return PowerupType.Fireball;  
+            if (chance < 0.17) return PowerupType.Fireball;
             if (chance < 0.27) return PowerupType.SlowBall;
-            if (chance < 0.37) return PowerupType.FastBall;
-            if (chance < 0.47) return PowerupType.ExpandPaddle;
-            if (chance < 0.57) return PowerupType.StickyBall;
+            if (chance < 0.37) return PowerupType.ShrinkPaddle; 
+            if (chance < 0.47) return PowerupType.FastBall;
+            if (chance < 0.57) return PowerupType.ExpandPaddle;
+            if (chance < 0.67) return PowerupType.StickyBall;
 
             return PowerupType.None;
         }
