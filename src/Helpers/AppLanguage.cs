@@ -103,6 +103,19 @@ public static class AppLanguage
         //MainPage.Instance.Build(); // reload game completely as if HotReload hit
     }
 
+    /// <summary>
+    /// Cycles to the next enabled language and applies it
+    /// </summary>
+    public static void SelectNextAndSet()
+    {
+        var currentLang = AppSettings.Get(AppSettings.Lang, AppSettings.LangDefault);
+        var currentIndex = EnabledLanguages.IndexOf(currentLang);
+
+        var nextIndex = (currentIndex + 1) % EnabledLanguages.Count;
+        var nextLang = EnabledLanguages[nextIndex];
+
+        SetAndApply(nextLang);
+    }
 
     public static void SelectAndSet()
     {

@@ -33,7 +33,6 @@ namespace Breakout.Game.Dialogs
             set;
         }
 
-
         public Action OnOkClicked { get; set; }
         public Action OnCancelClicked { get; set; }
 
@@ -592,14 +591,23 @@ namespace Breakout.Game.Dialogs
             {
                 if (CanProcessAction())
                 {
-                    if (SelectedKeyHandler != null)
+
+                    if (SelectedKeyHandler == null && KeyHandlers.Count > 0)
                     {
-                        var handled = SelectedKeyHandler.HandleGameKey(key);
-                        UpdateLastActionTime();
-                        return true;
+                        SelectNextHandler();
+                        UpdateLastDirectionalActionTime();
                     }
-                    OnOkClicked();
-                    UpdateLastActionTime();
+                    else
+                    {
+                        if (SelectedKeyHandler != null)
+                        {
+                            var handled = SelectedKeyHandler.HandleGameKey(key);
+                            UpdateLastActionTime();
+                            return true;
+                        }
+                        OnOkClicked();
+                        UpdateLastActionTime();
+                    }
                 }
                 return true;
             }

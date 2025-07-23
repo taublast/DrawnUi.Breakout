@@ -158,9 +158,18 @@ namespace Breakout.Game
                                     var lang = AppSettings.Get(AppSettings.Lang, AppSettings.LangDefault);
                                     me.Lang = lang;
                                 })
-                                .OnTapped(me =>
+                                .OnTapped((me, a) =>
                                 {
-                                    AppLanguage.SelectAndSet();
+                                    //is this a real tap?
+                                    if (a.Parameters.Event != null)
+                                    {
+                                        AppLanguage.SelectAndSet();
+                                    }
+                                    else
+                                    {
+                                        //controller
+                                        AppLanguage.SelectNextAndSet();
+                                    }
                                 }),
                         }
                     },
