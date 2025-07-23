@@ -591,8 +591,7 @@ namespace Breakout.Game.Dialogs
             {
                 if (CanProcessAction())
                 {
-
-                    if (SelectedKeyHandler == null && KeyHandlers.Count > 1 || OnOkClicked==null)
+                    if (SelectedKeyHandler == null && KeyHandlers.Count > 1)
                     {
                         SelectNextHandler();
                         UpdateLastDirectionalActionTime();
@@ -607,12 +606,21 @@ namespace Breakout.Game.Dialogs
                         }
 
                         //tap single default button/control
-                        OnOkClicked?.Invoke();
+                        if (OnCancelClicked != null)
+                        {
+                            OnOkClicked?.Invoke();
+                        }
+                        else
+                        {
+                            _ = CloseAsync(true, true);
+                        }
                         UpdateLastActionTime();
                     }
                 }
+
                 return true;
             }
+
             if (KeyHandlers.Count > 0)
             {
                 if (key == GameKey.Left || key == GameKey.Up)
@@ -631,8 +639,10 @@ namespace Breakout.Game.Dialogs
                         UpdateLastDirectionalActionTime();
                     }
                 }
+
                 return true;
             }
+
             return false;
         }
 
@@ -702,6 +712,7 @@ namespace Breakout.Game.Dialogs
                     SelectionIndicator.Arrange(SelectionIndicatorRect, (float)SelectionIndicator.WidthRequest,
                         (float)SelectionIndicator.HeightRequest, RenderingScale);
                 }
+
                 SelectionIndicator.Render(ctx.WithDestination(SelectionIndicatorRect));
             }
         }
