@@ -76,6 +76,11 @@ public class HudController : IInputController
                 }
             }
 
+            if (!_leftPressed && !_rightPressed)
+            {
+                _game.SendKey(GameKey.Stop);
+            }
+
             return true;
         }
 

@@ -4,28 +4,6 @@ using SkiaSharp;
 namespace Breakout.Game.Dialogs
 {
     /// <summary>
-    /// Template system for customizing dialog appearance and behavior
-    /// </summary>
-    public class DialogTemplate
-    {
-        public Func<GameDialog, SkiaControl, string, string, SkiaLayout> CreateDialogFrame { get; set; }
-        public Func<SkiaLayout> CreateBackdrop { get; set; }
-        public Func<string, SkiaControl> CreateButton { get; set; }
-        public DialogAnimations Animations { get; set; }
-    }
-
-    /// <summary>
-    /// Animation definitions for dialog appearance and disappearance
-    /// </summary>
-    public class DialogAnimations
-    {
-        public Func<SkiaLayout, CancellationToken, Task> BackdropAppearing { get; set; }
-        public Func<SkiaLayout, CancellationToken, Task> BackdropDisappearing { get; set; }
-        public Func<SkiaLayout, CancellationToken, Task> FrameAppearing { get; set; }
-        public Func<SkiaLayout, CancellationToken, Task> FrameDisappearing { get; set; }
-    }
-
-    /// <summary>
     /// A standalone dialog class with customizable templates and animations.
     /// Displays content with optional OK and Cancel buttons.
     /// </summary>

@@ -403,6 +403,7 @@ namespace Breakout.Game
             if (_audioService != null)
             {
                 _audioService.IsMuted = true;
+                _audioService.StopBackgroundMusic();
             }
             
             PauseGame();
@@ -418,6 +419,7 @@ namespace Breakout.Game
             if (_audioService != null)
             {
                 _audioService.IsMuted = false;
+                SetupBackgroundMusic();
             }
 
             StartLoop();

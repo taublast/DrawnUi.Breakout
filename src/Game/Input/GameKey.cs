@@ -6,12 +6,20 @@
 public enum GameKey
 {
     Unset,
+    
     Demo,
+    
+    /// <summary>
+    /// Will open options
+    /// </summary>
     Pause,
+    
     Fire,
+
     Left,
     Right,
-    Stop,
     Up,
-    Down
+    Down,
+
+    Stop,
 }

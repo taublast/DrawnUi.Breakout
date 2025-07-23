@@ -123,9 +123,16 @@ public static class AppLanguage
             MainThread.BeginInvokeOnMainThread(async () =>
             {
                 var options = DisplayLanguages.Select(c => c.Value).ToArray();
+                
+                //block game input from keys
+                BreakoutGame.Instance.Pause();
+
                 var result =
                     await App.Current.MainPage.DisplayActionSheet(ResStrings.Language, ResStrings.BtnCancel, null,
                         options);
+
+                BreakoutGame.Instance.Resume();
+
                 if (!string.IsNullOrEmpty(result))
                 {
                     var selectedIndex = options.FindIndex(result);
