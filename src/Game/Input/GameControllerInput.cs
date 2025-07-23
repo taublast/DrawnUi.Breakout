@@ -28,11 +28,13 @@ public class GameControllerInput : IInputController
             return;
         }
         
-        if (_gameController.LeftStick.XAxis.Value < -0.001f)
+        if (_gameController.LeftStick.XAxis.Value < -0.001f ||
+            _gameController.Dpad.XAxis.Value < -0.001f)
         {
             _game.SendKey(GameKey.Left);
         }
-        else if (_gameController.LeftStick.XAxis.Value > 0.001f)
+        else if (_gameController.LeftStick.XAxis.Value > 0.001f ||
+                 _gameController.Dpad.XAxis.Value > 0.001f)
         {
             _game.SendKey(GameKey.Right);
         }
@@ -41,13 +43,15 @@ public class GameControllerInput : IInputController
             _game.SendKey(GameKey.Stop);
         }
         
-        if (_gameController.LeftStick.YAxis.Value < -0.001f)
-        {
-            _game.SendKey(GameKey.Down);
-        }
-        else if (_gameController.LeftStick.YAxis.Value > 0.001f)
+        if (_gameController.LeftStick.YAxis.Value < -0.001f ||
+            _gameController.Dpad.YAxis.Value > 0.001f)
         {
             _game.SendKey(GameKey.Up);
+        }
+        else if (_gameController.LeftStick.YAxis.Value > 0.001f ||
+                 _gameController.Dpad.YAxis.Value < -0.001f)
+        {
+            _game.SendKey(GameKey.Down);
         }
 
         if (_gameController.South.Value)
