@@ -1542,6 +1542,29 @@ namespace Breakout.Game
             if (powerUpType != PowerupType.None)
             {
                 CollectedPowerUps++;
+
+                // Add score for collecting powerups
+                switch (powerUpType)
+                {
+                    case PowerupType.MultiBall:
+                    case PowerupType.Fireball:
+                        Score += 200; 
+                        break;
+                    case PowerupType.Destroyer:
+                        Score += 150;  
+                        break;
+                    case PowerupType.ExpandPaddle:
+                    case PowerupType.StickyBall:
+                    case PowerupType.ExtraLife:
+                    case PowerupType.SlowBall:
+                        Score += 30; 
+                        break;
+                    case PowerupType.ShrinkPaddle:
+                    case PowerupType.FastBall:
+                        Score += 100; 
+                        break;
+                }
+
                 if (powerUpType == PowerupType.Destroyer || powerUpType == PowerupType.FastBall)
                 {
                     CollectedPowerUpsSpeedy++;
