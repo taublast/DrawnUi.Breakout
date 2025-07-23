@@ -70,7 +70,7 @@ public class PowerUpSprite : SkiaShape, IWithHitBox, IReusableSprite
                 break;
             case PowerupType.ShrinkPaddle:
                 _letterLabel.Text = "R";
-                BackgroundColor = Colors.Orange;
+                BackgroundColor = Colors.Yellow;
                 _letterLabel.TextColor = BlackColor;
                 break;
             case PowerupType.SlowBall:
@@ -85,8 +85,8 @@ public class PowerUpSprite : SkiaShape, IWithHitBox, IReusableSprite
                 break;
             case PowerupType.MultiBall:
                 _letterLabel.Text = "M";
-                BackgroundColor = Colors.Magenta;
-                _letterLabel.TextColor = WhiteColor;
+                BackgroundColor = Colors.DarkGreen;
+                _letterLabel.TextColor = Colors.White;
                 break;
             case PowerupType.ExtraLife:
                 _letterLabel.Text = "L";
@@ -95,8 +95,8 @@ public class PowerUpSprite : SkiaShape, IWithHitBox, IReusableSprite
                 break;
             case PowerupType.Fireball:
                 _letterLabel.Text = "B";
-                BackgroundColor = Colors.OrangeRed;
-                _letterLabel.TextColor = Colors.Yellow;
+                BackgroundColor = Colors.Crimson;
+                _letterLabel.TextColor = WhiteColor;
                 break;
 
             default:

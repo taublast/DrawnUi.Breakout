@@ -72,7 +72,11 @@ public class BallSprite : SkiaShape, IWithHitBox, IReusableSprite
     public float Angle
     {
         get => _angle;
-        set { _angle = ClampAngleFromHorizontal(value); }
+        set
+        {
+            _angle = ClampAngleFromHorizontal(value);
+            TrackAngleForOscillation(_angle);
+        }
     }
 
 
@@ -115,6 +119,12 @@ public class BallSprite : SkiaShape, IWithHitBox, IReusableSprite
     private float _interpolationFactor = 0.5f; // Smoothing factor
     private float _angle;
     private bool _isMoving;
+
+    // Angle oscillation detection for unsticking
+    private float _angleHistory1 = float.NaN;
+    private float _angleHistory2 = float.NaN;
+    private float _angleHistory3 = float.NaN;
+    private int _oscillationCount = 0;
 
     /// <summary>
     /// Change the current position offset by the provided amount in points
@@ -269,6 +279,87 @@ public class BallSprite : SkiaShape, IWithHitBox, IReusableSprite
             // Angle is not too horizontal, return the normalized version
             return normalizedAngle;
         }
+    }
+
+    /// <summary>
+    /// Track angle changes to detect oscillation (ball stuck between surfaces)
+    /// </summary>
+    private void TrackAngleForOscillation(float newAngle)
+    {
+        // Only track if ball is moving
+        if (!IsMoving)
+        {
+            ResetOscillationTracking();
+            return;
+        }
+
+        // Shift history: 3 -> 2 -> 1 -> new
+        _angleHistory3 = _angleHistory2;
+        _angleHistory2 = _angleHistory1;
+        _angleHistory1 = newAngle;
+
+        // Check for oscillation pattern (need at least 3 angles)
+        if (!float.IsNaN(_angleHistory3))
+        {
+            CheckForOscillation();
+        }
+    }
+
+    /// <summary>
+    /// Check if ball is stuck in angle oscillation pattern
+    /// </summary>
+    private void CheckForOscillation()
+    {
+        const float angleTolerance = 0.01f; // Small tolerance for floating point comparison
+
+        // Check if we have a 2-angle oscillation pattern
+        bool isOscillating =
+            (MathF.Abs(_angleHistory1 - _angleHistory3) < angleTolerance) && // Current matches 2 steps ago
+            (MathF.Abs(_angleHistory2 - _angleHistory1) > angleTolerance);   // But different from previous
+
+        if (isOscillating)
+        {
+            _oscillationCount++;
+
+            // If oscillating for 6+ frames, we're stuck!
+            if (_oscillationCount >= 6)
+            {
+                UnstickBall();
+            }
+        }
+        else
+        {
+            _oscillationCount = 0; // Reset counter if pattern breaks
+        }
+    }
+
+    /// <summary>
+    /// Unstick the ball by adding a small random angle adjustment
+    /// </summary>
+    private void UnstickBall()
+    {
+        // Add small random nudge to break oscillation
+        var random = new Random();
+        float nudge = (float)(random.NextDouble() - 0.5) * 0.4f; // ±0.2 radians (~±11 degrees)
+
+        _angle = ClampAngleFromHorizontal(_angle + nudge);
+
+        // Reset tracking
+        ResetOscillationTracking();
+
+        // Optional: Boost speed slightly to help escape
+        SpeedRatio = Math.Max(SpeedRatio, 1.0f);
+    }
+
+    /// <summary>
+    /// Reset oscillation tracking
+    /// </summary>
+    private void ResetOscillationTracking()
+    {
+        _angleHistory1 = float.NaN;
+        _angleHistory2 = float.NaN;
+        _angleHistory3 = float.NaN;
+        _oscillationCount = 0;
     }
 
 }

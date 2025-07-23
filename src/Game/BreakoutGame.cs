@@ -1101,11 +1101,15 @@ namespace Breakout.Game
             // Remove the bullet
             RemoveReusable(bullet);
 
-            // Handle brick hit logic (same as ball collision)
+            // Handle brick hit logic - destroyer bullets can destroy undestructible bricks!
             if (brick.Undestructible)
             {
-                PlaySound(Sound.Wall);
-                return;
+                // Destroyer bullets can destroy even undestructible bricks!
+                PlaySound(Sound.Brick); // Different sound for destroyer
+                Score += 10; // Give points for destroying undestructible brick
+                SpawnPowerUp(brick);
+                RemoveBrick(brick); // This will NOT decrement BricksLeftToBreak due to our fix
+                return; // Exit early, brick is destroyed
             }
 
             PlaySound(Sound.Brick);
