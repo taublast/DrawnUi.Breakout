@@ -4,7 +4,6 @@ namespace Breakout.Game
 {
     public partial class BreakoutGame : MauiGame
     {
-
         /// <summary>
         /// A keyboard key was pressed
         /// </summary>
@@ -16,7 +15,6 @@ namespace Breakout.Game
             GameKeysQueue.Enqueue(gameKey);
         }
 
-
         /// <summary>
         /// A keyboard key was released
         /// </summary>
@@ -24,27 +22,6 @@ namespace Breakout.Game
         public override void OnKeyUp(MauiKey mauiKey)
         {
             var gameKey = MapToGame(mauiKey);
-
-            if (gameKey == GameKey.Pause)
-            {
-                if (TogglePause())
-                    return;
-            }
-
-            if (mauiKey == MauiKey.KeyN)
-            {
-                StartNewLevel();
-                return;
-            }
-
-            if (mauiKey == MauiKey.KeyR)
-            {
-                // Toggle collision detection system
-                USE_RAYCAST_COLLISION = !USE_RAYCAST_COLLISION;
-                System.Diagnostics.Debug.WriteLine(
-                    $"Collision system switched to: {(USE_RAYCAST_COLLISION ? "RAYCAST" : "AABB")}");
-                return;
-            }
 
             if (State == GameState.Playing || State == GameState.DemoPlay)
             {

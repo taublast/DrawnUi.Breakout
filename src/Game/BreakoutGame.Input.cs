@@ -23,6 +23,26 @@ namespace Breakout.Game
             GameKeysQueue.Enqueue(key);
         }
 
+        private int ActionDelayMs = 2000;
+ 
+        private Dictionary<GameKey, long> LastActions = new();
+
+        private bool CanProcessSpecialKey(GameKey key)
+        {
+            var currentTime = Environment.TickCount64;
+            var allowed = true;
+            if (LastActions.TryGetValue(key, out var lastActionTime))
+            {
+                allowed = currentTime - lastActionTime >= ActionDelayMs;
+            }
+            return allowed;
+        }
+
+        private void MarkCanProcessSpecialKey(GameKey key)
+        {
+            LastActions[key] = Environment.TickCount64;
+        }
+
         public void ProcessInput()
         {
             foreach (var inputController in InputControllers)
@@ -34,6 +54,17 @@ namespace Breakout.Game
             {
                 var gameKey = GameKeysQueue.Dequeue();
 
+                //special global keys
+                if (gameKey == GameKey.Pause)
+                {
+                    if (!CanProcessSpecialKey(GameKey.Pause))
+                    {
+                        continue;
+                    }
+                    MarkCanProcessSpecialKey(gameKey); 
+                }
+                else
+                //keys that can go to dialogs too
                 if (GameDialog.IsAnyDialogOpen(this))
                 {
                     var topDialog = GameDialog.GetTopDialog(this);
@@ -75,9 +106,29 @@ namespace Breakout.Game
         /// <param name="gameKey"></param>
         public virtual void ApplyGameKey(GameKey gameKey)
         {
+
+            if (gameKey == GameKey.Pause)
+            {
+                TogglePause();
+                return;
+            }
+
             // For playing state, set movement flags
             if (State == GameState.Playing || State == GameState.DemoPlay)
             {
+                if (gameKey == GameKey.Fire)
+                {
+                    if (!Ball.IsMoving)
+                    {
+                        //serve the ball!
+                        Ball.IsMoving = true;
+                    }
+                    else if (Paddle.Powerup == PowerupType.Destroyer)
+                    {
+                        FirePaddleBullet();
+                    }
+                }
+
                 if (gameKey == GameKey.Stop)
                 {
                     IsMovingLeft = false;
@@ -94,18 +145,7 @@ namespace Breakout.Game
                     IsMovingRight = true;
                 }
 
-                if (gameKey == GameKey.Fire)
-                {
-                    if (!Ball.IsMoving)
-                    {
-                        //serve the ball!
-                        Ball.IsMoving = true;
-                    }
-                    else if (Paddle.Powerup == PowerupType.Destroyer)
-                    {
-                        FirePaddleBullet();
-                    }
-                }
+
             }
         }
 

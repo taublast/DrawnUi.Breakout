@@ -580,28 +580,27 @@ namespace Breakout.Game.Dialogs
         SkiaShape SelectionIndicator;
 
         // Time-delay filtering
-        private int _directionalActionDelayMs = 350;
+        private int DirectionalActionDelayMs = 200;
         private long _lastDirectionalActionTime = 0;
 
-        /// <summary>
-        /// Gets or sets the delay in milliseconds between directional actions to prevent rapid-fire selection from controllers
-        /// </summary>
-        public int DirectionalActionDelayMs
-        {
-            get => _directionalActionDelayMs;
-            set => _directionalActionDelayMs = Math.Max(0, value);
-        }
+        private int ActionDelayMs = 750;
+        private long _lastActionTime = 0;
 
         public bool HandleGameKey(GameKey key)
         {
             if (key == GameKey.Fire)
             {
-                if (SelectedKeyHandler != null)
+                if (CanProcessAction())
                 {
-                    var handled = SelectedKeyHandler.HandleGameKey(key);
-                    return true;
+                    if (SelectedKeyHandler != null)
+                    {
+                        var handled = SelectedKeyHandler.HandleGameKey(key);
+                        UpdateLastActionTime();
+                        return true;
+                    }
+                    OnOkClicked();
+                    UpdateLastActionTime();
                 }
-                OnOkClicked();
                 return true;
             }
             if (KeyHandlers.Count > 0)
@@ -628,12 +627,29 @@ namespace Breakout.Game.Dialogs
         }
 
         /// <summary>
+        /// Checks if enough time has passed since the last action to allow processing a new one
+        /// </summary>
+        private bool CanProcessAction()
+        {
+            var currentTime = Environment.TickCount64;
+            return currentTime - _lastActionTime >= ActionDelayMs;
+        }
+
+        /// <summary>
+        /// Updates the timestamp of the last action
+        /// </summary>
+        private void UpdateLastActionTime()
+        {
+            _lastActionTime = Environment.TickCount64;
+        }
+
+        /// <summary>
         /// Checks if enough time has passed since the last directional action to allow processing a new one
         /// </summary>
         private bool CanProcessDirectionalAction()
         {
             var currentTime = Environment.TickCount64;
-            return currentTime - _lastDirectionalActionTime >= _directionalActionDelayMs;
+            return currentTime - _lastDirectionalActionTime >= DirectionalActionDelayMs;
         }
 
         /// <summary>
