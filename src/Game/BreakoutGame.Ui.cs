@@ -13,7 +13,6 @@ namespace Breakout.Game
 
         // Ball management for multiball support
         private List<BallSprite> _activeBalls = new();
-        public BallSprite Ball => _activeBalls.FirstOrDefault(); // Primary ball for compatibility
         public IReadOnlyList<BallSprite> ActiveBalls => _activeBalls.AsReadOnly();
 
         public PaddleSprite Paddle;

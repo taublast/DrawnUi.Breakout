@@ -420,11 +420,11 @@ namespace Breakout.Game
 
             ResetPaddle();
 
-            // Then set ball properties
-            if (Ball != null)
+            // Then set ball properties for all active balls
+            foreach (var ball in ActiveBalls)
             {
-                Ball.IsMoving = false;
-                Ball.SpeedRatio = 1 + 0.2f * (Level - 1);
+                ball.IsMoving = false;
+                ball.SpeedRatio = 1 + 0.2f * (Level - 1);
             }
 
             // Set formation and presets based on level
@@ -664,9 +664,9 @@ namespace Breakout.Game
 
             // Reset ball and continue demo
             ResetBall();
-            if (Ball != null)
+            foreach (var ball in ActiveBalls)
             {
-                Ball.IsMoving = false;
+                ball.IsMoving = false;
             }
 
             // Set demo state before starting new level
@@ -955,7 +955,7 @@ namespace Breakout.Game
             ball.SpeedRatio = MathF.Min(ball.SpeedRatio * finalSpeedMultiplier, maxSpeedRatio);
 
             //adjust some for frame drops
-            AlightBallWithPaddleSurface();
+            AlightBallWithPaddleSurface(ball);
 
             if (Paddle.Powerup == PowerupType.StickyBall)
             {
@@ -1320,11 +1320,19 @@ namespace Breakout.Game
 
         #endregion
 
-        public void AlightBallWithPaddleSurface()
+        public void AlightBallWithPaddleSurface(BallSprite ball = null)
         {
-            if (Ball != null)
+            if (ball != null)
             {
-                Ball.SetOffsetY(Paddle.Top - Ball.HeightRequest);
+                ball.SetOffsetY(Paddle.Top - ball.HeightRequest);
+            }
+            else
+            {
+                // If no specific ball provided, align all active balls
+                foreach (var activeBall in ActiveBalls)
+                {
+                    activeBall.SetOffsetY(Paddle.Top - activeBall.HeightRequest);
+                }
             }
         }
 
@@ -1365,23 +1373,23 @@ namespace Breakout.Game
             // Clear all existing balls
             ClearAllBalls();
 
-            // Add a single primary ball
-            var primaryBall = AddBall();
-            if (primaryBall != null)
+            // Add a single ball
+            var newBall = AddBall();
+            if (newBall != null)
             {
-                primaryBall.SpeedRatio = 1;
+                newBall.SpeedRatio = 1;
                 // Position the ball above the paddle's center
-                primaryBall.SetOffsetX(Paddle.Left);
+                newBall.SetOffsetX(Paddle.Left);
 
-                AlightBallWithPaddleSurface();
+                AlightBallWithPaddleSurface(newBall);
 
                 // Random angle between -60� and -120� (upward)
                 float randomAngle = (float)(new Random().NextDouble() * (MathF.PI / 3) - MathF.PI / 6 - MathF.PI / 2);
 
-                primaryBall.Angle = randomAngle;
+                newBall.Angle = randomAngle;
 
-                primaryBall.IsMoving = false;
-                primaryBall.IsActive = true;
+                newBall.IsMoving = false;
+                newBall.IsActive = true;
             }
         }
 
@@ -1591,7 +1599,7 @@ namespace Breakout.Game
             {
                 foreach (var ball in ActiveBalls)
                 {
-                    ball.SpeedRatio *= 1.5f;
+                    ball.SpeedRatio *= 2.0f;
                 }
             }
             else if (powerUpType == PowerupType.MultiBall)
@@ -1629,10 +1637,16 @@ namespace Breakout.Game
         /// </summary>
         private void ActivateMultiball()
         {
-            if (Ball == null || !Ball.IsActive) return;
+            if (ActiveBalls.Count == 0) return;
 
-            // Make sure primary ball starts moving (override sticky ball)
-            Ball.IsMoving = true;
+            // Get the first active ball as reference
+            var referenceBall = ActiveBalls.First();
+
+            // Make sure all balls start moving (override sticky ball)
+            foreach (var ball in ActiveBalls)
+            {
+                ball.IsMoving = true;
+            }
 
             // Spawn 2 additional balls (total of 3 balls)
             const int additionalBalls = 2;
@@ -1643,18 +1657,18 @@ namespace Breakout.Game
                 var newBall = AddBall();
                 if (newBall != null)
                 {
-                    // Position new ball at primary ball location
-                    newBall.Left = Ball.Left;
-                    newBall.Top = Ball.Top;
+                    // Position new ball at reference ball location
+                    newBall.Left = referenceBall.Left;
+                    newBall.Top = referenceBall.Top;
 
-                    // Copy primary ball properties
-                    newBall.SpeedRatio = Ball.SpeedRatio;
+                    // Copy reference ball properties
+                    newBall.SpeedRatio = referenceBall.SpeedRatio;
                     newBall.IsMoving = true; // Always start moving, ignore sticky ball
                     newBall.IsActive = true;
-                    newBall.IsFireball = Ball.IsFireball; // Inherit fireball state
+                    newBall.IsFireball = referenceBall.IsFireball; // Inherit fireball state
 
                     // Calculate spread angle
-                    float baseAngle = Ball.Angle;
+                    float baseAngle = referenceBall.Angle;
                     float spreadOffset = (i + 1) * (angleSpread / (additionalBalls + 1)) - angleSpread / 2;
                     newBall.Angle = baseAngle + spreadOffset;
 

@@ -134,8 +134,8 @@ namespace Breakout.Game.Ai
                 _shootingTimer = _shootingInterval + _random.NextSingle() * 0.2f;
             }
 
-            // If the ball isn't moving, handle serving
-            if (!_game.Ball.IsMoving)
+            // If no balls are moving, handle serving
+            if (_game.ActiveBalls.Count == 0 || !_game.ActiveBalls.Any(b => b.IsMoving))
             {
                 IdleWandering(deltaTime);
                 _decisionChangeTimer -= deltaTime;
@@ -234,21 +234,24 @@ namespace Breakout.Game.Ai
                 return;
             }
 
-            // Check ball direction
-            bool ballIsComingDown = MathF.Sin(_game.Ball.Angle) > 0;
-            
-            if (ballIsComingDown)
+            // Find the closest ball that's coming down
+            var closestBall = _game.ActiveBalls
+                .Where(ball => ball.IsMoving && MathF.Sin(ball.Angle) > 0) // Coming down
+                .OrderBy(ball => ball.Top) // Closest to paddle
+                .FirstOrDefault();
+
+            if (closestBall != null)
             {
                 // BALL IS COMING DOWN - PRIORITIZE BALL, but try powerups if safe
                 if (_reactionTimer <= 0)
                 {
                     // Calculate ball trajectory first
-                    var ballX = _game.Ball.Left;
-                    var ballY = _game.Ball.Top;
+                    var ballX = closestBall.Left;
+                    var ballY = closestBall.Top;
                     var paddleY = _game.Paddle.Top;
 
-                    var ballVelX = MathF.Cos(_game.Ball.Angle) * BreakoutGame.BALL_SPEED * _game.Ball.SpeedRatio;
-                    var ballVelY = MathF.Sin(_game.Ball.Angle) * BreakoutGame.BALL_SPEED * _game.Ball.SpeedRatio;
+                    var ballVelX = MathF.Cos(closestBall.Angle) * BreakoutGame.BALL_SPEED * closestBall.SpeedRatio;
+                    var ballVelY = MathF.Sin(closestBall.Angle) * BreakoutGame.BALL_SPEED * closestBall.SpeedRatio;
 
                     var timeToIntersect = (paddleY - ballY) / ballVelY;
 
