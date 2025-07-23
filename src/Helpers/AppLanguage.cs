@@ -83,6 +83,27 @@ public static class AppLanguage
 
     static List<KeyValuePair<string, string>> DisplayLanguages;
 
+    public static void SetAndApply(string lang)
+    {
+        Set(lang);
+
+        Super.OnFrame +=
+            OnFrame; //will change language on rendering thread if different from main
+    }
+
+    private static void OnFrame(object o, EventArgs a)
+    {
+        Super.OnFrame -= OnFrame;
+        Thread.CurrentThread.CurrentUICulture = ResStrings.Culture;
+
+        //soft refresh
+        BreakoutGame.Instance.RedrawFromOptions();
+
+        //mimic HotReload
+        //MainPage.Instance.Build(); // reload game completely as if HotReload hit
+    }
+
+
     public static void SelectAndSet()
     {
         var languages = EnabledLanguages;
@@ -102,9 +123,16 @@ public static class AppLanguage
             MainThread.BeginInvokeOnMainThread(async () =>
             {
                 var options = DisplayLanguages.Select(c => c.Value).ToArray();
+                
+                //block game input from keys
+                BreakoutGame.Instance.Pause();
+
                 var result =
                     await App.Current.MainPage.DisplayActionSheet(ResStrings.Language, ResStrings.BtnCancel, null,
                         options);
+
+                BreakoutGame.Instance.Resume();
+
                 if (!string.IsNullOrEmpty(result))
                 {
                     var selectedIndex = options.FindIndex(result);
@@ -113,26 +141,12 @@ public static class AppLanguage
                         var lang = languages[selectedIndex];
                         if (lang != AppSettings.Get(AppSettings.Lang, AppSettings.LangDefault))
                         {
-                            Set(lang);
-
-                            Super.OnFrame +=
-                                OnFrame; //will change language on rendering thread if different from main
+                            SetAndApply(lang);
                         }
                     }
                 }
             });
 
-            void OnFrame(object o, EventArgs a)
-            {
-                Super.OnFrame -= OnFrame;
-                Thread.CurrentThread.CurrentUICulture = ResStrings.Culture;
-
-                //soft refresh
-                BreakoutGame.Instance.RedrawFromOptions();
-
-                //mimic HotReload
-                //MainPage.Instance.Build(); // reload game completely as if HotReload hit
-            }
         }
     }
 }

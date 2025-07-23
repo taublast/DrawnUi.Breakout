@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using AppoMobi.Maui.Gestures;
+using Breakout.Game.Controls;
 using Breakout.Game.Dialogs;
 using Breakout.Game.Input;
 using SkiaSharp;
@@ -320,9 +321,10 @@ namespace Breakout.Game
                 btn.BevelType = BevelType.Bevel;
             }
 
+
             public static SkiaShape Button(string caption, Action action)
             {
-                return new SkiaShape()
+                return new SelectableGameButton()
                 {
                     UseCache = SkiaCacheType.Image,
                     CornerRadius = 8,
