@@ -48,6 +48,8 @@ and app is crashing with "Activating a single-threaded class from MTA is not sup
 
 ### Optional Maybe ToDo
 
-* add enemies, main interest is they move and the ball is bouncing from them unexpectedly
-* an AI-boss paddle will appear on top after all bricks destroyed would need to be outplayed
-* add Pong mode to be chooses along with usual breakout at start
+* New powerups: multiball, fireball
+* Indestructibe bricks flash when hit
+* Add enemies, main interest is they move and the ball is bouncing from them unexpectedly
+* An AI-boss paddle would appear on top after all bricks destroyed would need to be outplayed
+* Add Pong mode!
