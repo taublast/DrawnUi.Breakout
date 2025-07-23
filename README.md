@@ -8,6 +8,7 @@ A cross-platform game to play on **iOS, MacCatalyst, Android and Windows**.
 * If you are lucky enough shoot at bricks in Destroyer mode!
 * Auto-generated levels
 * Available in 9 languages
+* Play with touch/keyboard/mouse/apple controllers
 
 ## App Features
 * Cross-platform for iOS, MacCatalyst, Android and Windows with hardware acceleration
@@ -20,14 +21,16 @@ A cross-platform game to play on **iOS, MacCatalyst, Android and Windows**.
 * Raycast collision detection
 * Layered rendering
 * Dialogs with glass-style transparent backdrops
+* Input controllers support
 
 ## Development Features
 * Compatible with .NET HotReload, built with Fluent C#
 * All game field content is built with vector shapes and scalable to infinity
 * Windows: x64 can run both MSIX-packaged and "Steam-friendly" unpackaged mode
 * Uses [Hot Preview](https://github.com/BretJohnson/hot-preview) to dynamically preview levels/states/languages/sprites and much more
-* Uses [Soundflow](https://github.com/LSXPrime/SoundFlow) and [Plugin.Maui.Audio](https://github.com/jfversluis/Plugin.Maui.Audio) for sound
-* Uses [DrawnUI for .NET MAUI]() for layout/gestures/fluent/bindings/rendering pipeline
+* Uses [Soundflow](https://github.com/LSXPrime/SoundFlow) for sound on Android
+* Uses [Plugin.Maui.Audio](https://github.com/jfversluis/Plugin.Maui.Audio) for sound on all other platforms
+* Uses [DrawnUI for .NET MAUI](https://github.com/taublast/DrawnUi) for layout/gestures/fluent/bindings/rendering pipeline
 * Uses [SkiaSharp](https://github.com/mono/SkiaSharp) to make this all possible
 
 ## Development Notes
@@ -45,6 +48,8 @@ and app is crashing with "Activating a single-threaded class from MTA is not sup
 
 ### Optional Maybe ToDo
 
-* add enemies, main interest is they move and the ball is bouncing from them unexpectedly
-* an AI-boss paddle will appear on top after all bricks destroyed would need to be outplayed
-* add Pong mode to be chooses along with usual breakout at start
+* New powerups: multiball, fireball
+* Indestructibe bricks flash when hit
+* Add enemies, main interest is they move and the ball is bouncing from them unexpectedly
+* An AI-boss paddle would appear on top after all bricks destroyed would need to be outplayed
+* Add Pong mode!
