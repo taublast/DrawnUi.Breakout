@@ -93,31 +93,31 @@ namespace Breakout.Game
         #region LANGUAGE
 
         [Preview]
-        public static void Language_EN() => AppLanguage.RestartWith("en");
+        public static void Language_EN() => AppLanguage.SetAndApply("en");
 
         [Preview]
-        public static void Language_DE() => AppLanguage.RestartWith("de");
+        public static void Language_DE() => AppLanguage.SetAndApply("de");
 
         [Preview]
-        public static void Language_ES() => AppLanguage.RestartWith("es");
+        public static void Language_ES() => AppLanguage.SetAndApply("es");
 
         [Preview]
-        public static void Language_FR() => AppLanguage.RestartWith("fr");
+        public static void Language_FR() => AppLanguage.SetAndApply("fr");
 
         [Preview]
-        public static void Language_RU() => AppLanguage.RestartWith("ru");
+        public static void Language_RU() => AppLanguage.SetAndApply("ru");
 
         [Preview]
-        public static void Language_IT() => AppLanguage.RestartWith("it");
+        public static void Language_IT() => AppLanguage.SetAndApply("it");
 
         [Preview]
-        public static void Language_JA() => AppLanguage.RestartWith("ja");
+        public static void Language_JA() => AppLanguage.SetAndApply("ja");
 
         [Preview]
-        public static void Language_KO() => AppLanguage.RestartWith("ko");
+        public static void Language_KO() => AppLanguage.SetAndApply("ko");
 
         [Preview]
-        public static void Language_ZH() => AppLanguage.RestartWith("zh");
+        public static void Language_ZH() => AppLanguage.SetAndApply("zh");
 
         #endregion
 
