@@ -579,6 +579,19 @@ namespace Breakout.Game.Dialogs
         SKRect SelectionIndicatorRect = SKRect.Empty;
         SkiaShape SelectionIndicator;
 
+        // Time-delay filtering
+        private int _directionalActionDelayMs = 350;
+        private long _lastDirectionalActionTime = 0;
+
+        /// <summary>
+        /// Gets or sets the delay in milliseconds between directional actions to prevent rapid-fire selection from controllers
+        /// </summary>
+        public int DirectionalActionDelayMs
+        {
+            get => _directionalActionDelayMs;
+            set => _directionalActionDelayMs = Math.Max(0, value);
+        }
+
         public bool HandleGameKey(GameKey key)
         {
             if (key == GameKey.Fire)
@@ -588,26 +601,47 @@ namespace Breakout.Game.Dialogs
                     var handled = SelectedKeyHandler.HandleGameKey(key);
                     return true;
                 }
-
                 OnOkClicked();
                 return true;
             }
-
             if (KeyHandlers.Count > 0)
             {
                 if (key == GameKey.Left || key == GameKey.Up)
                 {
-                    SelectPreviousHandler();
+                    if (CanProcessDirectionalAction())
+                    {
+                        SelectPreviousHandler();
+                        UpdateLastDirectionalActionTime();
+                    }
                 }
                 else if (key == GameKey.Right || key == GameKey.Down)
                 {
-                    SelectNextHandler();
+                    if (CanProcessDirectionalAction())
+                    {
+                        SelectNextHandler();
+                        UpdateLastDirectionalActionTime();
+                    }
                 }
-
                 return true;
             }
-
             return false;
+        }
+
+        /// <summary>
+        /// Checks if enough time has passed since the last directional action to allow processing a new one
+        /// </summary>
+        private bool CanProcessDirectionalAction()
+        {
+            var currentTime = Environment.TickCount64;
+            return currentTime - _lastDirectionalActionTime >= _directionalActionDelayMs;
+        }
+
+        /// <summary>
+        /// Updates the timestamp of the last directional action
+        /// </summary>
+        private void UpdateLastDirectionalActionTime()
+        {
+            _lastDirectionalActionTime = Environment.TickCount64;
         }
 
         void SelectGameKeyHandler(IGameKeyHandler selected)
@@ -622,8 +656,8 @@ namespace Breakout.Game.Dialogs
                     var ex = 3 * RenderingScale;
                     expand.Inflate(ex, ex);
                     SelectionIndicatorRect = expand;
-                    var width = SelectionIndicatorRect.Width / RenderingScale;
-                    var height = SelectionIndicatorRect.Height / RenderingScale;
+                    var width = SelectionIndicatorRect.Width;
+                    var height = SelectionIndicatorRect.Height;
                     SelectionIndicator.WidthRequest = width;
                     SelectionIndicator.HeightRequest = height;
                 }
@@ -633,7 +667,6 @@ namespace Breakout.Game.Dialogs
         protected override void Paint(DrawingContext ctx)
         {
             base.Paint(ctx);
-
             if (SelectionIndicatorRect != SKRect.Empty)
             {
                 if (SelectionIndicator.NeedMeasure)
@@ -643,7 +676,6 @@ namespace Breakout.Game.Dialogs
                     SelectionIndicator.Arrange(SelectionIndicatorRect, (float)SelectionIndicator.WidthRequest,
                         (float)SelectionIndicator.HeightRequest, RenderingScale);
                 }
-
                 SelectionIndicator.Render(ctx.WithDestination(SelectionIndicatorRect));
             }
         }
@@ -651,32 +683,20 @@ namespace Breakout.Game.Dialogs
         private void SelectPreviousHandler()
         {
             if (KeyHandlers.Count == 0) return;
-
-            // Find current index and move to previous
             int currentIndex = SelectedKeyHandler != null ? KeyHandlers.IndexOf(SelectedKeyHandler) : 0;
             int newIndex = currentIndex - 1;
-
-            // Wrap around to end if at beginning
             if (newIndex < 0)
                 newIndex = KeyHandlers.Count - 1;
-
-            // Select new handler
             SelectGameKeyHandler(KeyHandlers[newIndex]);
         }
 
         private void SelectNextHandler()
         {
             if (KeyHandlers.Count == 0) return;
-
-            // Find current index and move to next
             int currentIndex = SelectedKeyHandler != null ? KeyHandlers.IndexOf(SelectedKeyHandler) : -1;
             int newIndex = currentIndex + 1;
-
-            // Wrap around to beginning if at end
             if (newIndex >= KeyHandlers.Count)
                 newIndex = 0;
-
-            // Select new handler
             SelectGameKeyHandler(KeyHandlers[newIndex]);
         }
     }
