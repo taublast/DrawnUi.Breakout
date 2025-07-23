@@ -592,7 +592,7 @@ namespace Breakout.Game.Dialogs
                 if (CanProcessAction())
                 {
 
-                    if (SelectedKeyHandler == null && KeyHandlers.Count > 1)
+                    if (SelectedKeyHandler == null && KeyHandlers.Count > 1 || OnOkClicked==null)
                     {
                         SelectNextHandler();
                         UpdateLastDirectionalActionTime();
