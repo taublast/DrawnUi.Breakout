@@ -36,9 +36,7 @@ A cross-platform game to play on **iOS, MacCatalyst, Android and Windows**.
 
 ## Development Notes
 * `MainPage.HotPreview.cs` contains all the HotPreview items. Read an article about [how to use HotPreview](https://github.com/BretJohnson/hot-preview). 
-* We use `Soundflow` on mobile and `Plugin.Maui.Audio` on Windows.
-* Couln't use Soundflow on Windows as its background music code prohibits app from closing clicking on Close button 
-and app is crashing with "Activating a single-threaded class from MTA is not supported" when calling `Dispatcher.Dispatch(() => { DeviceDisplay.Current.KeepScreenOn = true; });`.
+* `Soundflow` solved Android performance playing sounds/music.
 
 ## Credits
 
@@ -46,11 +44,11 @@ and app is crashing with "Activating a single-threaded class from MTA is not sup
 * **Sound FX** - Those by `Eric Matyas` ([Soundimage.org](https://Soundimage.org)): powerup27, quirky7, quirky26, synthchime2, bells1
 * **Glassy App Icons** - The settings button by `Laura Reen`, fell in love with the settings icon, licensed under CC Attribution
 
-
 ### Optional Maybe ToDo
 
 * New powerups: multiball, fireball
 * Indestructibe bricks flash when hit
 * Add enemies, main interest is they move and the ball is bouncing from them unexpectedly
 * An AI-boss paddle would appear on top after all bricks destroyed would need to be outplayed
+* Add shaders effects
 * Add Pong mode!
