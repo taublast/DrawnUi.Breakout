@@ -1540,7 +1540,7 @@ namespace Breakout.Game
                     }
                 }
                 else //rare
-                if (powerUpType == PowerupType.MultiBall)
+                if (powerUpType == PowerupType.MultiBall || powerUpType == PowerupType.Fireball)
                 {
                     CollectedPowerUpsSpeedy++;
                     if (CollectedPowerUpsSpeedy == 1)
