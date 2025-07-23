@@ -6,6 +6,7 @@ A cross-platform game to play on **iOS, MacCatalyst, Android and Windows**.
 * 12 levels of Breakout madness!
 * Catch powerups destroying the bricks!
 * If you are lucky enough shoot at bricks in Destroyer mode!
+* Discover hidden music by catching rare powerups
 * Auto-generated levels
 * Available in 9 languages
 * Play with touch/keyboard/mouse/apple controllers
