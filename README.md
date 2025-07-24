@@ -11,6 +11,23 @@ A cross-platform game to play on **iOS, MacCatalyst, Android and Windows**.
 * Available in 9 languages
 * Play with touch/keyboard/mouse/apple controllers
 
+##How To Play
+
+WIth touch:
+
+Tap the bottom-left corner button to open Settings.
+By default you can move one finger everywhere, the bottom HUD would be just the conviniet area to place it.
+We added an option inside Settings: if you enable "Press HUD" mode you would then need topress the left or right side of bottom HUD to move the paddle. 
+
+With keyboard/mouse/controller:
+
+Left, Right to move Paddle
+Up, Down to move inside Settings
+Space/Enter, to Fire
+Esc to open Settings
+
+Discover game content on your own, no sploilers here!
+
 ## App Features
 * Cross-platform for iOS, MacCatalyst, Android and Windows with hardware acceleration
 * Control with touch/mouse/keyboard, customizable keys

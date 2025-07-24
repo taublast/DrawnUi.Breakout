@@ -68,7 +68,7 @@ namespace Breakout.Game
         #endregion
 
         /// <summary>
-        /// Need this when we change language
+        /// Redraw game labels re-open dialog when we change language
         /// </summary>
         public void RedrawFromOptions()
         {
