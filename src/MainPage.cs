@@ -64,7 +64,7 @@ namespace Breakout.Game
                                 new Game.BreakoutGame(),
                             }
                         }.Assign(out ViewsContainer),
-#if DEBUG
+#if NEED_DEBUG
                         new SkiaLabelFps()
                         {
                             Margin = new(0, 0, 4, 24),
