@@ -188,8 +188,8 @@
             int columns = DetermineColumns(level);
             int rows = DetermineRows(level);
 
-            // Generate formation positions
-            var positions = GenerateFormation(formation, columns, rows);
+            // Generate formation positions (rows may be adjusted by formation requirements)
+            var positions = GenerateFormation(formation, columns, ref rows);
 
             // Filter allowed presets if specified
             var presets = FilterPresets(allowedPresets);
@@ -424,15 +424,11 @@
             {
                 case FormationType.Diamond:
                     // Diamond needs minimum 5 rows to form proper shape, max 12 for good proportions
-                    return Math.Max(5, Math.Min(12, requestedRows));
-
-                case FormationType.Pyramid:
-                    // Pyramid needs minimum 4 rows to form triangle, max 10 for good gameplay
-                    return Math.Max(4, Math.Min(10, requestedRows));
+                    return Math.Max(8, Math.Min(12, requestedRows));
 
                 case FormationType.Arch:
                     // Arch needs minimum 5 rows for proper arch shape, max 12
-                    return Math.Max(5, Math.Min(12, requestedRows));
+                    return Math.Max(8, Math.Min(12, requestedRows));
 
                 case FormationType.Wave:
                     // Wave needs minimum 6 rows for visible wave pattern, max 10
@@ -444,11 +440,11 @@
 
                 case FormationType.Organic:
                     // Organic can work with any size but looks better with minimum 5 rows
-                    return Math.Max(5, requestedRows);
+                    return Math.Max(8, requestedRows);
 
                 case FormationType.Zigzag:
                     // Zigzag needs minimum 4 rows for pattern, max 12
-                    return Math.Max(4, Math.Min(12, requestedRows));
+                    return Math.Max(6, Math.Min(12, requestedRows));
 
                 case FormationType.Grid:
                 default:
@@ -460,7 +456,7 @@
         /// <summary>
         /// Generates formation based on specified type
         /// </summary>
-        private List<BrickPosition> GenerateFormation(FormationType formation, int columns, int rows)
+        private List<BrickPosition> GenerateFormation(FormationType formation, int columns, ref int rows)
         {
             List<BrickPosition> positions;
 
@@ -536,16 +532,18 @@
         private List<BrickPosition> GeneratePyramidFormation(int columns, int rows)
         {
             var positions = new List<BrickPosition>();
-            int maxWidth = columns;
+
+            // Calculate max width based on requested rows to ensure pyramid fits
+            int maxWidth = Math.Min(columns, rows * 2 - 1); // Ensure pyramid can have the requested height
 
             // Center position offset
-            float centerX = maxWidth / 2f;
+            float centerX = columns / 2f;
 
             for (int row = 0; row < rows; row++)
             {
                 // Calculate how many bricks in this row (wider at bottom, narrower at top)
                 int rowWidth = maxWidth - row * 2;
-                if (rowWidth <= 0) break;
+                if (rowWidth <= 0) break; // Safety check, but shouldn't happen with proper maxWidth
 
                 // Calculate starting position to center the row
                 float startX = centerX - (rowWidth / 2f);

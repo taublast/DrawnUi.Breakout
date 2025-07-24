@@ -31,6 +31,7 @@ namespace Breakout.Game
         public const float BRICKS_TOP_MARGIN = 90f;
 
         public const int LIVES = 3;
+        private const double POWERUP_SPAWN_COOLDOWN_SECONDS = 0.2;
 
         public const int MAXLVL = 12;
         public const int DEMO_MAXLVL = 3;
@@ -395,7 +396,6 @@ namespace Breakout.Game
 
         // Powerup spawn timing control
         private DateTime _lastPowerupSpawnTime = DateTime.MinValue;
-        private const double POWERUP_SPAWN_COOLDOWN_SECONDS = 1.0;
 
         /// <summary>
         /// Start a precise level number in player mode
@@ -452,7 +452,7 @@ namespace Breakout.Game
 
                 case 2:
                     // Level 2: Arch formation with some reinforced bricks
-                    formation = FormationType.Pyramid;
+                    formation = FormationType.Arch;
                     allowedPresets = new List<string>
                     {
                         "Standard_Red",
@@ -465,14 +465,12 @@ namespace Breakout.Game
                     break;
 
                 case 3:
-                    // Level 3: Diamond formation with all brick types
-                    formation = FormationType.Diamond;
+                    formation = FormationType.Organic;
                     // null means use all available presets
                     break;
 
                 case 4:
-                    // Level 4: Pyramid with tough bricks
-                    formation = FormationType.Arch;
+                    formation = FormationType.Diamond;
                     allowedPresets = new List<string>
                     {
                         "Standard_Red", "Standard_Blue", "Reinforced_Brown", "Hard_DarkGray"
@@ -480,7 +478,7 @@ namespace Breakout.Game
                     break;
 
                 case 5:
-                    formation = FormationType.Organic;
+                    formation = FormationType.Maze;
                     // null means use all available presets
                     break;
 
@@ -490,6 +488,10 @@ namespace Breakout.Game
 
                 case 7:
                     formation = FormationType.Wave;
+                    break;
+
+                case 8:
+                    formation = FormationType.Arch;
                     break;
 
                 case 9:
@@ -505,7 +507,7 @@ namespace Breakout.Game
                     break;
 
                 case 12:
-                    formation = FormationType.Maze;
+                    formation = FormationType.Grid;
                     break;
 
                 default:
