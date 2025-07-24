@@ -425,11 +425,6 @@ namespace Breakout.Game
             ResetPaddle();
 
             // Then set ball properties for all active balls
-            foreach (var ball in ActiveBalls)
-            {
-                ball.IsMoving = false;
-                ball.SpeedRatio = 1 + 0.2f * (Level - 1);
-            }
 
             // Set formation and presets based on level
             FormationType formation;
@@ -1391,12 +1386,11 @@ namespace Breakout.Game
 
         void ResetPowerUp()
         {
-            // Reset speed and fireball mode for all active balls
             foreach (var ball in ActiveBalls)
             {
-                ball.SpeedRatio = 1.0f;
                 ball.IsFireball = false;
             }
+            ResetBallsSpeed();
 
             Paddle.Powerup = PowerupType.None;
             Paddle.PowerupDuration = 0;
@@ -1426,6 +1420,16 @@ namespace Breakout.Game
 
                 newBall.IsMoving = false;
                 newBall.IsActive = true;
+            }
+
+            ResetBallsSpeed();
+        }
+
+        void ResetBallsSpeed()
+        {
+            foreach (var ball in ActiveBalls)
+            {
+                ball.SpeedRatio = 1 + 0.05f * (Level - 1);
             }
         }
 
@@ -1664,7 +1668,7 @@ namespace Breakout.Game
             {
                 foreach (var ball in ActiveBalls)
                 {
-                    ball.SpeedRatio = 0.5f;
+                    ball.SpeedRatio *= 0.5f;
                 }
             }
             else if (powerUpType == PowerupType.FastBall)
