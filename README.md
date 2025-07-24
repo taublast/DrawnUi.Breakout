@@ -11,7 +11,9 @@ A cross-platform game to play on **iOS, MacCatalyst, Android and Windows**.
 * Available in 9 languages
 * Play with touch/keyboard/mouse/apple controllers
 
-##How To Play
+https://github.com/user-attachments/assets/0bd6e340-a895-42e6-83f4-558f2323d37d
+
+## How To Play
 
 WIth touch:
 
@@ -27,6 +29,8 @@ Space/Enter, to Fire
 Esc to open Settings
 
 Discover game content on your own, no sploilers here!
+
+🤓 Read the article: [Breakout: Building A Cross-Platform Game in .NET MAUI with DrawnUI and Hot Preview](https://taublast.github.io/posts/Breakout)
 
 ## App Features
 * Cross-platform for iOS, MacCatalyst, Android and Windows with hardware acceleration
