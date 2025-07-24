@@ -17,8 +17,9 @@ A cross-platform game to play on **iOS, MacCatalyst, Android and Windows**.
 * Background music and multichannel sounds
 * Localized to 9 languages, auto-selects font upon language
 * Auto-scales to any screen/window size
-* Auto-generated random levels
 * AI-controlled paddle
+* Auto-generated random levels
+* Auto-unblock stuck ball
 * Raycast collision detection
 * Layered rendering
 * Dialogs with glass-style transparent backdrops

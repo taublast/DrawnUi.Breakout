@@ -63,7 +63,6 @@
 
 
   <ItemGroup>
-    <None Include="..\ARTICLE.md" Link="ARTICLE.md" />
     <None Include="..\README.md" Link="README.md" />
     <None Include="Game\BreakoutGame.Input.Keyboard.cs" />
   </ItemGroup>
