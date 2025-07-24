@@ -4,6 +4,7 @@ global using Breakout.Game;
 global using Breakout.Resources.Fonts;
 global using Breakout.Resources.Strings;
 using Microsoft.Extensions.Logging;
+using Orbit.Input;
 using Plugin.Maui.Audio;
 
 namespace Breakout;
@@ -17,6 +18,7 @@ public static class MauiProgram
             .UseMauiApp<App>()
             .AddAudio()
             .AddAppFonts()
+            .UseOrbitGameController(options => { })
             .UseDrawnUi(new()
             {
                 UseDesktopKeyboard = true,

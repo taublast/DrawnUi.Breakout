@@ -12,6 +12,7 @@ public class HudArrows : SkiaGrid
         _game = game;
         _controller = new HudController(game);
         _game.AddInputController(_controller);
+        _game.AddInputController(new GameControllerInput(game));
     }
 
     public override ISkiaGestureListener ProcessGestures(SkiaGesturesParameters args, GestureEventProcessingInfo apply)
