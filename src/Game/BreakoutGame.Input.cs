@@ -1,11 +1,7 @@
-﻿using System.Diagnostics;
-using AppoMobi.Maui.Gestures;
-using AppoMobi.Specials;
+﻿using AppoMobi.Maui.Gestures;
 using Breakout.Game.Dialogs;
-using Breakout.Helpers;
-using DrawnUi.Controls;
-using System.Globalization;
 using Breakout.Game.Input;
+using Breakout.Helpers;
 
 namespace Breakout.Game
 {
@@ -16,6 +12,9 @@ namespace Breakout.Game
         protected void InitializeInput()
         {
             SetInputPressMode(AppSettings.Get(AppSettings.InputPressEnabled, AppSettings.InputPressEnabledDefault));
+
+            //GAME CONTROLLER SUPPORT
+            AddInputController(new GameControllerInput(this));
         }
 
         public virtual void SendKey(GameKey key)

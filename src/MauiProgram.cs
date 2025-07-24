@@ -16,9 +16,9 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
-            .AddAudio()
             .AddAppFonts()
-            .UseOrbitGameController(options => { })
+            .AddAudio() //Plugin.Maui.Audio
+            .UseOrbitGameController(options => { }) //Game controller support
             .UseDrawnUi(new()
             {
                 UseDesktopKeyboard = true,
