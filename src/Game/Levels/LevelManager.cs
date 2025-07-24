@@ -416,11 +416,56 @@
         }
 
         /// <summary>
+        /// Adjusts the number of rows based on formation requirements
+        /// </summary>
+        private int AdjustRowsForFormation(FormationType formation, int requestedRows)
+        {
+            switch (formation)
+            {
+                case FormationType.Diamond:
+                    // Diamond needs minimum 5 rows to form proper shape, max 12 for good proportions
+                    return Math.Max(5, Math.Min(12, requestedRows));
+
+                case FormationType.Pyramid:
+                    // Pyramid needs minimum 4 rows to form triangle, max 10 for good gameplay
+                    return Math.Max(4, Math.Min(10, requestedRows));
+
+                case FormationType.Arch:
+                    // Arch needs minimum 5 rows for proper arch shape, max 12
+                    return Math.Max(5, Math.Min(12, requestedRows));
+
+                case FormationType.Wave:
+                    // Wave needs minimum 6 rows for visible wave pattern, max 10
+                    return Math.Max(6, Math.Min(10, requestedRows));
+
+                case FormationType.Maze:
+                    // Maze needs minimum 6 rows for corridors, max 15 for complexity
+                    return Math.Max(6, Math.Min(15, requestedRows));
+
+                case FormationType.Organic:
+                    // Organic can work with any size but looks better with minimum 5 rows
+                    return Math.Max(5, requestedRows);
+
+                case FormationType.Zigzag:
+                    // Zigzag needs minimum 4 rows for pattern, max 12
+                    return Math.Max(4, Math.Min(12, requestedRows));
+
+                case FormationType.Grid:
+                default:
+                    // Grid can work with any number of rows
+                    return requestedRows;
+            }
+        }
+
+        /// <summary>
         /// Generates formation based on specified type
         /// </summary>
         private List<BrickPosition> GenerateFormation(FormationType formation, int columns, int rows)
         {
             List<BrickPosition> positions;
+
+            // Adjust rows based on formation requirements
+            rows = AdjustRowsForFormation(formation, rows);
 
             switch (formation)
             {
@@ -444,6 +489,9 @@
                     break;
                 case FormationType.Wave:
                     positions = GenerateWaveFormation(columns, rows);
+                    break;
+                case FormationType.Maze:
+                    positions = GenerateMazeFormation(columns, rows);
                     break;
                 case FormationType.Grid:
                 default:
@@ -666,48 +714,6 @@
         }
 
         /// <summary>
-        /// Generates a spiral formation
-        /// </summary>
-        private List<BrickPosition> GenerateSpiralFormation(int columns, int rows)
-        {
-            var positions = new List<BrickPosition>();
-
-            // Center of the spiral
-            int centerX = columns / 2;
-            int centerY = rows / 2;
-
-            // Number of spiral turns
-            int turns = Math.Min(columns, rows) / 4;
-
-            // Use consistent step size instead of decreasing interval
-            float stepSize = 0.3f;
-
-            // Generate the spiral
-            for (float t = 0; t < turns * 2 * Math.PI; t += stepSize)
-            {
-                // Calculate spiral radius (grows with angle)
-                float radius = t / (2 * (float)Math.PI) * 2;
-
-                // Calculate position
-                float x = centerX + radius * (float)Math.Cos(t);
-                float y = centerY + radius * (float)Math.Sin(t);
-
-                // Check if in bounds
-                if (x >= 0 && x < columns && y >= 0 && y < rows)
-                {
-                    positions.Add(new BrickPosition
-                    {
-                        Column = x,
-                        Row = y,
-                        PresetId = null
-                    });
-                }
-            }
-
-            return positions;
-        }
-
-        /// <summary>
         /// Generates an organic formation using noise
         /// </summary>
         private List<BrickPosition> GenerateOrganicFormation(int columns, int rows)
@@ -862,6 +868,53 @@
             }
 
             return newGrid;
+        }
+
+        /// <summary>
+        /// Generates a maze-like formation with corridors and walls
+        /// </summary>
+        private List<BrickPosition> GenerateMazeFormation(int columns, int rows)
+        {
+            var positions = new List<BrickPosition>();
+
+            // Create maze using simple algorithm
+            for (int row = 0; row < rows; row++)
+            {
+                for (int col = 0; col < columns; col++)
+                {
+                    bool placeBrick = false;
+
+                    // Create maze walls - every 3rd column and row creates corridors
+                    if (row % 3 == 0 || col % 3 == 0)
+                    {
+                        placeBrick = true;
+                    }
+
+                    // Add some random openings in walls (30% chance)
+                    if (placeBrick && _random.NextDouble() < 0.3)
+                    {
+                        placeBrick = false;
+                    }
+
+                    // Add some random blocks in corridors (20% chance)
+                    if (!placeBrick && _random.NextDouble() < 0.2)
+                    {
+                        placeBrick = true;
+                    }
+
+                    if (placeBrick)
+                    {
+                        positions.Add(new BrickPosition
+                        {
+                            Column = col,
+                            Row = row,
+                            PresetId = null
+                        });
+                    }
+                }
+            }
+
+            return positions;
         }
 
         #endregion

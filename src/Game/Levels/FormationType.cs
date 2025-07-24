@@ -8,9 +8,10 @@
         Grid,           // Regular grid layout
         Pyramid,        // Triangular/pyramid shape
         Arch,           // Arch or multiple arches
-        Diamond,       
-        Zigzag,        
+        Diamond,
+        Zigzag,
         Organic,        // Organic/irregular shape using noise
-        Wave          
+        Wave,
+        Maze,           // Maze-like corridors and walls
     }
 }

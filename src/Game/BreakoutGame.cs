@@ -100,7 +100,7 @@ namespace Breakout.Game
         public override void OnWillDisposeWithChildren()
         {
             Super.OnNativeAppResumed += Super_OnNativeAppResumed;
-            
+
             Super.OnNativeAppPaused += Super_OnNativeAppPaused;
 
             _audioService?.Dispose();
@@ -486,20 +486,32 @@ namespace Breakout.Game
 
                 case 6:
                     formation = FormationType.Zigzag;
-                    // null means use all available presets
                     break;
 
                 case 7:
                     formation = FormationType.Wave;
-                    // null means use all available presets
                     break;
 
-            default:
-                    // For higher levels, use more complex and varied patterns
-                    // Use modulo to cycle through formations
-                    int formationIndex = (Level - 6) % 8;
+                case 9:
+                    formation = FormationType.Organic;
+                    break;
+
+                case 10:
+                    formation = FormationType.Diamond;
+                    break;
+
+                case 11:
+                    formation = FormationType.Zigzag;
+                    break;
+
+                case 12:
+                    formation = FormationType.Maze;
+                    break;
+
+                default:
+                    // Use modulo to cycle through all formations 
+                    int formationIndex = Level % 8; // by total number of formations 
                     formation = (FormationType)formationIndex;
-                    // null means use all available presets
                     break;
             }
 
@@ -559,7 +571,7 @@ namespace Breakout.Game
                 State = GameState.Playing;
             }
 
-            if (State!= GameState.Playing)
+            if (State != GameState.Playing)
             {
                 State = GameState.DemoPlay;
             }
@@ -1018,7 +1030,8 @@ namespace Breakout.Game
             CollideBallAndBrick(brick, ball, face, penetration, isFireball);
         }
 
-        void CollideBallAndBrick(BrickSprite brick, BallSprite ball, CollisionFace face, float overlap, bool isFireball = false)
+        void CollideBallAndBrick(BrickSprite brick, BallSprite ball, CollisionFace face, float overlap,
+            bool isFireball = false)
         {
             var offset = overlap * 1.1;
 
@@ -1106,6 +1119,7 @@ namespace Breakout.Game
             {
                 BricksLeftToBreak -= 1;
             }
+
             RemoveReusable(brick);
         }
 
@@ -1357,7 +1371,7 @@ namespace Breakout.Game
             }
         }
 
-        public void ResetPaddle(bool center=true)
+        public void ResetPaddle(bool center = true)
         {
             CollectedPowerUps = 0;
             CollectedPowerUpsSpeedy = 0;
@@ -1559,7 +1573,7 @@ namespace Breakout.Game
             if (chance < 0.15) return PowerupType.MultiBall;
             if (chance < 0.17) return PowerupType.Fireball;
             if (chance < 0.27) return PowerupType.SlowBall;
-            if (chance < 0.37) return PowerupType.ShrinkPaddle; 
+            if (chance < 0.37) return PowerupType.ShrinkPaddle;
             if (chance < 0.47) return PowerupType.FastBall;
             if (chance < 0.57) return PowerupType.ExpandPaddle;
             if (chance < 0.67) return PowerupType.StickyBall;
@@ -1569,7 +1583,6 @@ namespace Breakout.Game
 
         private void ApplyPowerUp(PowerupType powerUpType)
         {
-
             if (powerUpType != PowerupType.None)
             {
                 CollectedPowerUps++;
@@ -1579,20 +1592,20 @@ namespace Breakout.Game
                 {
                     case PowerupType.MultiBall:
                     case PowerupType.Fireball:
-                        Score += 200; 
+                        Score += 200;
                         break;
                     case PowerupType.Destroyer:
-                        Score += 150;  
+                        Score += 150;
                         break;
                     case PowerupType.ExpandPaddle:
                     case PowerupType.StickyBall:
                     case PowerupType.ExtraLife:
                     case PowerupType.SlowBall:
-                        Score += 30; 
+                        Score += 30;
                         break;
                     case PowerupType.ShrinkPaddle:
                     case PowerupType.FastBall:
-                        Score += 100; 
+                        Score += 100;
                         break;
                 }
 
@@ -1634,7 +1647,6 @@ namespace Breakout.Game
             {
                 ResetPowerUp();
             }
-
 
 
             if (powerUpType == PowerupType.ExtraLife)
@@ -1827,6 +1839,7 @@ namespace Breakout.Game
                     _spritesToBeAdded.Add(bullet);
                 }
             }
+
             BulletsAvailable--;
             if (BulletsAvailable <= 0)
             {
