@@ -8,10 +8,9 @@
         Grid,           // Regular grid layout
         Pyramid,        // Triangular/pyramid shape
         Arch,           // Arch or multiple arches
-        Diamond,        // Diamond/rhombus pattern
-        Zigzag,         // Zigzag pattern
-        Spiral,         // Spiral formation
+        Diamond,       
+        Zigzag,        
         Organic,        // Organic/irregular shape using noise
-        Wave            // Wave pattern
+        Wave          
     }
 }

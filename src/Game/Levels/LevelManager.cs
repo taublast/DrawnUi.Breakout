@@ -210,7 +210,7 @@
         /// </summary>
         private float CalculateLevelDifficulty(int level)
         {
-            return BaseDifficulty + (level - 1) * DifficultyIncreasePerLevel;
+            return BaseDifficulty + (level) * DifficultyIncreasePerLevel;
         }
 
         /// <summary>

@@ -393,6 +393,10 @@ namespace Breakout.Game
         private int CollectedPowerUpsSpeedy;
         private int BulletsAvailable;
 
+        // Powerup spawn timing control
+        private DateTime _lastPowerupSpawnTime = DateTime.MinValue;
+        private const double POWERUP_SPAWN_COOLDOWN_SECONDS = 1.0;
+
         /// <summary>
         /// Start a precise level number in player mode
         /// </summary>
@@ -448,7 +452,7 @@ namespace Breakout.Game
 
                 case 2:
                     // Level 2: Arch formation with some reinforced bricks
-                    formation = FormationType.Arch;
+                    formation = FormationType.Pyramid;
                     allowedPresets = new List<string>
                     {
                         "Standard_Red",
@@ -468,7 +472,7 @@ namespace Breakout.Game
 
                 case 4:
                     // Level 4: Pyramid with tough bricks
-                    formation = FormationType.Pyramid;
+                    formation = FormationType.Arch;
                     allowedPresets = new List<string>
                     {
                         "Standard_Red", "Standard_Blue", "Reinforced_Brown", "Hard_DarkGray"
@@ -476,12 +480,21 @@ namespace Breakout.Game
                     break;
 
                 case 5:
-                    // Level 5: Wave pattern with special bricks
+                    formation = FormationType.Organic;
+                    // null means use all available presets
+                    break;
+
+                case 6:
+                    formation = FormationType.Zigzag;
+                    // null means use all available presets
+                    break;
+
+                case 7:
                     formation = FormationType.Wave;
                     // null means use all available presets
                     break;
 
-                default:
+            default:
                     // For higher levels, use more complex and varied patterns
                     // Use modulo to cycle through formations
                     int formationIndex = (Level - 6) % 8;
@@ -1482,6 +1495,19 @@ namespace Breakout.Game
 
         public void SpawnPowerUp(BrickSprite brick)
         {
+            // Check if enough time has passed since last powerup spawn
+            var currentTime = DateTime.Now;
+            var timeSinceLastSpawn = (currentTime - _lastPowerupSpawnTime).TotalSeconds;
+
+            if (timeSinceLastSpawn < POWERUP_SPAWN_COOLDOWN_SECONDS)
+            {
+                // Too soon, skip spawning this powerup
+                return;
+            }
+
+            // Update timestamp immediately to prevent multiple spawns in same frame
+            _lastPowerupSpawnTime = currentTime;
+
             if (PowerupsPool.Count > 0)
             {
                 var powerup = PowerupsPool.Get();
