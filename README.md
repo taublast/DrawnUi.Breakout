@@ -15,18 +15,18 @@ https://github.com/user-attachments/assets/0bd6e340-a895-42e6-83f4-558f2323d37d
 
 ## How To Play
 
-WIth touch:
+With touch:
 
-Tap the bottom-left corner button to open Settings.
-By default you can move one finger everywhere, the bottom HUD would be just the conviniet area to place it.
-We added an option inside Settings: if you enable "Press HUD" mode you would then need topress the left or right side of bottom HUD to move the paddle. 
+Tap the bottom-left corner button to open Settings.  
+By default you can move one finger everywhere, the bottom HUD would be just the conviniet area to place it.  
+We added an option inside Settings: if you enable "Press HUD" mode you would then need topress the left or right side of bottom HUD to move the paddle.  
 
 With keyboard/mouse/controller:
 
-Left, Right to move Paddle
-Up, Down to move inside Settings
-Space/Enter, to Fire
-Esc to open Settings
+Left, Right to move Paddle  
+Up, Down to move inside Settings  
+Space/Enter, to Fire  
+Esc to open Settings  
 
 Discover game content on your own, no sploilers here!
 
