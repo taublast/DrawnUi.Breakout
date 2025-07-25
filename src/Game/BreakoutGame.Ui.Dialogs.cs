@@ -68,7 +68,6 @@ namespace Breakout.Game
             _ = GameDialog.PopAll(this);
 
             // Pause the game if currently playing
-            var lastState = State;
             State = GameState.Paused;
             IsMovingLeft = false;
             IsMovingRight = false;

@@ -78,7 +78,6 @@
     <PackageReference Include="Bijington.Orbit.Input" Version="0.2.2-preview.1" />
     <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.70" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
-    <PackageReference Condition="$(Configuration) == 'Debug'" Include="HotPreview.App.Maui" Version="0.14.31" />
   </ItemGroup>
 
   <ItemGroup Condition="$(TargetFramework.Contains('android'))">
@@ -87,6 +86,7 @@
 
   <ItemGroup Condition="$(Configuration) == 'Debug' AND !$(TargetFramework.Contains('ios')) AND !$(TargetFramework.Contains('maccatalyst'))">
     <!--https://github.com/BretJohnson/hot-preview-->
+    <PackageReference Include="HotPreview.App.Maui" Version="0.14.31" />
   </ItemGroup>
 
   <!--for development-->

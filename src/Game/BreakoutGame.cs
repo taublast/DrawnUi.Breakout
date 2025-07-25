@@ -28,7 +28,6 @@ namespace Breakout.Game
         public const int MIN_BRICKS_ROWS = 3;
         public const float SPACING_BRICKS = 3f;
         public const float BRICKS_SIDE_MARGIN = 16f;
-        public const float BRICKS_TOP_MARGIN = 90f;
 
         public const int LIVES = 3;
         private const double POWERUP_SPAWN_COOLDOWN_SECONDS = 0.2;
