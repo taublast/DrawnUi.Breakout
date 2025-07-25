@@ -92,31 +92,31 @@ namespace Breakout.Game
 
         #region LANGUAGE
 
-        [Preview]
+        [PreviewCommand]
         public static void Language_EN() => AppLanguage.SetAndApply("en");
 
-        [Preview]
+        [PreviewCommand]
         public static void Language_DE() => AppLanguage.SetAndApply("de");
 
-        [Preview]
+        [PreviewCommand]
         public static void Language_ES() => AppLanguage.SetAndApply("es");
 
-        [Preview]
+        [PreviewCommand]
         public static void Language_FR() => AppLanguage.SetAndApply("fr");
 
-        [Preview]
+        [PreviewCommand]
         public static void Language_RU() => AppLanguage.SetAndApply("ru");
 
-        [Preview]
+        [PreviewCommand]
         public static void Language_IT() => AppLanguage.SetAndApply("it");
 
-        [Preview]
+        [PreviewCommand]
         public static void Language_JA() => AppLanguage.SetAndApply("ja");
 
-        [Preview]
+        [PreviewCommand]
         public static void Language_KO() => AppLanguage.SetAndApply("ko");
 
-        [Preview]
+        [PreviewCommand]
         public static void Language_ZH() => AppLanguage.SetAndApply("zh");
 
         #endregion
