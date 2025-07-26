@@ -11,6 +11,8 @@ A cross-platform game to play on **iOS, MacCatalyst, Android and Windows**.
 * Available in 9 languages
 * Play with touch/keyboard/mouse/apple controllers
 
+Please star ⭐ if you like it!
+
 https://github.com/user-attachments/assets/0bd6e340-a895-42e6-83f4-558f2323d37d
 
 ## How To Play
@@ -68,7 +70,6 @@ Discover game content on your own, no sploilers here!
 
 ### Optional Maybe ToDo
 
-* New powerups: multiball, fireball
 * Indestructibe bricks flash when hit
 * Add enemies, main interest is they move and the ball is bouncing from them unexpectedly
 * An AI-boss paddle would appear on top after all bricks destroyed would need to be outplayed
