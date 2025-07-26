@@ -11,9 +11,11 @@ A cross-platform game to play on **iOS, MacCatalyst, Android and Windows**.
 * Available in 9 languages
 * Play with touch/keyboard/mouse/apple controllers
 
-Please star ⭐ if you like it!
+---
 
 https://github.com/user-attachments/assets/0bd6e340-a895-42e6-83f4-558f2323d37d
+
+Please star ⭐ if you like it!
 
 ## How To Play
 
