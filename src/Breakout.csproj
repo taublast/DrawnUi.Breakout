@@ -84,10 +84,11 @@
     <PackageReference Include="SoundFlow" Version="1.1.1" />
   </ItemGroup>
 
-  <ItemGroup Condition="$(Configuration) == 'Debug' AND !$(TargetFramework.Contains('ios')) AND !$(TargetFramework.Contains('maccatalyst'))">
-    <!--https://github.com/BretJohnson/hot-preview-->
+  <!--https://github.com/BretJohnson/hot-preview-->
+  <!-- !!! uncomment this if you install dotnet tool hotpreviews !!! -->
+  <!--<ItemGroup Condition="$(Configuration) == 'Debug'">
     <PackageReference Include="HotPreview.App.Maui" Version="0.14.31" />
-  </ItemGroup>
+  </ItemGroup>-->
 
   <!--for development-->
   <ItemGroup Condition="'$(UseNuget)' != 'true'">
