@@ -61,6 +61,10 @@ Discover game content on your own, no sploilers here!
 * Uses [SkiaSharp](https://github.com/mono/SkiaSharp) to make this all possible
 
 ## Development Notes
+* Actuallly you need to install Hot Preview dotnet tool to compile the app if previews nuget is referenced:
+    ```bash
+    dotnet tool install -g HotPreview.DevTools
+    ```
 * `MainPage.HotPreview.cs` contains all the HotPreview items. Read an article about [how to use HotPreview](https://github.com/BretJohnson/hot-preview). 
 * `Soundflow` solved Android performance playing sounds/music.
 
