@@ -86,7 +86,7 @@
 
   <ItemGroup Condition="$(Configuration) == 'Debug' AND !$(TargetFramework.Contains('ios')) AND !$(TargetFramework.Contains('maccatalyst'))">
     <!--https://github.com/BretJohnson/hot-preview-->
-    <PackageReference Include="HotPreview.App.Maui" Version="0.14.31" />
+    <PackageReference Include="HotPreview.App.Maui" Version="0.15.26" />
   </ItemGroup>
 
   <!--for development-->
