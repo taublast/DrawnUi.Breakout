@@ -2,6 +2,7 @@
 
 	<PropertyGroup>
 
+    <!--<TargetFrameworks>net9.0-ios;</TargetFrameworks>-->
     <!--<TargetFrameworks>net9.0-windows10.0.19041.0</TargetFrameworks>-->
 
     <TargetFrameworks>net9.0-android;net9.0-ios;net9.0-maccatalyst</TargetFrameworks>
@@ -14,13 +15,13 @@
     <ImplicitUsings>enable</ImplicitUsings>
 
     <!-- Display name -->
-    <ApplicationTitle>Breakout</ApplicationTitle>
+    <ApplicationTitle>Bricks Breaker</ApplicationTitle>
 
-    <UseNuget>true</UseNuget>
+    <UseNuget>false</UseNuget>
     <UseHotPreviewNuget>true</UseHotPreviewNuget>
     
     <!-- App Identifier -->
-    <ApplicationId>com.mauigame.breakout</ApplicationId>
+    <ApplicationId>com.appomobi.drawnui.breakout</ApplicationId>
     <ApplicationIdGuid>230e07b0-ebc2-4fde-9ac8-074d3c3d69a9</ApplicationIdGuid>
 
     <!-- Versions -->
@@ -35,9 +36,21 @@
     <WindowsPackageType>None</WindowsPackageType>
   </PropertyGroup>
 
+  <!-- Custom Android icons: workaround for MAUI Android bug not including webp resources-->
+  <ItemGroup Condition="$(TargetFramework.Contains('android'))">
+    <AndroidResource Include="Platforms\Android\Resources\**\*.xml" />
+    <AndroidResource Include="Platforms\Android\Resources\**\*.webp" />
+  </ItemGroup>
+
+  <!--Custom iOS icons-->
+  <ItemGroup Condition="$(TargetFramework.Contains('ios')) == true">
+    <BundleResource Include="Platforms\iOS\Assets.xcassets\**\*" />
+  </ItemGroup>
+
   <ItemGroup>
-		<!-- App Icon -->
-		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" ForegroundScale="0.8" Color="#212529" />
+
+    <!-- App Icon, ios and android will override this with our custom icons -->
+    <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" ForegroundScale="0.8" Color="#212529" />
 
 		<!-- Splash Screen -->
 		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#212529" BaseSize="120,120" />

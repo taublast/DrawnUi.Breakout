@@ -1,9 +1,9 @@
-# Breakout
+# Bricks Breaker
 
-A cross-platform game to play on **iOS, MacCatalyst, Android and Windows**.
+A cross-platform Arkanoid/Breakout style game to play on **iOS, MacCatalyst, Android and Windows**.
 
 ## Game Features
-* 12 levels of Breakout madness!
+* 12 levels of ball versus bricks madness!
 * Catch powerups destroying the bricks!
 * If you are lucky enough shoot at bricks in Destroyer mode!
 * Discover hidden music by catching rare powerups
