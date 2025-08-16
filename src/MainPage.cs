@@ -80,8 +80,14 @@ namespace Breakout.Game
                     }
                 }.Fill()
             };
-
+#if IOS
+            this.Content = new Grid() //using grid wrapper to take apply safe insets on ios, other platforms use different logic
+            {
+                Children = { Canvas }
+            };
+#else
             this.Content = Canvas;
+#endif
         }
 
 #if PREVIEWS

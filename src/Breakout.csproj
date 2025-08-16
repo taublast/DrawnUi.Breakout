@@ -74,6 +74,10 @@
     <ProvisioningType>manual</ProvisioningType>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(TargetFramework)'=='net9.0-ios'">
+    <CodesignKey>iPhone Developer</CodesignKey>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Include="..\README.md" Link="README.md" />
     <None Include="Game\BreakoutGame.Input.Keyboard.cs" />
@@ -83,7 +87,7 @@
 
 
   <ItemGroup>
-    <PackageReference Include="DrawnUi.Maui.Game" Version="1.6.2.22" />
+    <PackageReference Include="DrawnUi.Maui.Game" Version="1.6.2.23" />
     <!--can replace this with usual plugin if PR is merged-->
     <PackageReference Include="AppoMobi.Preview.Plugin.Maui.Audio" Version="3.0.2.1-pre1" />
     <PackageReference Include="Bijington.Orbit.Input" Version="0.2.2-preview.1" />
@@ -102,10 +106,10 @@
   </ItemGroup>-->
 
   <!--for development-->
-  <ItemGroup Condition="'$(UseNuget)' != 'true'">
+  <!--<ItemGroup>
     <ProjectReference Include="..\..\DrawnUi.Maui\src\Maui\DrawnUi\DrawnUi.Maui.csproj" />
     <ProjectReference Include="..\..\DrawnUi.Maui\src\Maui\Addons\DrawnUi.Maui.Game\DrawnUi.Maui.Game.csproj" />
-  </ItemGroup>
+  </ItemGroup>-->
 
   <ItemGroup>
     <Compile Update="Resources\Strings\ResStrings.Designer.cs">
