@@ -9,6 +9,11 @@ public partial class App : Application
     public App()
     {
         InitializeComponent();
+
+#if ANDROID
+    Super.SetNavigationBarColor(Colors.Black, Colors.Black, false);    
+#endif
+
 #if PREVIEWS
         PreviewService.Initialize();
 #endif

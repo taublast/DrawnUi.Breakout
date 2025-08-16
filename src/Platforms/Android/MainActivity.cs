@@ -4,7 +4,7 @@ using Android.OS;
 
 namespace Breakout;
 
-[Activity(Theme = "@style/Maui.SplashTheme", MainLauncher = true, 
+[Activity(Theme = "@style/MainTheme", MainLauncher = true, 
     LaunchMode = LaunchMode.SingleTop, 
     ConfigurationChanges = ConfigChanges.ScreenSize | 
                            ConfigChanges.Orientation
