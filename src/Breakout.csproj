@@ -2,6 +2,8 @@
 
 	<PropertyGroup>
 
+    <!--<TargetFrameworks>net9.0-android;</TargetFrameworks>-->
+
     <!--<TargetFrameworks>net9.0-ios;</TargetFrameworks>-->
     <!--<TargetFrameworks>net9.0-windows10.0.19041.0</TargetFrameworks>-->
 
@@ -16,9 +18,6 @@
 
     <!-- Display name -->
     <ApplicationTitle>Bricks Breaker</ApplicationTitle>
-
-    <UseNuget>false</UseNuget>
-    <UseHotPreviewNuget>true</UseHotPreviewNuget>
     
     <!-- App Identifier -->
     <ApplicationId>com.appomobi.drawnui.breakout</ApplicationId>
@@ -81,11 +80,10 @@
   </ItemGroup>
 
   <!--production-->
-  <ItemGroup Condition="'$(UseNuget)' == 'true'">
-    <PackageReference Include="DrawnUi.Maui.Game" Version="1.6.2.16" />
-  </ItemGroup>
+
 
   <ItemGroup>
+    <PackageReference Include="DrawnUi.Maui.Game" Version="1.6.2.22" />
     <!--can replace this with usual plugin if PR is merged-->
     <PackageReference Include="AppoMobi.Preview.Plugin.Maui.Audio" Version="3.0.2.1-pre1" />
     <PackageReference Include="Bijington.Orbit.Input" Version="0.2.2-preview.1" />
