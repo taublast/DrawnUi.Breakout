@@ -539,11 +539,11 @@ Score: {1}
 Get ready for Level {2}!</value>
   </data>
   <data name="MessageWelcome" xml:space="preserve">
-    <value>💥 Welcome to Breakout! 🏓
+    <value>💥 Welcome to Bricks Breaker! 🏓
 🏆 Smash all bricks, victory awaits!</value>
   </data>
   <data name="MessageWelcomeDesktop" xml:space="preserve">
-    <value>💥 Welcome to Breakout! 🏓
+    <value>💥 Welcome to Bricks Breaker! 🏓
 Use mouse/keyboard to control. 
 🏆 Smash all bricks, victory awaits!</value>
   </data>

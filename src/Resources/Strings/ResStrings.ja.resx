@@ -542,11 +542,11 @@
 レベル{2}の準備をしよう！</value>
   </data>
   <data name="MessageWelcome" xml:space="preserve">
-    <value>💥 ブレイクアウトへようこそ！ 🏓
+    <value>💥 Bricks Breakerへようこそ！ 🏓
 🏆 すべてのブロックを壊して、勝利を掴もう！</value>
   </data>
   <data name="MessageWelcomeDesktop" xml:space="preserve">
-    <value>💥 ブレイクアウトへようこそ！ 🏓
+    <value>💥 Bricks Breakerへようこそ！ 🏓
 マウス/キーボードで操作してください。
 🏆 すべてのブロックを壊して、勝利を掴もう！</value>
   </data>

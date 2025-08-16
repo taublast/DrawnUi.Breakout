@@ -542,11 +542,11 @@
 Приготовьтесь к уровню {2}!</value>
   </data>
   <data name="MessageWelcome" xml:space="preserve">
-    <value>💥 Добро пожаловать в Breakout! 🏓
+    <value>💥 Добро пожаловать в Bricks Breaker! 🏓
 🏆 Разрушь все кирпичи, победа ждёт!</value>
   </data>
   <data name="MessageWelcomeDesktop" xml:space="preserve">
-    <value>💥 Добро пожаловать в Breakout! 🏓
+    <value>💥 Добро пожаловать в Bricks Breaker! 🏓
 Используйте мышь/клавиатуру для управления.
 🏆 Разрушь все кирпичи, победа ждёт!</value>
   </data>

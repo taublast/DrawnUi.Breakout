@@ -542,11 +542,11 @@ Punteggio: {1}
 Preparati per il livello {2}!</value>
   </data>
   <data name="MessageWelcome" xml:space="preserve">
-    <value>💥 Benvenuto in Breakout! 🏓
+    <value>💥 Benvenuto in Bricks Breaker! 🏓
 🏆 Distruggi tutti i mattoni, la vittoria ti aspetta!</value>
   </data>
   <data name="MessageWelcomeDesktop" xml:space="preserve">
-    <value>💥 Benvenuto in Breakout! 🏓
+    <value>💥 Benvenuto in Bricks Breaker! 🏓
 Usa mouse/tastiera per controllare.
 🏆 Distruggi tutti i mattoni, la vittoria ti aspetta!</value>
   </data>

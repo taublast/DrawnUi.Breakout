@@ -542,11 +542,11 @@ Score : {1}
 Préparez-vous pour le niveau {2} !</value>
   </data>
   <data name="MessageWelcome" xml:space="preserve">
-    <value>💥 Bienvenue dans Breakout ! 🏓
+    <value>💥 Bienvenue dans Bricks Breaker ! 🏓
 🏆 Détruisez toutes les briques, la victoire vous attend !</value>
   </data>
   <data name="MessageWelcomeDesktop" xml:space="preserve">
-    <value>💥 Bienvenue dans Breakout ! 🏓
+    <value>💥 Bienvenue dans Bricks Breaker ! 🏓
 Utilisez la souris/clavier pour contrôler.
 🏆 Détruisez toutes les briques, la victoire vous attend !</value>
   </data>

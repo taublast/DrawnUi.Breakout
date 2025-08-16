@@ -542,11 +542,11 @@ Puntaje: {1}
 ¡Prepárate para el nivel {2}!</value>
   </data>
   <data name="MessageWelcome" xml:space="preserve">
-    <value>💥 ¡Bienvenido a Breakout! 🏓
+    <value>💥 ¡Bienvenido a Bricks Breaker! 🏓
 🏆 ¡Destruye todos los ladrillos, la victoria te espera!</value>
   </data>
   <data name="MessageWelcomeDesktop" xml:space="preserve">
-    <value>💥 ¡Bienvenido a Breakout! 🏓
+    <value>💥 ¡Bienvenido a Bricks Breaker! 🏓
 Usa mouse/teclado para controlar.
 🏆 ¡Destruye todos los ladrillos, la victoria te espera!</value>
   </data>

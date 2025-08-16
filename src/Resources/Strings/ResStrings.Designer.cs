@@ -733,7 +733,7 @@ namespace Breakout.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 💥 Welcome to Breakout! 🏓
+        ///   Looks up a localized string similar to 💥 Welcome to Bricks Breaker! 🏓
         ///🏆 Smash all bricks, victory awaits!.
         /// </summary>
         public static string MessageWelcome {
@@ -743,7 +743,7 @@ namespace Breakout.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 💥 Welcome to Breakout! 🏓
+        ///   Looks up a localized string similar to 💥 Welcome to Bricks Breaker! 🏓
         ///Use mouse/keyboard to control. 
         ///🏆 Smash all bricks, victory awaits!.
         /// </summary>

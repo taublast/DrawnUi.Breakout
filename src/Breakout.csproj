@@ -3,7 +3,6 @@
 	<PropertyGroup>
 
     <!--<TargetFrameworks>net9.0-android;</TargetFrameworks>-->
-
     <!--<TargetFrameworks>net9.0-ios;</TargetFrameworks>-->
     <!--<TargetFrameworks>net9.0-windows10.0.19041.0</TargetFrameworks>-->
 
@@ -65,26 +64,17 @@
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
 	</ItemGroup>
 
+  <!--dev provisioning for iPhone-->
+  <Import Project="../../Breakout.targets" Condition="Exists('../../Breakout.targets')" />
 
-  <ItemGroup>
-    <Compile Remove="Game\Internals\MauiGame.cs" />
-  </ItemGroup>
-
-  <PropertyGroup Condition="$(TargetFramework.Contains('ios')) == true">
+  <!--DEBUG-->
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <ProvisioningType>manual</ProvisioningType>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(TargetFramework)'=='net9.0-ios'">
-    <CodesignKey>iPhone Developer</CodesignKey>
   </PropertyGroup>
 
   <ItemGroup>
     <None Include="..\README.md" Link="README.md" />
-    <None Include="Game\BreakoutGame.Input.Keyboard.cs" />
   </ItemGroup>
-
-  <!--production-->
-
 
   <ItemGroup>
     <PackageReference Include="DrawnUi.Maui.Game" Version="1.6.2.23" />

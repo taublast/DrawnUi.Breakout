@@ -542,11 +542,11 @@ Punktzahl: {1}
 Mach dich bereit für Level {2}!</value>
   </data>
   <data name="MessageWelcome" xml:space="preserve">
-    <value>💥 Willkommen bei Breakout! 🏓
+    <value>💥 Willkommen bei Bricks Breaker! 🏓
 🏆 Zerstöre alle Steine, der Sieg wartet!</value>
   </data>
   <data name="MessageWelcomeDesktop" xml:space="preserve">
-    <value>💥 Willkommen bei Breakout! 🏓
+    <value>💥 Willkommen bei Bricks Breaker! 🏓
 Verwende Maus/Tastatur zur Steuerung.
 🏆 Zerstöre alle Steine, der Sieg wartet!</value>
   </data>

@@ -17,15 +17,21 @@ https://github.com/user-attachments/assets/0bd6e340-a895-42e6-83f4-558f2323d37d
 
 Please star ⭐ if you like it!
 
+Try it out, compile or install for stores:
+
+* [Google Play]() 
+
+* [AppStore]()
+
 ## How To Play
 
-With touch:
+### With touch:
 
 Tap the bottom-left corner button to open Settings.  
 By default you can move one finger everywhere, the bottom HUD would be just the conviniet area to place it.  
-We added an option inside Settings: if you enable "Press HUD" mode you would then need topress the left or right side of bottom HUD to move the paddle.  
+Settings: if you enable "Press HUD" mode you would then need to press the left or right arrows of bottom HUD to move the paddle instead of panning the finger everywhere
 
-With keyboard/mouse/controller:
+### With keyboard/mouse/controller:
 
 Left, Right to move Paddle  
 Up, Down to move inside Settings  
