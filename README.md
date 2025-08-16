@@ -19,7 +19,7 @@ Please star ⭐ if you like it!
 
 Try it out, compile or install for stores:
 
-* [Google Play]() 
+* [Google Play](https://play.google.com/store/apps/details?id=com.appomobi.drawnui.breakout) 
 
 * [AppStore]()
 
