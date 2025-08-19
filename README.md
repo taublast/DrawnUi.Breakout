@@ -19,9 +19,9 @@ Please star ⭐ if you like it!
 
 Try it out, compile or install for stores:
 
-* [Google Play](https://play.google.com/store/apps/details?id=com.appomobi.drawnui.breakout) 
+* [Google Play](https://play.google.com/store/apps/details?id=com.appomobi.drawnui.breakout) - Nice and smooth
 
-* [AppStore](https://apps.apple.com/us/app/bricks-breaker/id6749823869)
+* AppStore - Still in review
 
 ## How To Play
 
