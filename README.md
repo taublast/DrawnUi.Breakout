@@ -1,6 +1,6 @@
 # Bricks Breaker
 
-A cross-platform Arkanoid/Breakout style game to play on **iOS, MacCatalyst, Android and Windows**.
+A cross-platform Arkanoid/Breakout style game to play on **iOS, MacCatalyst, Android and Windows** made with DrawnUI for .NET MAUI.
 
 * [Google Play](https://play.google.com/store/apps/details?id=com.appomobi.drawnui.breakout) 
 
