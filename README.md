@@ -15,13 +15,13 @@ A cross-platform Arkanoid/Breakout style game to play on **iOS, MacCatalyst, And
 
 https://github.com/user-attachments/assets/0bd6e340-a895-42e6-83f4-558f2323d37d
 
-Please star ⭐ if you like it!
-
 Try it out, compile or install for stores:
 
 * [Google Play](https://play.google.com/store/apps/details?id=com.appomobi.drawnui.breakout) - Nice and smooth
 
-* AppStore - Still in review
+* [AppStore]([https://play.google.com/store/apps/details?id=com.appomobi.drawnui.breakout](https://apps.apple.com/us/app/bricks-breaker/id6749823869?platform=iphone)) - iPhone and iPad
+
+Please star ⭐ if you like it!
 
 ## How To Play
 
