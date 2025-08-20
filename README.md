@@ -6,7 +6,7 @@ Try it out, compile or install for stores:
 
 * [Google Play](https://play.google.com/store/apps/details?id=com.appomobi.drawnui.breakout) - Nice and smooth
 
-* [AppStore](https://play.google.com/store/apps/details?id=com.appomobi.drawnui.breakout](https://apps.apple.com/us/app/bricks-breaker/id6749823869?platform=iphone) - iPhone and iPad
+* [AppStore](https://apps.apple.com/us/app/bricks-breaker/id6749823869?platform=iphone) - iPhone and iPad
 
 Please star ⭐ if you like it!
 
