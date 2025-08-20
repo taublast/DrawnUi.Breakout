@@ -13,6 +13,8 @@ namespace Breakout.Game
     {
         public MainPage()
         {
+            BackgroundColor = Colors.Black; //iOS statusbar and bottom insets
+
             Instance = this; // To change of this instance, to be accessed from AppLanguage helper
 
             AppLanguage.ApplySelected();

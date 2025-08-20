@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
   <key>CFBundleVersion</key>
-  <string>100101</string>
+  <string>100102</string>
   <key>XSAppIconAssets</key>
   <string>Assets.xcassets/icon.appiconset</string>
   <key>ITSAppUsesNonExemptEncryption</key>
