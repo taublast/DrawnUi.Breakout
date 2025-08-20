@@ -2,6 +2,14 @@
 
 A cross-platform Arkanoid/Breakout style game to play on **iOS, MacCatalyst, Android and Windows**.
 
+Try it out, compile or install for stores:
+
+* [Google Play](https://play.google.com/store/apps/details?id=com.appomobi.drawnui.breakout) - Nice and smooth
+
+* [AppStore](https://play.google.com/store/apps/details?id=com.appomobi.drawnui.breakout](https://apps.apple.com/us/app/bricks-breaker/id6749823869?platform=iphone) - iPhone and iPad
+
+Please star ⭐ if you like it!
+
 ## Game Features
 * 12 levels of ball versus bricks madness!
 * Catch powerups destroying the bricks!
@@ -14,14 +22,6 @@ A cross-platform Arkanoid/Breakout style game to play on **iOS, MacCatalyst, And
 ---
 
 https://github.com/user-attachments/assets/0bd6e340-a895-42e6-83f4-558f2323d37d
-
-Try it out, compile or install for stores:
-
-* [Google Play](https://play.google.com/store/apps/details?id=com.appomobi.drawnui.breakout) - Nice and smooth
-
-* [AppStore]([https://play.google.com/store/apps/details?id=com.appomobi.drawnui.breakout](https://apps.apple.com/us/app/bricks-breaker/id6749823869?platform=iphone)) - iPhone and iPad
-
-Please star ⭐ if you like it!
 
 ## How To Play
 
