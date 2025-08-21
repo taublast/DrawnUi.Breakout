@@ -76,7 +76,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DrawnUi.Maui.Game" Version="1.6.2.25" />
+    <PackageReference Include="DrawnUi.Maui.Game" Version="1.6.2.27" />
     <!--can replace this with usual plugin if PR is merged-->
     <PackageReference Include="AppoMobi.Preview.Plugin.Maui.Audio" Version="3.0.2.1-pre1" />
     <PackageReference Include="Bijington.Orbit.Input" Version="0.2.2-preview.1" />
