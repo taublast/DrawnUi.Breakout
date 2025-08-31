@@ -76,7 +76,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DrawnUi.Maui.Game" Version="1.6.2.25" />
+    <!--<PackageReference Include="DrawnUi.Maui.Game" Version="1.6.2.28" />-->
     <!--can replace this with usual plugin if PR is merged-->
     <PackageReference Include="AppoMobi.Preview.Plugin.Maui.Audio" Version="3.0.2.1-pre1" />
     <PackageReference Include="Bijington.Orbit.Input" Version="0.2.2-preview.1" />
@@ -115,6 +115,10 @@
   </ItemGroup>
   <ItemGroup>
     <MauiFont Include="Helpers\AppFonts.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\DrawnUi.Maui\src\Maui\Addons\DrawnUi.Maui.Game\DrawnUi.Maui.Game.csproj" />
+    <ProjectReference Include="..\..\DrawnUi.Maui\src\Maui\DrawnUi\DrawnUi.Maui.csproj" />
   </ItemGroup>
 
 </Project>
