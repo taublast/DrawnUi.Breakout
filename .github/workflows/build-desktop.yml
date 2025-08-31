@@ -1,0 +1,27 @@
+name: Build .NET MAUI Windows
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 9.0.x
+        
+    - name: Install MAUI workload
+      run: dotnet workload install maui
+      
+    - name: Build
+      run: dotnet build src/SpaceShooter.csproj -c Release -f:net9.0-windows10.0.19041.0
+
+  
