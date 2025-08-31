@@ -22,6 +22,6 @@ jobs:
       run: dotnet workload install maui
       
     - name: Build
-      run: dotnet build src/SpaceShooter.csproj -c Release -f:net9.0-windows10.0.19041.0
+      run: dotnet build src/Breakout.csproj -c Release -f:net9.0-windows10.0.19041.0
 
   
