@@ -2,10 +2,6 @@
 
 A cross-platform Arkanoid/Breakout style game to play on **iOS, MacCatalyst, Android and Windows** made with DrawnUI for .NET MAUI.
 
-* [Google Play](https://play.google.com/store/apps/details?id=com.appomobi.drawnui.breakout) 
-
-* [AppStore](https://apps.apple.com/us/app/bricks-breaker/id6749823869?platform=iphone) 
-
 ## Game Features
 * 12 levels of ball versus bricks madness!
 * Catch powerups destroying the bricks!
@@ -17,9 +13,19 @@ A cross-platform Arkanoid/Breakout style game to play on **iOS, MacCatalyst, And
 
 ---
 
+Please star ⭐ if you like it!
+
+Support: [ask your question here](https://github.com/taublast/DrawnUi.Breakout/discussions)
+
 https://github.com/user-attachments/assets/0bd6e340-a895-42e6-83f4-558f2323d37d
 
-Please star ⭐ if you like it!
+### Install
+
+* [Google Play](https://play.google.com/store/apps/details?id=com.appomobi.drawnui.breakout) 
+
+* [AppStore](https://apps.apple.com/us/app/bricks-breaker/id6749823869?platform=iphone) 
+
+* Run on Windows and MacCatalyst compiling from source code
 
 ## How To Play
 
