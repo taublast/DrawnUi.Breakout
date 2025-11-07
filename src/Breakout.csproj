@@ -71,22 +71,26 @@
     <ProvisioningType>manual</ProvisioningType>
   </PropertyGroup>
 
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <PackageReference Include="HotPreview.App.Maui" Version="0.17.30" />
+  </ItemGroup>
+
   <ItemGroup>
     <None Include="..\README.md" Link="README.md" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DrawnUi.Maui.Game" Version="1.6.2.28" />
     
     <!--can replace this with usual plugin if PR is merged-->
     <PackageReference Include="AppoMobi.Preview.Plugin.Maui.Audio" Version="3.0.2.1-pre1" />
     <PackageReference Include="Bijington.Orbit.Input" Version="0.2.2-preview.1" />
+    <PackageReference Include="DrawnUi.Maui.Game" Version="1.7.4.1" />
     <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.70" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
   </ItemGroup>
 
   <ItemGroup Condition="$(TargetFramework.Contains('android'))">
-    <PackageReference Include="SoundFlow" Version="1.1.1" />
+    <PackageReference Include="SoundFlow" Version="1.2.1" />
   </ItemGroup>
 
   <!--https://github.com/BretJohnson/hot-preview-->
@@ -108,14 +112,17 @@
       <DependentUpon>ResStrings.resx</DependentUpon>
     </Compile>
   </ItemGroup>
+
   <ItemGroup>
     <EmbeddedResource Update="Resources\Strings\ResStrings.resx">
       <LastGenOutput>ResStrings.Designer.cs</LastGenOutput>
       <Generator>PublicResXFileCodeGenerator</Generator>
     </EmbeddedResource>
   </ItemGroup>
+
   <ItemGroup>
     <MauiFont Include="Helpers\AppFonts.cs" />
   </ItemGroup>
+ 
 
 </Project>

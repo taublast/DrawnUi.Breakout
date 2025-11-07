@@ -27,6 +27,12 @@ https://github.com/user-attachments/assets/0bd6e340-a895-42e6-83f4-558f2323d37d
 
 * Run on Windows and MacCatalyst compiling from source code
 
+### What's New
+
+* Phisical Keyboard support is back!
+* Controller support got better
+* Bug fixes and optimizations
+
 ## How To Play
 
 ### With touch:

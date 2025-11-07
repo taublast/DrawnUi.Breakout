@@ -106,6 +106,7 @@ namespace Breakout.Game
                                 //all bricks inside one layer draw cached if unchanged
                                 new SkiaLayout()
                                 {
+                                    Tag="BricksContainer",
                                     UseCache = SkiaCacheType.ImageComposite, //critical for perf
                                     HorizontalOptions = LayoutOptions.Center,
                                     Margin = new(0,90,0,0),

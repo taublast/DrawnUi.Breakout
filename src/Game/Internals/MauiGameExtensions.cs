@@ -10,14 +10,16 @@ public static class MauiGameExtensions
         if (sprite is SkiaControl control)
         {
             //real position even below/inside a cached layer
-            //var position = control.GetFuturePositionOnCanvasInPoints();
+            SKPoint position;
             if (control.VisualLayer == null)
             {
-                return SKRect.Empty;
+                position = control.GetFuturePositionOnCanvasInPoints();
             }
-
-            //we can get position from layer as we do not ache above
-            var position = control.VisualLayer.HitBoxWithTransforms.Units.Location;
+            else
+            {
+                //we can get position from layer as we do not ache above
+                position = control.VisualLayer.HitBoxWithTransforms.Units.Location;
+            }
 
             var hitBox = new SKRect(position.X, position.Y,
                 (float)(position.X + control.Width), (float)(position.Y + control.Height));

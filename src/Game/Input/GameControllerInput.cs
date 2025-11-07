@@ -4,7 +4,7 @@ namespace Breakout.Game.Input;
 
 public class GameControllerInput : IInputController
 {
-    private readonly BreakoutGame _game;
+    private BreakoutGame _game;
     private Orbit.Input.GameController _gameController;
     private bool _wasMoving;
     private readonly Dictionary<GameKey, bool> _buttonStates;
@@ -93,7 +93,7 @@ public class GameControllerInput : IInputController
 
     public void Dispose()
     {
-        _game?.Dispose();
+        _game = null;
         _buttonStates.Clear();
 
         GameControllerManager.Current.GameControllerConnected -= OnGameControllerConnected;
