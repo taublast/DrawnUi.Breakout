@@ -99,9 +99,9 @@ namespace Breakout.Game
 
         public override void OnWillDisposeWithChildren()
         {
-            Super.OnNativeAppResumed += Super_OnNativeAppResumed;
+            Super.OnNativeAppResumed -= Super_OnNativeAppResumed;
 
-            Super.OnNativeAppPaused += Super_OnNativeAppPaused;
+            Super.OnNativeAppPaused -= Super_OnNativeAppPaused;
 
             _audioService?.Dispose();
 
