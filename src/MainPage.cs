@@ -66,7 +66,7 @@ namespace Breakout.Game
                                 new Game.BreakoutGame(),
                             }
                         }.Assign(out ViewsContainer),
-#if NEED_DEBUG
+#if DEBUG
                         new SkiaLabelFps()
                         {
                             Margin = new(0, 0, 4, 24),
@@ -82,14 +82,13 @@ namespace Breakout.Game
                     }
                 }.Fill()
             };
-#if IOS
-            this.Content = new Grid() //using grid wrapper to take apply safe insets on ios, other platforms use different logic
+            this.Content = new Grid() 
             {
-                Children = { Canvas }
+                Children =
+                {
+                    Canvas
+                }
             };
-#else
-            this.Content = Canvas;
-#endif
         }
 
 #if PREVIEWS
