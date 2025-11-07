@@ -13,6 +13,9 @@ namespace Breakout.Game
         {
             SetInputPressMode(AppSettings.Get(AppSettings.InputPressEnabled, AppSettings.InputPressEnabledDefault));
 
+            _keyboard = new KeyboardController(this);
+            AddInputController(_keyboard);
+
             //GAME CONTROLLER SUPPORT
             AddInputController(new GameControllerInput(this));
         }
@@ -97,6 +100,7 @@ namespace Breakout.Game
 
         private GameState _lastStateChecked;
         private float thresholdTapVelocity = 200;
+        private KeyboardController _keyboard;
 
 
         /// <summary>
@@ -342,6 +346,26 @@ namespace Breakout.Game
         }
 
         public bool InputPressMode { get; protected set; }
+
+        #endregion
+
+        #region KEYBOARD
+
+        public override void OnKeyDown(MauiKey key)
+        {
+            base.OnKeyDown(key);
+
+            var gameKey = MapToGame(key);
+            _keyboard.SetKeyPressed(gameKey, true);
+        }
+
+        public override void OnKeyUp(MauiKey key)
+        {
+            base.OnKeyUp(key);
+
+            var gameKey = MapToGame(key);
+            _keyboard.SetKeyPressed(gameKey, false);
+        }
 
         #endregion
     }
