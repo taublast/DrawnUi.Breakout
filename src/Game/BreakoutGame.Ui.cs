@@ -164,7 +164,6 @@ namespace Breakout.Game
                                         }),
 
                                         //LEVEL
-                            
                                         new SkiaRichLabel()
                                         {
                                             UseCache = SkiaCacheType.Operations,
