@@ -2,13 +2,16 @@
 
 using AppoMobi.Specials;
 using SoundFlow.Abstracts;
+using SoundFlow.Abstracts.Devices;
 using SoundFlow.Backends.MiniAudio;
 using SoundFlow.Components;
 using SoundFlow.Enums;
 using SoundFlow.Interfaces;
 using SoundFlow.Providers;
-using System.Diagnostics;
 using System.Numerics;
+using JetBrains.Annotations;
+using SoundFlow.Structs;
+using Debug = System.Diagnostics.Debug;
 
 namespace Breakout.Game;
 
@@ -33,13 +36,8 @@ public class SoundFlowAudioService : IAudioService
 
     #region SOUND DATA STORAGE
 
-    // Store preloaded audio data for use with SoundFlow
     private readonly Dictionary<string, byte[]> _soundData = new();
-
-    // Track active sound players for sound effects
     private readonly List<SoundPlayer> _soundEffectPlayers = new();
-
-    // Object pool for memory streams to reduce GC pressure
     private readonly Queue<MemoryStream> _memoryStreamPool = new();
     private readonly object _poolLock = new();
 
@@ -85,18 +83,12 @@ public class SoundFlowAudioService : IAudioService
 
     #region FIELDS
 
-    // SoundFlow audio engine and mixer
     private readonly AudioEngine _audioEngine;
+    private readonly AudioPlaybackDevice _playbackDevice;
     private readonly Mixer _masterMixer;
-
-    // Background music tracking
     private SoundPlayerBase _backgroundMusicPlayer;
     private float _backgroundMusicVolume = 0.3f;
-
-    // Sound effect management
     private int _currentSoundChannel = 0;
-
-    // Disposal tracking
     private bool _disposed = false;
 
     #endregion
@@ -110,9 +102,15 @@ public class SoundFlowAudioService : IAudioService
     {
         try
         {
-            // Initialize SoundFlow audio engine with MiniAudio backend
-            _audioEngine = new MiniAudioEngine(SAMPLE_RATE, Capability.Playback);
-            _masterMixer = Mixer.Master;
+            _audioEngine = new MiniAudioEngine();
+
+            var defaultDevice = _audioEngine.PlaybackDevices.FirstOrDefault(x => x.IsDefault);
+            var format = AudioFormat.StudioHq;
+
+            _playbackDevice = _audioEngine.InitializePlaybackDevice(defaultDevice, format);
+            _masterMixer = _playbackDevice.MasterMixer;
+
+            _playbackDevice.Start();
 
             Debug.WriteLine($"SoundFlow audio engine initialized with {SAMPLE_RATE}Hz sample rate");
         }
@@ -137,7 +135,6 @@ public class SoundFlowAudioService : IAudioService
     {
         try
         {
-            // Load audio data into memory
             byte[] audioData;
             using (var stream = await FileSystem.OpenAppPackageFileAsync(filePath))
             using (var memoryStream = new MemoryStream())
@@ -146,7 +143,6 @@ public class SoundFlowAudioService : IAudioService
                 audioData = memoryStream.ToArray();
             }
 
-            // Store the raw audio data
             _soundData[soundId] = audioData;
 
             Debug.WriteLine($"Preloaded sound '{soundId}' from '{filePath}' ({audioData.Length} bytes)");
@@ -175,47 +171,38 @@ public class SoundFlowAudioService : IAudioService
         if (_disposed || _audioEngine == null)
             return;
 
-        //Tasks.StartDelayed(TimeSpan.FromMicroseconds(1), () =>
-        //{
-            try
+        try
+        {
+            if (IsMuted)
+                volume = 0f;
+            else
+                volume *= MasterVolume;
+
+            if (!_soundData.TryGetValue(soundId, out var audioData))
             {
-                if (IsMuted)
-                    volume = 0f;
-                else
-                    volume *= MasterVolume;
-
-                if (!_soundData.TryGetValue(soundId, out var audioData))
-                {
-                    Debug.WriteLine($"Sound '{soundId}' not preloaded");
-                    return;
-                }
-
-                // Create a new SoundPlayer for this sound effect using pooled memory stream
-                var memoryStream = GetPooledMemoryStream(audioData);
-                var dataProvider = new StreamDataProvider(memoryStream);
-                var player = new SoundPlayer(dataProvider);
-
-                // Configure the player
-                player.Volume = volume;
-                player.IsLooping = loop;
-
-                // Add to master mixer
-                _masterMixer.AddComponent(player);
-
-                // Track the player for cleanup
-                _soundEffectPlayers.Add(player);
-
-                // Start playback
-                player.Play();
-
-                // Clean up finished players periodically
-                CleanupFinishedPlayers();
+                Debug.WriteLine($"Sound '{soundId}' not preloaded");
+                return;
             }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error playing sound '{soundId}': {ex}");
-            }
-        //});
+
+            var memoryStream = GetPooledMemoryStream(audioData);
+            var dataProvider = new StreamDataProvider(_audioEngine, AudioFormat.StudioHq, memoryStream);
+            var player = new SoundPlayer(_audioEngine, AudioFormat.StudioHq, dataProvider);
+
+            player.Volume = volume;
+            player.IsLooping = loop;
+
+            _masterMixer.AddComponent(player);
+
+            _soundEffectPlayers.Add(player);
+
+            player.Play();
+
+            CleanupFinishedPlayers();
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error playing sound '{soundId}': {ex}");
+        }
     }
 
     /// <summary>
@@ -232,11 +219,9 @@ public class SoundFlowAudioService : IAudioService
         else
             volume *= MasterVolume;
 
-        // Simple spatial audio calculation
-        // Distance attenuation and stereo panning based on X position
         float distance = position.Length();
-        float attenuatedVolume = volume / (1.0f + distance * 0.1f); // Simple distance attenuation
-        float balance = Math.Clamp(position.X * 0.5f, -1.0f, 1.0f); // Pan based on X position
+        float attenuatedVolume = volume / (1.0f + distance * 0.1f);
+        float balance = Math.Clamp(position.X * 0.5f, -1.0f, 1.0f);
 
         PlaySound(soundId, attenuatedVolume, balance, loop);
     }
@@ -245,27 +230,35 @@ public class SoundFlowAudioService : IAudioService
 
     #region BACKGROUND MUSIC
 
- 
-
+    /// <summary>
+    /// Custom sound player with enhanced end-of-stream handling
+    /// </summary>
     public class SFPlayer : SoundPlayerBase
     {
-        /// <summary>A sound player that plays audio from a data provider.</summary>
-        public SFPlayer(ISoundDataProvider dataProvider) : base (dataProvider)
-        {
-            _dataProvider = dataProvider;
-        }
-
         private readonly ISoundDataProvider _dataProvider;
 
-        protected override void HandleEndOfStream(Span<float> remainingOutputBuffer)
+        /// <summary>
+        /// A sound player that plays audio from a data provider
+        /// </summary>
+        public SFPlayer([NotNull] AudioEngine engine, AudioFormat format, [NotNull] ISoundDataProvider dataProvider,
+            string name) : base(engine, format, dataProvider)
+        {
+            _dataProvider = dataProvider;
+            Name = name;
+        }
+
+        /// <summary>
+        /// Handles the end of stream event
+        /// </summary>
+        protected override void HandleEndOfStream(Span<float> remainingOutputBuffer, int channels)
         {
             if (!_dataProvider.CanSeek)
             {
-                //basically we wouldn't be able to loop as we don't know the end
                 var check = $"{Time} / {Duration}  {LoopStartSamples} / {LoopEndSamples}  |  {LoopEndSeconds}";
                 Debug.WriteLine(check);
             }
-            base.HandleEndOfStream(remainingOutputBuffer);
+
+            base.HandleEndOfStream(remainingOutputBuffer, channels);
         }
 
         /// <inheritdoc />
@@ -279,16 +272,15 @@ public class SoundFlowAudioService : IAudioService
     /// <param name="volume">Volume level (0.0 to 1.0)</param>
     public async void StartBackgroundMusicFromFile(string filePath, float volume = 1.0f)
     {
-        StopBackgroundMusic(); // Stop any existing background music
+        StopBackgroundMusic();
 
         _backgroundMusicVolume = Math.Clamp(volume, 0f, 1f);
 
         try
         {
-            // Stream directly from file instead of loading into memory
             var fileStream = await FileSystem.OpenAppPackageFileAsync(filePath);
-            var dataProvider = new StreamDataProvider(fileStream);
-            _backgroundMusicPlayer = new SFPlayer(dataProvider);
+            var dataProvider = new StreamDataProvider(_audioEngine, AudioFormat.StudioHq, fileStream);
+            _backgroundMusicPlayer = new SFPlayer(_audioEngine, AudioFormat.StudioHq, dataProvider, "background");
 
             _backgroundMusicPlayer.IsLooping = true;
             UpdateBackgroundMusicVolume();
@@ -296,14 +288,13 @@ public class SoundFlowAudioService : IAudioService
             _masterMixer.AddComponent(_backgroundMusicPlayer);
             _backgroundMusicPlayer.Play();
 
-            Debug.WriteLine($"Started background music streaming from '{filePath}'");
+            //Debug.WriteLine($"Started background music streaming from '{filePath}'");
         }
         catch (Exception ex)
         {
             Debug.WriteLine($"Error starting background music from file '{filePath}': {ex}");
         }
     }
-
 
     /// <summary>
     /// Starts background music playback
@@ -312,7 +303,7 @@ public class SoundFlowAudioService : IAudioService
     /// <param name="volume">Volume level (0.0 to 1.0)</param>
     public void StartBackgroundMusic(string soundId, float volume = 0.3f)
     {
-        StopBackgroundMusic(); // Stop any existing background music
+        StopBackgroundMusic();
 
         _backgroundMusicVolume = Math.Clamp(volume, 0f, 1f);
 
@@ -321,8 +312,8 @@ public class SoundFlowAudioService : IAudioService
             try
             {
                 var memoryStream = GetPooledMemoryStream(audioData);
-                var dataProvider = new StreamDataProvider(memoryStream);
-                _backgroundMusicPlayer = new SoundPlayer(dataProvider);
+                var dataProvider = new StreamDataProvider(_audioEngine, AudioFormat.StudioHq, memoryStream);
+                _backgroundMusicPlayer = new SoundPlayer(_audioEngine, AudioFormat.StudioHq, dataProvider);
 
                 _backgroundMusicPlayer.IsLooping = true;
                 UpdateBackgroundMusicVolume();
@@ -330,7 +321,7 @@ public class SoundFlowAudioService : IAudioService
                 _masterMixer.AddComponent(_backgroundMusicPlayer);
                 _backgroundMusicPlayer.Play();
 
-                Debug.WriteLine($"Started background music '{soundId}'");
+                //Debug.WriteLine($"Started background music '{soundId}'");
             }
             catch (Exception ex)
             {
@@ -354,7 +345,7 @@ public class SoundFlowAudioService : IAudioService
             {
                 _backgroundMusicPlayer.Stop();
                 _masterMixer.RemoveComponent(_backgroundMusicPlayer);
-                Debug.WriteLine("Stopped background music");
+                //Debug.WriteLine("Stopped background music");
             }
             catch (Exception ex)
             {
@@ -380,7 +371,6 @@ public class SoundFlowAudioService : IAudioService
     {
         volume = Math.Clamp(volume, 0f, 1f);
 
-        // Special handling for background music
         if (soundId == "background")
         {
             _backgroundMusicVolume = volume;
@@ -388,10 +378,7 @@ public class SoundFlowAudioService : IAudioService
             return;
         }
 
-        // Note: For sound effects, individual volume control is complex with SoundFlow
-        // since each sound creates a new player. This would require tracking
-        // which sounds are playing, which adds complexity.
-        Debug.WriteLine($"SetSoundVolume for '{soundId}' - individual sound volume control not implemented");
+        //Debug.WriteLine($"SetSoundVolume for '{soundId}' - individual sound volume control not implemented");
     }
 
     /// <summary>
@@ -401,7 +388,6 @@ public class SoundFlowAudioService : IAudioService
     {
         UpdateBackgroundMusicVolume();
 
-        // Update sound effect volumes
         foreach (var player in _soundEffectPlayers.ToList())
         {
             if (player != null)
@@ -480,7 +466,6 @@ public class SoundFlowAudioService : IAudioService
 
         lock (_poolLock)
         {
-            // Limit pool size to prevent excessive memory usage
             if (_memoryStreamPool.Count < 10)
             {
                 stream.SetLength(0);
@@ -532,10 +517,10 @@ public class SoundFlowAudioService : IAudioService
                 }
             }
 
-            // Limit the number of tracked players to prevent excessive memory usage
             if (_soundEffectPlayers.Count > SOUND_EFFECT_CHANNELS * 2)
             {
-                var oldestPlayers = _soundEffectPlayers.Take(_soundEffectPlayers.Count - SOUND_EFFECT_CHANNELS).ToList();
+                var oldestPlayers = _soundEffectPlayers.Take(_soundEffectPlayers.Count - SOUND_EFFECT_CHANNELS)
+                    .ToList();
                 foreach (var player in oldestPlayers)
                 {
                     _soundEffectPlayers.Remove(player);
@@ -576,10 +561,8 @@ public class SoundFlowAudioService : IAudioService
         {
             Debug.WriteLine("Disposing SoundFlow audio service...");
 
-            // Stop background music
             StopBackgroundMusic();
 
-            // Stop and dispose all sound effect players
             foreach (var player in _soundEffectPlayers.ToList())
             {
                 if (player != null)
@@ -597,10 +580,8 @@ public class SoundFlowAudioService : IAudioService
             }
             _soundEffectPlayers.Clear();
 
-            // Clear sound data
             _soundData.Clear();
 
-            // Clear memory stream pool
             lock (_poolLock)
             {
                 while (_memoryStreamPool.Count > 0)
@@ -610,7 +591,8 @@ public class SoundFlowAudioService : IAudioService
                 }
             }
 
-            // Dispose audio engine
+            _playbackDevice?.Stop();
+            _playbackDevice?.Dispose();
             _audioEngine?.Dispose();
 
             Debug.WriteLine("SoundFlow audio service disposed successfully");
