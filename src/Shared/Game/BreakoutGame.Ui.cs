@@ -33,6 +33,7 @@ namespace Breakout.Game
                     return ball;
                 }
             }
+
             return null;
         }
 
@@ -52,6 +53,7 @@ namespace Breakout.Game
             {
                 RemoveBall(ball);
             }
+
             _activeBalls.Clear();
         }
 
@@ -92,10 +94,13 @@ namespace Breakout.Game
                                 //all bricks inside one layer draw cached if unchanged
                                 new SkiaLayout()
                                 {
-                                    Tag="BricksContainer",
+                                    Tag = "BricksContainer",
+#if BROWSER
+                                    ExpandDirtyRegion = new Thickness(1),
+#endif
                                     UseCache = SkiaCacheType.ImageComposite, //critical for perf
                                     HorizontalOptions = LayoutOptions.Center,
-                                    Margin = new(0,90,0,0),
+                                    Margin = new(0, 90, 0, 0),
                                 }.Assign(out BricksContainer),
 
                                 new PaddleSprite()
@@ -113,89 +118,89 @@ namespace Breakout.Game
                                     {
                                         //SCORE/DEMO
                                         new SkiaRichLabel()
-                                        {
-                                            UseCache = SkiaCacheType.Operations,
-                                            Margin = 16,
-                                            FontFamily = AppFonts.GameAutoselect,
-                                            FontSize = 17 * AppFonts.GameAdjustSize,
-                                            StrokeColor = AmstradColors.DarkBlue,
-                                            TextColor = AmstradColors.White,
-                                            DropShadowColor = Colors.DarkBlue,
-                                            DropShadowOffsetX = 2,
-                                            DropShadowOffsetY = 2,
-                                            DropShadowSize = 2,
-                                            FillGradient = new()
                                             {
-                                                Colors = new List<Color>()
+                                                UseCache = SkiaCacheType.Operations,
+                                                Margin = 16,
+                                                FontFamily = AppFonts.GameAutoselect,
+                                                FontSize = 17 * AppFonts.GameAdjustSize,
+                                                StrokeColor = AmstradColors.DarkBlue,
+                                                TextColor = AmstradColors.White,
+                                                DropShadowColor = Colors.DarkBlue,
+                                                DropShadowOffsetX = 2,
+                                                DropShadowOffsetY = 2,
+                                                DropShadowSize = 2,
+                                                FillGradient = new()
                                                 {
-                                                    Colors.White,
-                                                    Colors.CornflowerBlue
+                                                    Colors = new List<Color>()
+                                                    {
+                                                        Colors.White,
+                                                        Colors.CornflowerBlue
+                                                    }
                                                 }
                                             }
-                                        }
-                                        .ObserveProperties(this, [nameof(Score), nameof(State)], me =>
-                                        {
-                                            me.FontFamily = AppFonts.GameAutoselect;
-                                            me.FontSize = 17 * AppFonts.GameAdjustSize;
+                                            .ObserveProperties(this, [nameof(Score), nameof(State)], me =>
+                                            {
+                                                me.FontFamily = AppFonts.GameAutoselect;
+                                                me.FontSize = 17 * AppFonts.GameAdjustSize;
 
-                                            if (State == GameState.DemoPlay)
-                                            {
-                                                me.Text = ResStrings.DemoMode.ToUpperInvariant();
-                                            }
-                                            else
-                                            {
-                                                me.Text = $"{ResStrings.Score.ToUpperInvariant()}: {Score:0}";
-                                            }
-                                        }),
+                                                if (State == GameState.DemoPlay)
+                                                {
+                                                    me.Text = ResStrings.DemoMode.ToUpperInvariant();
+                                                }
+                                                else
+                                                {
+                                                    me.Text = $"{ResStrings.Score.ToUpperInvariant()}: {Score:0}";
+                                                }
+                                            }),
 
                                         //LEVEL
                                         new SkiaRichLabel()
-                                        {
-                                            UseCache = SkiaCacheType.Operations,
-                                            Margin = 16,
-                                            HorizontalOptions = LayoutOptions.End,
-                                            FontFamily = AppFonts.GameAutoselect,
-                                            FontSize = 17* AppFonts.GameAdjustSize,
-                                            StrokeColor = AmstradColors.DarkBlue,
-                                            TextColor = AmstradColors.White,
-                                            DropShadowColor = Colors.DarkBlue,
-                                            DropShadowOffsetX = 2,
-                                            DropShadowOffsetY = 2,
-                                            DropShadowSize = 2,
-                                            FillGradient = new()
                                             {
-                                                Colors = new List<Color>()
+                                                UseCache = SkiaCacheType.Operations,
+                                                Margin = 16,
+                                                HorizontalOptions = LayoutOptions.End,
+                                                FontFamily = AppFonts.GameAutoselect,
+                                                FontSize = 17 * AppFonts.GameAdjustSize,
+                                                StrokeColor = AmstradColors.DarkBlue,
+                                                TextColor = AmstradColors.White,
+                                                DropShadowColor = Colors.DarkBlue,
+                                                DropShadowOffsetX = 2,
+                                                DropShadowOffsetY = 2,
+                                                DropShadowSize = 2,
+                                                FillGradient = new()
                                                 {
-                                                    Colors.White,
-                                                    Colors.CornflowerBlue
+                                                    Colors = new List<Color>()
+                                                    {
+                                                        Colors.White,
+                                                        Colors.CornflowerBlue
+                                                    }
                                                 }
                                             }
-                                        }
-                                        .ObserveProperty(this, nameof(Level), me =>
-                                        {
-                                            me.FontFamily = AppFonts.GameAutoselect;
-                                            me.FontSize = 17 * AppFonts.GameAdjustSize;
+                                            .ObserveProperty(this, nameof(Level), me =>
+                                            {
+                                                me.FontFamily = AppFonts.GameAutoselect;
+                                                me.FontSize = 17 * AppFonts.GameAdjustSize;
 
-                                            me.Text = $"{ResStrings.Lev.ToUpperInvariant()}: {Level}";
-                                        }),
+                                                me.Text = $"{ResStrings.Lev.ToUpperInvariant()}: {Level}";
+                                            }),
 
 
                                         //LIVES
                                         new SkiaLayout()
-                                        {
-                                            UseCache = SkiaCacheType.Image,
-                                            HorizontalOptions = LayoutOptions.Start,
-                                            Type = LayoutType.Row,
-                                            Spacing = 3,
-                                            Margin = new (16,60,16,0),
-                                            ItemTemplateType = typeof(LifeSprite)
-                                        }
-                                        .ObserveProperties(this, [nameof(Lives), nameof(State)], me =>
-                                        {
-                                            me.IsVisible = true;
-                                            me.ItemsSource = Enumerable.Repeat(1, Lives).ToArray();
-                                            Debug.WriteLine($"LIVES: {Lives}");
-                                        }),
+                                            {
+                                                UseCache = SkiaCacheType.Image,
+                                                HorizontalOptions = LayoutOptions.Start,
+                                                Type = LayoutType.Row,
+                                                Spacing = 3,
+                                                Margin = new(16, 60, 16, 0),
+                                                ItemTemplateType = typeof(LifeSprite)
+                                            }
+                                            .ObserveProperties(this, [nameof(Lives), nameof(State)], me =>
+                                            {
+                                                me.IsVisible = true;
+                                                me.ItemsSource = Enumerable.Repeat(1, Lives).ToArray();
+                                                Debug.WriteLine($"LIVES: {Lives}");
+                                            }),
                                     }
                                 }
                             }
@@ -211,30 +216,27 @@ namespace Breakout.Game
                             Children =
                             {
                                 new SkiaSvg()
-                                {
-                                    Opacity = 0.85,
-                                    UseCache = SkiaCacheType.Image,
-                                    SvgString = AppSvg.SvgSettings,
-                                    WidthRequest = 56,
-                                    LockRatio = 1,
-                                    VerticalOptions = LayoutOptions.Center,
-                                    Margin = new (12,0,0,0),
-                                }
-                                .OnTapped(me =>
-                                {
-                                    TogglePause();
-                                }),
+                                    {
+                                        Opacity = 0.85,
+                                        UseCache = SkiaCacheType.Image,
+                                        SvgString = AppSvg.SvgSettings,
+                                        WidthRequest = 56,
+                                        LockRatio = 1,
+                                        VerticalOptions = LayoutOptions.Center,
+                                        Margin = new(12, 0, 0, 0),
+                                    }
+                                    .OnTapped(me => { TogglePause(); }),
 
 
                                 //ARROWS
                                 new HudArrows(this)
                                 {
-                                    Margin = new (80,0,16,0),
+                                    Margin = new(80, 0, 16, 0),
                                     HorizontalOptions = LayoutOptions.Fill,
                                     VerticalOptions = LayoutOptions.Fill,
                                     UseCache = SkiaCacheType.Operations,
                                     ColumnSpacing = 20,
-                                    Children=
+                                    Children =
                                     {
                                         new SkiaSvg()
                                         {
@@ -271,7 +273,6 @@ namespace Breakout.Game
 
         public static class UiElements
         {
-
             public static Color ColorPrimary = Colors.HotPink;
             public static Color ColorPrimaryDark = Colors.DeepPink;
 
@@ -329,7 +330,7 @@ namespace Breakout.Game
                         new SkiaRichLabel()
                         {
                             Text = caption,
-                            Margin = new Thickness(16, 8,16,10),
+                            Margin = new Thickness(16, 8, 16, 10),
                             UseCache = SkiaCacheType.Operations,
                             HorizontalOptions = LayoutOptions.Center,
                             VerticalOptions = LayoutOptions.Center,
@@ -406,11 +407,11 @@ namespace Breakout.Game
         {
             return new[]
             {
-            Black, Blue, Red, Magenta, Green, Cyan, Yellow, White, Grey,
-            BrightBlue, BrightRed, BrightMagenta, BrightGreen, BrightCyan, BrightYellow, BrightWhite,
-            DarkBlue, DarkRed, DarkMagenta, DarkGreen, DarkCyan, DarkYellow, DarkGrey,
-            MidBlue, MidRed, MidGreen, MidCyan
-        };
+                Black, Blue, Red, Magenta, Green, Cyan, Yellow, White, Grey,
+                BrightBlue, BrightRed, BrightMagenta, BrightGreen, BrightCyan, BrightYellow, BrightWhite,
+                DarkBlue, DarkRed, DarkMagenta, DarkGreen, DarkCyan, DarkYellow, DarkGrey,
+                MidBlue, MidRed, MidGreen, MidCyan
+            };
         }
     }
 }
