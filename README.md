@@ -1,9 +1,9 @@
 # Bricks Breaker
 
-A cross-platform Arkanoid/Breakout style game to play on **iOS, MacCatalyst, Android and Windows** made with DrawnUI for .NET MAUI.
+A cross-platform Arkanoid/Breakout style game to play on **iOS, MacCatalyst, Android and Windows** and now also [on the Web](...), made with DrawnUI for .NET.
 
 ## Game Features
-* 12 levels of ball versus bricks madness!
+* 12 levels of madness, ball versus bricks!
 * Catch powerups destroying the bricks!
 * If you are lucky enough shoot at bricks in Destroyer mode!
 * Discover hidden music by catching rare powerups
