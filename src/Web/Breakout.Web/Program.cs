@@ -8,6 +8,8 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
+DrawnExtensions.RegisterFont("FontEmoji", "/fonts/NotoColorEmoji-Regular.ttf");
+
 // Text / UI fonts
 DrawnExtensions.RegisterFont("FontText", "/fonts/ZenMaruGothic-Bold.ttf");
 
