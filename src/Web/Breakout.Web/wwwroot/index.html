@@ -4,21 +4,57 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#090b10" />
+    <meta name="description" content="Break'em all bricks in a fast arcade brick breaker inspired by Arkanoid and Breakout. Smash bricks, catch powerups, unlock Destroyer mode, and play with touch, keyboard, mouse, or controllers." />
+    <meta name="application-name" content="Bricks Breaker" />
+    <meta name="apple-itunes-app" content="app-id=6749823869" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Bricks Breaker" />
+    <meta property="og:title" content="Bricks Breaker | Break'em all bricks!" />
+    <meta property="og:description" content="A fast arcade paddle-vs-bricks action game inspired by Arkanoid and Breakout. Catch powerups, trigger Destroyer mode, and play across touch, keyboard, mouse, or controllers." />
+    <meta property="og:image" content="/Images/back.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:alt" content="Bricks Breaker preview image" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Bricks Breaker | Break'em all bricks!" />
+    <meta name="twitter:description" content="Smash bricks, catch powerups, unlock Destroyer mode, and play a fast arcade brick breaker inspired by Arkanoid and Breakout." />
+    <meta name="twitter:image" content="/Images/back.jpg" />
     <title>Bricks Breaker</title>
     <base href="/" />
     <link rel="preload" id="webassembly" />
+    <link rel="preload" href="drawnui-gray.svg" as="image" type="image/svg+xml" />
+    <link rel="icon" type="image/svg+xml" href="drawnui-gray.svg" />
     <link rel="stylesheet" href="css/app.css" />
     <link href="Breakout.Web.styles.css" rel="stylesheet" />
     <script type="importmap"></script>
+    <style>
+        html, body {
+            background: #090b10;
+        }
+    </style>
 </head>
 
 <body>
     <div id="app">
-        <svg class="loading-progress">
-            <circle r="40%" cx="50%" cy="50%" />
-            <circle r="40%" cx="50%" cy="50%" />
-        </svg>
-        <div class="loading-progress-text"></div>
+        <div class="boot-shell" aria-label="Loading Bricks Breaker">
+            <div class="boot-stage">
+                <div class="boot-orbit boot-orbit-outer"></div>
+                <div class="boot-orbit boot-orbit-inner"></div>
+
+                <div class="boot-logo-wrap">
+                    <img class="boot-logo" src="drawnui-gray.svg" alt="DrawnUI" />
+                </div>
+
+                <div class="boot-copy">Bricks Breaker</div>
+
+                <div class="boot-progress" aria-hidden="true">
+                    <div class="boot-progress-track">
+                        <div class="boot-progress-fill"></div>
+                    </div>
+                    <div class="boot-progress-text"></div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div id="blazor-error-ui">
@@ -26,6 +62,7 @@
         <a href="." class="reload">Reload</a>
         <span class="dismiss">&#x1F5D9;</span>
     </div>
+    <script src="breakout-audio.js"></script>
     <script>
         globalThis.breakoutStorage = {
             get(key) {
@@ -42,14 +79,61 @@
                 }
             }
         };
+
+        globalThis.breakoutFullscreen = {
+            isEnabled() {
+                try {
+                    return !!globalThis.document.fullscreenElement;
+                } catch {
+                    return false;
+                }
+            },
+            setEnabled(enabled) {
+                try {
+                    if (enabled) {
+                        if (!globalThis.document.fullscreenElement) {
+                            const target = globalThis.document.documentElement;
+                            if (target?.requestFullscreen) {
+                                void target.requestFullscreen();
+                            }
+                        }
+                    } else if (globalThis.document.fullscreenElement && globalThis.document.exitFullscreen) {
+                        void globalThis.document.exitFullscreen();
+                    }
+                } catch {
+                }
+            }
+        };
     </script>
     <script src="_framework/blazor.webassembly.js" autostart="false"></script>
     <script>
+        const searchParams = new URLSearchParams(globalThis.location.search);
+        const loaderPreview = searchParams.has('loader-preview');
+        const loaderProgressRaw = Number(searchParams.get('progress'));
+        const loaderProgress = Number.isFinite(loaderProgressRaw)
+            ? Math.max(0, Math.min(100, loaderProgressRaw))
+            : 46;
+        const loaderLabel = searchParams.get('label');
+
+        if (loaderPreview) {
+            const progressText = loaderLabel || `${Math.floor(loaderProgress)}%`;
+            globalThis.document.documentElement.style.setProperty('--blazor-load-percentage', `${loaderProgress}%`);
+            globalThis.document.documentElement.style.setProperty('--blazor-load-percentage-text', `"${progressText}"`);
+            globalThis.document.body.classList.add('loader-preview');
+            globalThis.document.getElementById('blazor-error-ui')?.style.setProperty('display', 'none');
+        }
+
         const startupCultureRaw = globalThis.breakoutStorage.get('breakout.lang');
         const startupCulture = startupCultureRaw ? JSON.parse(startupCultureRaw) : undefined;
-        Blazor.start({ applicationCulture: startupCulture });
+        if (!loaderPreview) {
+            Blazor.start({ applicationCulture: startupCulture });
+        }
     </script>
-    <script>navigator.serviceWorker.register('service-worker.js', { updateViaCache: 'none' });</script>
+    <script>
+        if (!loaderPreview && 'serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js', { updateViaCache: 'none' });
+        }
+    </script>
 </body>
 
 </html>

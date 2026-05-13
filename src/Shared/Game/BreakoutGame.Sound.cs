@@ -34,13 +34,14 @@ namespace Breakout.Game
 
         private async Task InitializeAudioAsync()
         {
-#if !BROWSER
             IAudioService audioService;
 
-#if !ANDROID
-            audioService = new AudioMixerService(Plugin.Maui.Audio.AudioManager.Current);
-#else
+#if BROWSER
+            audioService = new WebAudioService();
+#elif ANDROID
             audioService = new SoundFlowAudioService();
+#else
+            audioService = new AudioMixerService(Plugin.Maui.Audio.AudioManager.Current);
 #endif
 
             // Preload
@@ -76,7 +77,6 @@ namespace Breakout.Game
             EnableSounds(soundsOn);
 
             SetupBackgroundMusic();
-#endif
         }
 
 

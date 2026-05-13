@@ -1,4 +1,3 @@
-#if !BROWSER
 using AppoMobi.Specials;
 
 namespace Breakout.Game;
@@ -51,11 +50,7 @@ public class DisplayFlag : SkiaLayout
                                 }
                                 .ObserveProperty(this, nameof(Lang), me =>
                                 {
-                                    if (!string.IsNullOrEmpty(this.Lang))
-                                    {
-                                        var resKey = $"SvgFlag{this.Lang.ToTitleCase()}";
-                                        me.SvgString = App.Current.Resources.Get<string>(resKey);
-                                    }
+                                    me.SvgString = AppSvg.GetFlag(this.Lang);
                                 }),
                         }
                     },
@@ -64,16 +59,15 @@ public class DisplayFlag : SkiaLayout
                     //dropdown icon
                     new SkiaSvg()
                     {
-                        Margin = new Microsoft.Maui.Thickness(1, 1, 0, 0),
+                        Margin = new Thickness(1, 1, 0, 0),
                         HorizontalOptions = LayoutOptions.Start,
                         TintColor = BreakoutGame.UiElements.ColorIconSecondary,
                         VerticalOptions = LayoutOptions.Fill,
                         WidthRequest = 10,
-                        SvgString = App.Current.Resources.Get<string>("SvgDropdown")
+                        SvgString = AppSvg.SvgDropdown
                     }
                 },
             }
         };
     }
 }
-#endif

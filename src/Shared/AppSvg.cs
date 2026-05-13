@@ -2,6 +2,19 @@ namespace Breakout;
 
 public static class AppSvg
 {
+    public static string GetFlag(string? lang) => (lang ?? string.Empty).ToLowerInvariant() switch
+    {
+        "de" => SvgFlagDe,
+        "es" => SvgFlagEs,
+        "fr" => SvgFlagFr,
+        "it" => SvgFlagIt,
+        "ru" => SvgFlagRu,
+        "ja" => SvgFlagJa,
+        "ko" => SvgFlagKo,
+        "zh" => SvgFlagZh,
+        _ => SvgFlagEn,
+    };
+
     public const string SvgLeft = @"<svg width=""800px"" height=""800px"" viewBox=""0 0 24 24"" fill=""none"" xmlns=""http://www.w3.org/2000/svg"">
 <path d=""M17.9999 12.0001V14.6701C17.9999 17.9801 15.6499 19.3401 12.7799 17.6801L10.4699 16.3401L8.15995 15.0001C5.28995 13.3401 5.28995 10.6301 8.15995 8.97005L10.4699 7.63005L12.7799 6.29005C15.6499 4.66005 17.9999 6.01005 17.9999 9.33005V12.0001Z"" stroke=""#292D32"" stroke-width=""1.5"" stroke-miterlimit=""10"" stroke-linecap=""round"" stroke-linejoin=""round""/>
 </svg>";
@@ -39,6 +52,24 @@ public static class AppSvg
 </svg>";
 
     public const string SvgDropdown = @"<svg viewBox=""0 0 320 512""><path d=""M320 240L160 384 0 240l0-48 320 0 0 48z""/></svg>";
+
+    public const string SvgFlagRu = @"<?xml version=""1.0"" encoding=""UTF-8""?><svg viewBox=""0 0 9 6"" width=""900"" height=""600""><rect fill=""#fff"" width=""9"" height=""3""/><rect fill=""#d52b1e"" y=""3"" width=""9"" height=""3""/><rect fill=""#0039a6"" y=""2"" width=""9"" height=""2""/></svg>";
+
+    public const string SvgFlagEn = @"<?xml version=""1.0""?><svg viewBox=""0 0 60 30"" width=""1200"" height=""600""><clipPath id=""s""><path d=""M0,0 v30 h60 v-30 z""/></clipPath><clipPath id=""t""><path d=""M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z""/></clipPath><g clip-path=""url(#s)""><path d=""M0,0 v30 h60 v-30 z"" fill=""#012169""/><path d=""M0,0 L60,30 M60,0 L0,30"" stroke=""#fff"" stroke-width=""6""/><path d=""M0,0 L60,30 M60,0 L0,30"" clip-path=""url(#t)"" stroke=""#C8102E"" stroke-width=""4""/><path d=""M30,0 v30 M0,15 h60"" stroke=""#fff"" stroke-width=""10""/><path d=""M30,0 v30 M0,15 h60"" stroke=""#C8102E"" stroke-width=""6""/></g></svg>";
+
+    public const string SvgFlagFr = @"<?xml version=""1.0"" encoding=""UTF-8""?><svg width=""900"" height=""600""><rect width=""900"" height=""600"" fill=""#ED2939""/><rect width=""600"" height=""600"" fill=""#fff""/><rect width=""300"" height=""600"" fill=""#002395""/></svg>";
+
+    public const string SvgFlagDe = @"<?xml version=""1.0"" encoding=""UTF-8""?><svg width=""1000"" height=""600"" viewBox=""0 0 5 3""><rect width=""5"" height=""3"" y=""0"" x=""0"" fill=""#000""/><rect width=""5"" height=""2"" y=""1"" x=""0"" fill=""#D00""/><rect width=""5"" height=""1"" y=""2"" x=""0"" fill=""#FFCE00""/></svg>";
+
+    public const string SvgFlagIt = @"<?xml version=""1.0"" encoding=""UTF-8""?><svg width=""1500"" height=""1000"" viewBox=""0 0 3 2""><rect width=""3"" height=""2"" fill=""#009246""/><rect width=""2"" height=""2"" x=""1"" fill=""#fff""/><rect width=""1"" height=""2"" x=""2"" fill=""#ce2b37""/></svg>";
+
+    public const string SvgFlagEs = @"<?xml version=""1.0"" encoding=""utf-8""?><svg width=""900"" height=""600""><rect width=""900"" height=""600"" fill=""#c60b1e""/><rect width=""900"" height=""300"" y=""150"" fill=""#ffc400""/></svg>";
+
+    public const string SvgFlagJa = @"<?xml version=""1.0"" encoding=""UTF-8""?><svg width=""900"" height=""600""><rect fill=""#fff"" height=""600"" width=""900""/><circle fill=""#bc002d"" cx=""450"" cy=""300"" r=""180""/></svg>";
+
+    public const string SvgFlagKo = @"<?xml version=""1.0"" encoding=""UTF-8""?><svg xmlns:xlink=""http://www.w3.org/1999/xlink"" width=""900"" height=""600"" viewBox=""-36 -24 72 48""><title>Flag of South Korea</title><rect fill=""#fff"" x=""-36"" y=""-24"" width=""72"" height=""48""/><g transform=""rotate(-56.3099325)""><g id=""b2""><path id=""b"" d=""M-6-25H6M-6-22H6M-6-19H6"" stroke=""#000"" stroke-width=""2""/><use xlink:href=""#b"" y=""44""/></g><path stroke=""#fff"" stroke-width=""1"" d=""M0,17v10""/><circle fill=""#cd2e3a"" r=""12""/><path fill=""#0047a0"" d=""M0-12A6,6 0 0 0 0,0A6,6 0 0 1 0,12A12,12 0 0,1 0-12Z""/></g><g transform=""rotate(-123.6900675)""><use xlink:href=""#b2""/><path stroke=""#fff"" stroke-width=""1"" d=""M0-23.5v3M0,17v3.5M0,23.5v3""/></g></svg>";
+
+    public const string SvgFlagZh = @"<?xml version=""1.0"" encoding=""UTF-8""?><svg xmlns:xlink=""http://www.w3.org/1999/xlink"" width=""900"" height=""600"" viewBox=""0 0 30 20""><defs><path id=""s"" d=""M0,-1 0.587785,0.809017 -0.951057,-0.309017H0.951057L-0.587785,0.809017z"" fill=""#FFFF00""/></defs><rect width=""30"" height=""20"" fill=""#EE1C25""/><use xlink:href=""#s"" transform=""translate(5,5) scale(3)""/><use xlink:href=""#s"" transform=""translate(10,2) rotate(23.036243)""/><use xlink:href=""#s"" transform=""translate(12,4) rotate(45.869898)""/><use xlink:href=""#s"" transform=""translate(12,7) rotate(69.945396)""/><use xlink:href=""#s"" transform=""translate(10,9) rotate(20.659808)""/></svg>";
 
     public const string SvgCircleClose = @"<svg viewBox=""0 0 512 512""><path d=""M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM381.1 128L285.9 256l95.2 128-59.8 0L256 296.2 190.7 384l-59.8 0 95.2-128L130.9 128l59.8 0L256 215.8 321.3 128l59.8 0z""/></svg>";
 

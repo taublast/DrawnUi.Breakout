@@ -68,14 +68,12 @@ namespace Breakout.Game
         {
             CreateUi();
 
-#if ANDROID && !BROWSER
+#if ANDROID || BROWSER
             //prefer skipping frames than go smooth because this game is dynamic
             MauiGame.FrameInterpolatorDisabled = true;
 #endif
 
-#if !BROWSER
             BindingContext = this;
-#endif
 
             Instance = this;
 

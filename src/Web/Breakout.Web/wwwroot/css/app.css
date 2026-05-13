@@ -1,5 +1,5 @@
 html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: "Segoe UI Variable Text", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     padding: 0;
     overflow: hidden;
@@ -15,6 +15,13 @@ body,
 body {
     min-height: 100vh;
     height: 100vh;
+    color-scheme: dark;
+    color: #eef2f8;
+    background:
+        radial-gradient(circle at 18% 20%, rgba(75, 142, 249, 0.16), transparent 0 24%),
+        radial-gradient(circle at 82% 14%, rgba(120, 84, 158, 0.18), transparent 0 26%),
+        radial-gradient(circle at 50% 100%, rgba(242, 85, 54, 0.12), transparent 0 28%),
+        linear-gradient(180deg, #11131b 0%, #090b10 62%, #05060a 100%);
 }
 
 #app > .page {
@@ -71,34 +78,262 @@ body {
     cursor: pointer;
 }
 
-.loading-progress {
+.boot-shell {
     position: relative;
-    display: block;
-    fill: none;
-    stroke: #e0e0e0;
-    stroke-width: 0.6rem;
-    width: 8rem;
-    height: 8rem;
-    margin: 2rem auto 1.5rem;
+    display: grid;
+    place-items: center;
+    min-height: 100%;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    isolation: isolate;
 }
 
-.loading-progress circle {
-    fill: none;
-    stroke: #1b6ec2;
-    stroke-dasharray: calc(3.141 * var(--blazor-load-percentage, 0%) * 0.8), 500%;
-    stroke-dashoffset: 0;
-    transition: stroke-dasharray 0.05s ease-in-out;
-    stroke-linecap: round;
-}
-
-.loading-progress-text {
+.boot-shell::before,
+.boot-shell::after {
+    content: "";
     position: absolute;
-    text-align: center;
-    font-weight: bold;
-    inset: calc(20vh - 3.25rem) 0 auto;
-    font-size: 1.8rem;
+    inset: auto;
+    border-radius: 999px;
+    pointer-events: none;
+    filter: blur(54px);
+    opacity: 0.45;
 }
 
-.loading-progress-text:after {
+.boot-shell::before {
+    width: min(38vw, 18rem);
+    height: min(38vw, 18rem);
+    top: 10%;
+    right: 8%;
+    background: rgba(120, 84, 158, 0.32);
+}
+
+.boot-shell::after {
+    width: min(42vw, 20rem);
+    height: min(42vw, 20rem);
+    bottom: 8%;
+    left: 6%;
+    background: rgba(75, 142, 249, 0.24);
+}
+
+.boot-stage {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    justify-items: center;
+    gap: 1rem;
+    width: min(28rem, calc(100vw - 2.75rem));
+    padding: 2.5rem 1.5rem 2rem;
+}
+
+.boot-orbit {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.boot-orbit::before,
+.boot-orbit::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(214, 220, 230, 0.96) 0%, rgba(129, 138, 151, 0.92) 22%, rgba(58, 64, 76, 0.96) 58%, rgba(21, 24, 31, 0.98) 100%);
+    box-shadow:
+        inset -0.08rem -0.08rem 0.16rem rgba(255, 255, 255, 0.12),
+        inset 0.1rem 0.1rem 0.2rem rgba(0, 0, 0, 0.32),
+        0 0 12px rgba(0, 0, 0, 0.22);
+}
+
+.boot-orbit-outer {
+    width: min(27rem, 88vw);
+    aspect-ratio: 1;
+    animation: boot-spin 20s linear infinite;
+}
+
+.boot-orbit-outer::before {
+    width: 1rem;
+    height: 0.32rem;
+    left: 9%;
+    top: 22%;
+    opacity: 0.52;
+    border-radius: 58% 42% 64% 36% / 60% 46% 54% 40%;
+    background: linear-gradient(135deg, rgba(96, 103, 116, 0.72) 0%, rgba(37, 42, 51, 0.88) 42%, rgba(11, 14, 20, 0.98) 100%);
+    transform: rotate(22deg);
+    box-shadow:
+        inset -0.05rem -0.04rem 0.08rem rgba(255, 255, 255, 0.08),
+        inset 0.05rem 0.05rem 0.08rem rgba(0, 0, 0, 0.28),
+        19.2rem 1.5rem 0 -0.08rem rgba(20, 24, 31, 0.48),
+        22.6rem 13.7rem 0 -0.12rem rgba(16, 20, 27, 0.4),
+        4.8rem 16.8rem 0 -0.1rem rgba(23, 27, 34, 0.46);
+}
+
+.boot-orbit-outer::after {
+    width: 0.72rem;
+    height: 0.24rem;
+    right: 7%;
+    bottom: 18%;
+    opacity: 0.42;
+    border-radius: 62% 38% 54% 46% / 56% 46% 54% 44%;
+    background: linear-gradient(125deg, rgba(89, 95, 106, 0.66) 0%, rgba(30, 35, 43, 0.82) 44%, rgba(10, 12, 18, 0.96) 100%);
+    transform: rotate(-28deg);
+    box-shadow:
+        inset -0.04rem -0.03rem 0.08rem rgba(255, 255, 255, 0.06),
+        inset 0.05rem 0.04rem 0.08rem rgba(0, 0, 0, 0.24),
+        -15.7rem 3rem 0 -0.08rem rgba(18, 22, 29, 0.42),
+        -8.2rem -14.7rem 0 -0.12rem rgba(24, 28, 35, 0.46),
+        -21.1rem -7.4rem 0 -0.06rem rgba(19, 23, 30, 0.4);
+}
+
+.boot-orbit-inner {
+    display: none;
+}
+
+.boot-logo-wrap {
+    position: relative;
+    width: min(12rem, 56vw);
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+    border-radius: 2rem;
+    background: radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0) 62%);
+    animation: boot-float 4.6s ease-in-out infinite;
+}
+
+.boot-logo-wrap::before {
+    content: "";
+    position: absolute;
+    inset: 12%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 70%);
+    filter: blur(12px);
+}
+
+.boot-logo {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 12px 34px rgba(0, 0, 0, 0.38));
+    animation: boot-glow 3.4s ease-in-out infinite;
+}
+
+.boot-copy {
+    text-transform: uppercase;
+    letter-spacing: 0.36em;
+    font-size: clamp(0.86rem, 2vw, 1rem);
+    font-weight: 650;
+    text-align: center;
+    color: #dde3ef;
+    text-shadow: 0 0 20px rgba(10, 10, 16, 0.35);
+}
+
+.boot-progress {
+    display: grid;
+    gap: 0.65rem;
+    width: min(18rem, 72vw);
+}
+
+.boot-progress-track {
+    position: relative;
+    overflow: hidden;
+    height: 0.48rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.boot-progress-track::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -36%;
+    width: 36%;
+    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.36) 48%, transparent 100%);
+    transform: translateX(0);
+    animation: boot-shimmer 1.8s ease-in-out infinite;
+}
+
+.boot-progress-fill {
+    position: relative;
+    height: 100%;
+    width: var(--blazor-load-percentage, 8%);
+    min-width: 2.4rem;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #f25536 0%, #e4a130 30%, #4b8ef9 66%, #78549e 100%);
+    box-shadow: 0 0 18px rgba(75, 142, 249, 0.28);
+    transition: width 0.16s ease-out;
+}
+
+.boot-progress-text {
+    min-height: 1em;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.24em;
+    font-size: 0.72rem;
+    color: rgba(221, 227, 239, 0.72);
+}
+
+.boot-progress-text::after {
     content: var(--blazor-load-percentage-text, "Loading");
+}
+
+@keyframes boot-spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes boot-spin-reverse {
+    from {
+        transform: rotate(18deg);
+    }
+    to {
+        transform: rotate(-342deg);
+    }
+}
+
+@keyframes boot-float {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+@keyframes boot-glow {
+    0%,
+    100% {
+        transform: scale(0.985);
+        opacity: 0.92;
+    }
+    50% {
+        transform: scale(1.015);
+        opacity: 1;
+    }
+}
+
+@keyframes boot-shimmer {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(380%);
+    }
+}
+
+@media (max-width: 640px) {
+    .boot-stage {
+        width: min(22rem, calc(100vw - 2rem));
+        padding-top: 2rem;
+    }
+
+    .boot-copy {
+        letter-spacing: 0.24em;
+    }
 }
