@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <OverrideHtmlAssetPlaceholders>true</OverrideHtmlAssetPlaceholders>
+    <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
+    <WasmBuildNative>true</WasmBuildNative>
+    <DefineConstants>$(DefineConstants);BROWSER</DefineConstants>
+    <RootNamespace>Breakout</RootNamespace>
+  </PropertyGroup>
+
+  <!-- Shared game code -->
+  <Import Project="../../Shared/Breakout.Shared.projitems" Label="Shared" />
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.7" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\DrawnUi\src\Blazor\Addons\DrawnUi.Gaming.Blazor\DrawnUi.Gaming.Blazor.csproj" />
+    <ProjectReference Include="..\..\Common\Breakout.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TrimmerRootAssembly Include="SkiaSharp" />
+  </ItemGroup>
+
+</Project>

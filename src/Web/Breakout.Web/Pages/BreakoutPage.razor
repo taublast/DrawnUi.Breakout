@@ -1,0 +1,65 @@
+@page "/"
+@using DrawnUi.Draw
+@using DrawnUi.Views
+
+<PageTitle>Bricks Breaker</PageTitle>
+
+<div class="game-page">
+    <AspectLockedViewportHost
+        AspectWidth="@ViewportWidth"
+        AspectHeight="@ViewportHeight"
+        BackgroundColor="#1A1A2E"
+        IsFullscreen="@_isFullscreen"
+        EmbeddedMargin="0"
+        FitVisibleHeight="true"
+        ViewportOffsetPixels="0">
+        <AspectLockedCanvas
+            @ref="_canvas"
+            Content="_canvasContent"
+            LogicalWidth="@ViewportWidth"
+            LogicalHeight="@ViewportHeight"
+            HorizontalOptions="LayoutOptions.Fill"
+            VerticalOptions="LayoutOptions.Fill"
+            BackgroundColor="#1A1A2E"
+            RenderingMode="@RenderingModeType.Accelerated"
+            Gestures="@GesturesMode.Enabled"
+            IsFullscreen="@_isFullscreen"
+            IsFullscreenChanged="OnFullscreenChanged" />
+    </AspectLockedViewportHost>
+</div>
+
+@code {
+
+    private const float ViewportWidth = 360f;
+    private const float ViewportHeight = 760f;
+
+    private SkiaControl _canvasContent;
+    private AspectLockedCanvas _canvas;
+    private bool _isFullscreen = true;
+
+    public BreakoutPage()
+    {
+        _canvasContent = new SkiaLayer()
+        {
+            VerticalOptions = LayoutOptions.Fill,
+            HorizontalOptions = LayoutOptions.Fill,
+            Children =
+            {
+                new Breakout.Game.BreakoutGame()
+                {
+                    WidthRequest = ViewportWidth,
+                    HeightRequest = ViewportHeight,
+                    HorizontalOptions = LayoutOptions.Center,
+                    VerticalOptions = LayoutOptions.Center,
+                },
+            }
+        };
+    }
+
+    private Task OnFullscreenChanged(bool isFullscreen)
+    {
+        _isFullscreen = isFullscreen;
+        _canvas?.InvalidateChildren();
+        return Task.CompletedTask;
+    }
+}
