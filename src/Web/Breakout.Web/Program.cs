@@ -1,4 +1,5 @@
 using Breakout;
+using Breakout.Resources.Fonts;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
@@ -27,5 +28,7 @@ var host = await builder.UseDrawnUiAsync(new DrawnUiStartupSettings
 {
     UseDesktopKeyboard = true
 });
+
+AppLanguage.ApplySelected();
 
 await host.RunAsync();

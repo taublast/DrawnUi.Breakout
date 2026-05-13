@@ -153,6 +153,55 @@ namespace Breakout.Game
                                 }),
                         }
                     },
+#else
+                    // LANGUAGE setting row
+                    new OptionWithTappable("LangSwitch")
+                    {
+                        Type = LayoutType.Row,
+                        Spacing = 15,
+                        HorizontalOptions = LayoutOptions.Fill,
+                        Children = new List<SkiaControl>
+                        {
+                            new SkiaRichLabel()
+                            {
+                                Text = ResStrings.Language.ToUpperInvariant(),
+                                FontFamily = AppFonts.Default,
+                                FontSize = 18,
+                                TextColor = AmstradColors.White,
+                                VerticalOptions = LayoutOptions.Center,
+                                HorizontalOptions = LayoutOptions.Start,
+                                UseCache = SkiaCacheType.Operations,
+                            },
+                            new SkiaShape()
+                                {
+                                    Tag = "LangSwitch",
+                                    Type = ShapeType.Rectangle,
+                                    CornerRadius = 6,
+                                    Padding = new Thickness(10, 4),
+                                    BackgroundColor = Colors.Black.WithAlpha(0.25f),
+                                    StrokeColor = UiElements.ColorIconSecondary,
+                                    StrokeWidth = 1,
+                                    HorizontalOptions = LayoutOptions.End,
+                                    VerticalOptions = LayoutOptions.Center,
+                                    Children =
+                                    {
+                                        new SkiaRichLabel()
+                                        {
+                                            Text = Breakout.Resources.Fonts.AppLanguage.GetCurrentCode(),
+                                            FontFamily = AppFonts.Default,
+                                            FontSize = 16,
+                                            TextColor = AmstradColors.White,
+                                            UseCache = SkiaCacheType.Operations,
+                                            CharacterSpacing = 1.1,
+                                        }
+                                    }
+                                }
+                                .OnTapped((me, a) =>
+                                {
+                                    Breakout.Resources.Fonts.AppLanguage.SelectNextAndSet();
+                                }),
+                        }
+                    },
 #endif
 
                     // SOUND setting row
