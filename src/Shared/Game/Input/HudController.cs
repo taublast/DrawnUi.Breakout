@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using AppoMobi.Gestures;
 using SkiaSharp;
 
 namespace Breakout.Game.Input;
@@ -10,11 +11,23 @@ public class HudController : IInputController
     private bool _rightPressed = false;
     private Dictionary<long, bool> _touchSides = new Dictionary<long, bool>(); // true = left, false = right
 
+    /// <summary>
+    /// Initializes a new instance of the VirtualController class
+    /// </summary>
+    /// <param name="game">The breakout game instance</param>
     public HudController(BreakoutGame game)
     {
         _game = game;
     }
 
+    /// <summary>
+    /// Processes touch gestures and updates internal key state
+    /// </summary>
+    /// <param name="args">The gesture parameters</param>
+    /// <param name="apply">The gesture processing info</param>
+    /// <param name="hitbox">The hit box area for touch detection</param>
+    /// <param name="scale">The rendering scale factor</param>
+    /// <returns>True if gesture was consumed, false otherwise</returns>
     public bool ProcessGestures(SkiaGesturesParameters args, GestureEventProcessingInfo apply, SKRect hitbox,
         float scale)
     {
@@ -74,6 +87,9 @@ public class HudController : IInputController
         return false;
     }
 
+    /// <summary>
+    /// Called every frame to apply continuous key input based on current state
+    /// </summary>
     public void ProcessState()
     {
         if (!_game.InputPressMode)
@@ -81,6 +97,8 @@ public class HudController : IInputController
 
         if (_rightPressed && _leftPressed)
         {
+            // Both pressed - prioritize the most recent one
+            // For now, right takes priority when both are pressed
             _game.SendKey(GameKey.Right);
         }
         else if (_leftPressed)
@@ -93,6 +111,9 @@ public class HudController : IInputController
         }
     }
 
+    /// <summary>
+    /// Resets the virtual controller state
+    /// </summary>
     public void Reset()
     {
         _leftPressed = false;
@@ -102,5 +123,6 @@ public class HudController : IInputController
 
     public void Dispose()
     {
+ 
     }
 }

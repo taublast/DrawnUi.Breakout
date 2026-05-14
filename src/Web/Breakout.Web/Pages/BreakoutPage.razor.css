@@ -1,0 +1,38 @@
+.game-page {
+    position: relative;
+    width: 100vw;
+    min-height: 100vh;
+    background-color: #090b10;
+    overflow: hidden;
+    isolation: isolate;
+}
+
+.game-page::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url('/Images/back.jpg');
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    filter: brightness(0.1);
+    transform: scale(1.02);
+    transform-origin: center;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.game-page::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(0, 0, 0, 0) 18%, rgba(0, 0, 0, 0.45) 48%, rgba(0, 0, 0, 0.66) 66%, rgba(0, 0, 0, 0.9) 100%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.game-page::deep .aspect-locked-host {
+    position: relative;
+    z-index: 2;
+    background: transparent;
+}

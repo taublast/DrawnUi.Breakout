@@ -10,6 +10,13 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- Cross-platform aliases and utilities -->
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Input\EventType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Input\GameKey.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Input\HudController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Input\IGameKeyHandler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Input\IInputController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Input\KeyboardController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Input\KeyState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GlobalAliases.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AppSvg.cs" />
     <!-- Helpers -->
@@ -65,15 +72,12 @@
     <!-- Sound interface (implementations stay in platform projects) -->
     <Compile Include="$(MSBuildThisFileDirectory)Game\Sound\IAudioService.cs" />
     <!-- Input (except GameControllerInput which is MAUI-only) -->
-    <Compile Include="$(MSBuildThisFileDirectory)Game\Input\EventType.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game\Input\GameKey.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game\Input\HudController.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game\Input\IGameKeyHandler.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game\Input\IInputController.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game\Input\KeyState.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game\Input\KeyboardController.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Resources\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)Game\Dialogs\Dialogs.md" />
+    <None Include="$(MSBuildThisFileDirectory)Game\Internals\COLLISION_SYSTEMS.md" />
   </ItemGroup>
 </Project>

@@ -78,57 +78,6 @@
   <!-- Shared code from Breakout.Shared -->
   <Import Project="../Shared/Breakout.Shared.projitems" Label="Shared" />
 
-  <!-- Remove Mobile files that are now in Shared -->
-  <ItemGroup>
-    <Compile Remove="Game\BreakoutGame.cs" />
-    <Compile Remove="Game\BreakoutGame.Input.cs" />
-    <Compile Remove="Game\BreakoutGame.Loop.cs" />
-    <Compile Remove="Game\BreakoutGame.Sound.cs" />
-    <Compile Remove="Game\BreakoutGame.Ui.cs" />
-    <Compile Remove="Game\BreakoutGame.Ui.Dialogs.cs" />
-    <Compile Remove="Game\BreakoutGameExtensions.cs" />
-    <Compile Remove="Game\Controls\DisplayFlag.cs" />
-    <Compile Remove="Game\Controls\GameSwitch.cs" />
-    <Compile Remove="Game\Controls\HudArrows.cs" />
-    <Compile Remove="Game\Controls\OptionWithTappable.cs" />
-    <Compile Remove="Game\Controls\SelectableGameButton.cs" />
-    <Compile Remove="Game\Controls\StableCacheLayout.cs" />
-    <Compile Remove="Game\Dialogs\DialogAnimations.cs" />
-    <Compile Remove="Game\Dialogs\DialogTemplate.cs" />
-    <Compile Remove="Game\Dialogs\DialogThemes.cs" />
-    <Compile Remove="Game\Dialogs\GameDialog.cs" />
-    <Compile Remove="Game\Internals\CollisionFace.cs" />
-    <Compile Remove="Game\Internals\GameState.cs" />
-    <Compile Remove="Game\Internals\IReusableSprite.cs" />
-    <Compile Remove="Game\Internals\IWithHitBox.cs" />
-    <Compile Remove="Game\Internals\MauiGameExtensions.cs" />
-    <Compile Remove="Game\Internals\RaycastCollision.cs" />
-    <Compile Remove="Game\Ai\AIDifficulty.cs" />
-    <Compile Remove="Game\Ai\AIPaddleController.cs" />
-    <Compile Remove="Game\Levels\BrickPosition.cs" />
-    <Compile Remove="Game\Levels\BrickPreset.cs" />
-    <Compile Remove="Game\Levels\BrickPresets.cs" />
-    <Compile Remove="Game\Levels\FormationType.cs" />
-    <Compile Remove="Game\Levels\LevelManager.cs" />
-    <Compile Remove="Game\Levels\PowerupType.cs" />
-    <Compile Remove="Game\Sprites\BallSprite.cs" />
-    <Compile Remove="Game\Sprites\BrickSprite.cs" />
-    <Compile Remove="Game\Sprites\BulletSprite.cs" />
-    <Compile Remove="Game\Sprites\LifeSprite.cs" />
-    <Compile Remove="Game\Sprites\PaddleSprite.cs" />
-    <Compile Remove="Game\Sprites\PowerupSprite.cs" />
-    <Compile Remove="Game\Sound\IAudioService.cs" />
-    <Compile Remove="Game\Input\EventType.cs" />
-    <Compile Remove="Game\Input\GameKey.cs" />
-    <Compile Remove="Game\Input\HudController.cs" />
-    <Compile Remove="Game\Input\IGameKeyHandler.cs" />
-    <Compile Remove="Game\Input\IInputController.cs" />
-    <Compile Remove="Game\Input\KeyState.cs" />
-    <Compile Remove="Game\Input\KeyboardController.cs" />
-    <Compile Remove="Helpers\AppFonts.cs" />
-    <Compile Remove="Helpers\AppSettings.cs" />
-  </ItemGroup>
-
   <ItemGroup>
     <None Include="..\README.md" Link="README.md" />
   </ItemGroup>

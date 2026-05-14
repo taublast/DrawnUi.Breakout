@@ -72,6 +72,7 @@ namespace Breakout.Game
         {
             HorizontalOptions = LayoutOptions.Fill;
             VerticalOptions = LayoutOptions.Fill;
+
             BackgroundColor = Colors.DarkSlateBlue.WithAlpha(0.975f);
 
             Children = new List<SkiaControl>()
@@ -98,7 +99,7 @@ namespace Breakout.Game
 #if BROWSER
                                     ExpandDirtyRegion = new Thickness(1),
 #endif
-                                    UseCache = SkiaCacheType.ImageComposite, //critical for perf
+                                    UseCache = SkiaCacheType.ImageCompositeGPU, //critical for perf
                                     HorizontalOptions = LayoutOptions.Center,
                                     Margin = new(0, 90, 0, 0),
                                 }.Assign(out BricksContainer),

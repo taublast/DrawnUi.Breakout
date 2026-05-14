@@ -9,7 +9,7 @@
     <AspectLockedViewportHost
         AspectWidth="@ViewportWidth"
         AspectHeight="@ViewportHeight"
-        BackgroundColor="#090b10"
+        BackgroundColor="#00000000"
         IsFullscreen="@_isFullscreen"
         EmbeddedMargin="0"
         FitVisibleHeight="true"
@@ -21,7 +21,7 @@
             LogicalHeight="@ViewportHeight"
             HorizontalOptions="LayoutOptions.Fill"
             VerticalOptions="LayoutOptions.Fill"
-            BackgroundColor="#090b10"
+            BackgroundColor="#00000000"
             RenderingMode="@RenderingModeType.Accelerated"
             Gestures="@GesturesMode.Enabled"
             IsFullscreen="@_isFullscreen"
@@ -46,13 +46,6 @@
             HorizontalOptions = LayoutOptions.Fill,
             Children =
             {
-                new SkiaImage(@"Images/back.jpg")
-                {
-                    UseCache = SkiaCacheType.Image,
-                    AddEffect = SkiaImageEffect.Darken,
-                    Darken = 0.2f
-                }.Fill(),
-
                 new Breakout.Game.BreakoutGame()
                 {
                     WidthRequest = ViewportWidth,
@@ -60,6 +53,19 @@
                     HorizontalOptions = LayoutOptions.Center,
                     VerticalOptions = LayoutOptions.Center,
                 },
+#if DEBUG
+                new SkiaLabelFps()
+                {
+                    Margin = new(0, 0, 4, 24),
+                    VerticalOptions = LayoutOptions.End,
+                    HorizontalOptions = LayoutOptions.End,
+                    Rotation = -45,
+                    FontSize = 11,
+                    BackgroundColor = Colors.DarkRed,
+                    TextColor = Colors.White,
+                    ZIndex = 110,
+                }
+#endif
             }
         };
     }
