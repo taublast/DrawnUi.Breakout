@@ -96,9 +96,6 @@ namespace Breakout.Game
                                 new SkiaLayout()
                                 {
                                     Tag = "BricksContainer",
-#if BROWSER
-                                    ExpandDirtyRegion = new Thickness(1),
-#endif
                                     UseCache = SkiaCacheType.ImageCompositeGPU, //critical for perf
                                     HorizontalOptions = LayoutOptions.Center,
                                     Margin = new(0, 90, 0, 0),
