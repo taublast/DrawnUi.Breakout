@@ -12,13 +12,18 @@
     <meta property="og:site_name" content="Bricks Breaker" />
     <meta property="og:title" content="Bricks Breaker | Break'em all bricks!" />
     <meta property="og:description" content="A fast arcade paddle-vs-bricks action game inspired by Arkanoid and Breakout. Catch powerups, trigger Destroyer mode, and play across touch, keyboard, mouse, or controllers." />
-    <meta property="og:image" content="/Images/back.jpg" />
-    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:url" content="https://bricks.appomobi.com/" />
+    <meta property="og:image" content="https://bricks.appomobi.com/og/icon.png" />
+    <meta property="og:image:secure_url" content="https://bricks.appomobi.com/og/icon.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="600" />
+    <meta property="og:image:height" content="600" />
     <meta property="og:image:alt" content="Bricks Breaker preview image" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Bricks Breaker | Break'em all bricks!" />
     <meta name="twitter:description" content="Smash bricks, catch powerups, unlock Destroyer mode, and play a fast arcade brick breaker inspired by Arkanoid and Breakout." />
-    <meta name="twitter:image" content="/Images/back.jpg" />
+    <meta name="twitter:url" content="https://bricks.appomobi.com/" />
+    <meta name="twitter:image" content="https://bricks.appomobi.com/og/icon.png" />
     <title>Bricks Breaker</title>
     <base href="/" />
     <link rel="preload" id="webassembly" />
@@ -123,10 +128,22 @@
             : 46;
         const loaderLabel = searchParams.get('label');
 
-        if (loaderPreview) {
-            const progressText = loaderLabel || `${Math.floor(loaderProgress)}%`;
-            globalThis.document.documentElement.style.setProperty('--blazor-load-percentage', `${loaderProgress}%`);
+        const loaderDownloadCap = 98;
+        const loaderInitialProgress = 8;
+        let lastLoaderProgress = loaderInitialProgress;
+        let downloadsReachedCap = false;
+
+        function setLoaderProgress(progress, label) {
+            const clampedProgress = Math.max(lastLoaderProgress, Math.min(100, progress));
+            const progressText = label || `${Math.floor(clampedProgress)}%`;
+
+            lastLoaderProgress = clampedProgress;
+            globalThis.document.documentElement.style.setProperty('--blazor-load-percentage', `${clampedProgress}%`);
             globalThis.document.documentElement.style.setProperty('--blazor-load-percentage-text', `"${progressText}"`);
+        }
+
+        if (loaderPreview) {
+            setLoaderProgress(loaderProgress, loaderLabel);
             globalThis.document.body.classList.add('loader-preview');
             globalThis.document.getElementById('blazor-error-ui')?.style.setProperty('display', 'none');
         }
@@ -134,7 +151,30 @@
         const startupCultureRaw = globalThis.breakoutStorage.get('breakout.lang');
         const startupCulture = startupCultureRaw ? JSON.parse(startupCultureRaw) : undefined;
         if (!loaderPreview) {
-            Blazor.start({ applicationCulture: startupCulture });
+            setLoaderProgress(loaderInitialProgress, 'Loading');
+
+            Blazor.start({
+                applicationCulture: startupCulture,
+                onDownloadResourceProgress: (resourcesLoaded, totalResources) => {
+                    if (!Number.isFinite(totalResources) || totalResources <= 0) {
+                        return;
+                    }
+
+                    const clampedRatio = Math.max(0, Math.min(1, resourcesLoaded / totalResources));
+                    const isDownloadComplete = clampedRatio >= 1;
+                    const cappedProgress = clampedRatio * loaderDownloadCap;
+
+                    downloadsReachedCap = isDownloadComplete;
+                    setLoaderProgress(cappedProgress, isDownloadComplete ? 'Initializing...' : undefined);
+                }
+            })
+                .then(() => {
+                    setLoaderProgress(100, '100%');
+                })
+                .catch(error => {
+                    setLoaderProgress(downloadsReachedCap ? loaderDownloadCap : lastLoaderProgress, 'Failed');
+                    throw error;
+                });
         }
     </script>
     <script>
