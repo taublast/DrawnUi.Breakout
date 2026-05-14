@@ -29,6 +29,18 @@ body {
     height: 100vh;
 }
 
+@supports (height: 100dvh) {
+    body {
+        min-height: 100dvh;
+        height: 100dvh;
+    }
+
+    #app > .page {
+        min-height: 100dvh;
+        height: 100dvh;
+    }
+}
+
 #app > .page > main {
     display: flex;
     flex: 1 1 auto;
