@@ -113,8 +113,6 @@ namespace Breakout.Game
                     // LANGUAGE setting row
                     new OptionWithTappable("LangFlag")
                     {
-                        Type = LayoutType.Row,
-                        Spacing = 15,
                         HorizontalOptions = LayoutOptions.Fill,
                         Children = new List<SkiaControl>
                         {
@@ -156,8 +154,6 @@ namespace Breakout.Game
                     // SOUND setting row
                     new OptionWithTappable("SoundSwitch")
                     {
-                        Type = LayoutType.Row,
-                        Spacing = 15,
                         HorizontalOptions = LayoutOptions.Fill,
                         Children = new List<SkiaControl>
                         {
@@ -199,8 +195,6 @@ namespace Breakout.Game
                     // Music setting row
                     new OptionWithTappable("MusicSwitch")
                     {
-                        Type = LayoutType.Row,
-                        Spacing = 15,
                         HorizontalOptions = LayoutOptions.Fill,
                         Children = new List<SkiaControl>
                         {
@@ -257,8 +251,6 @@ namespace Breakout.Game
 #if BROWSER
                     new OptionWithTappable("BrowserFullscreenSwitch")
                     {
-                        Type = LayoutType.Row,
-                        Spacing = 15,
                         HorizontalOptions = LayoutOptions.Fill,
                         Children = new List<SkiaControl>
                         {
@@ -293,8 +285,6 @@ namespace Breakout.Game
                     // Press input mode for HUD
                     new OptionWithTappable("HudSwitch")
                     {
-                        Type = LayoutType.Row,
-                        Spacing = 15,
                         HorizontalOptions = LayoutOptions.Fill,
                         Children = new List<SkiaControl>
                         {
