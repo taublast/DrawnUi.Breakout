@@ -94,7 +94,7 @@ namespace Breakout.Game
                 Tag = "Options",
                 Type = LayoutType.Column,
                 Spacing = 20,
-                Padding = new Thickness(16,16,16,-12),
+                Padding = new Thickness(12,16,12,-12),
                 HorizontalOptions = LayoutOptions.Fill,
                 Children = new List<SkiaControl>
                 {
@@ -256,7 +256,7 @@ namespace Breakout.Game
                         {
                             new SkiaRichLabel()
                             {
-                                Text = "FULLSCREEN",
+                                Text = ResStrings.Fullscreen.ToUpperInvariant(),
                                 FontFamily = AppFonts.Default,
                                 FontSize = 18,
                                 TextColor = AmstradColors.White,
@@ -317,17 +317,19 @@ namespace Breakout.Game
                         }
                     },
 #endif
-                    //DEMO
-                    UiElements.Button(ResStrings.DemoMode.ToUpperInvariant(), async () =>
-                    {
-                        StartNewGameDemo();
-                    }).FillX().WithMargin(new Thickness(0,16,0,-16)),
 
                     //RESTART
                     UiElements.Button(ResStrings.NewGame.ToUpperInvariant(), async () =>
                     {
                         StartNewGamePlayer();
+                    }).FillX().WithMargin(new Thickness(0,16,0,-16)),
+
+                    //DEMO
+                    UiElements.Button(ResStrings.DemoMode.ToUpperInvariant(), async () =>
+                    {
+                        StartNewGameDemo();
                     }).FillX().WithMargin(new Thickness(0,16,0,0)),
+
 
                 }
             };

@@ -579,4 +579,7 @@ Du bist ein Breakout-Meister!</value>
   <data name="PressHud" xml:space="preserve">
     <value>Drücken HUD</value>
   </data>
+  <data name="Fullscreen" xml:space="preserve">
+    <value>Vollbild</value>
+  </data>
 </root>

@@ -579,4 +579,7 @@ Puntaje final: {0}
   <data name="PressHud" xml:space="preserve">
     <value>Presionar HUD</value>
   </data>
+  <data name="Fullscreen" xml:space="preserve">
+    <value>Fullscreen</value>
+  </data>
 </root>

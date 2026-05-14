@@ -579,4 +579,7 @@
   <data name="PressHud" xml:space="preserve">
     <value>프레스 모드</value>
   </data>
+  <data name="Fullscreen" xml:space="preserve">
+    <value>전체 화면</value>
+  </data>
 </root>
