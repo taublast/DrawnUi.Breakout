@@ -68,7 +68,7 @@ namespace Breakout.Game
         {
             CreateUi();
 
-#if ANDROID
+#if ANDROID //|| BROWSER
             //prefer skipping frames than go smooth because this game is dynamic
             MauiGame.FrameInterpolatorDisabled = true;
 #endif
@@ -96,6 +96,13 @@ namespace Breakout.Game
         }
 
         #endregion
+
+        public override void OnScaleChanged()
+        {
+            base.OnScaleChanged();
+
+            Debug.WriteLine($"Scale changed: {RenderingScale} {Scale}");
+        }
 
         public override void OnWillDisposeWithChildren()
         {

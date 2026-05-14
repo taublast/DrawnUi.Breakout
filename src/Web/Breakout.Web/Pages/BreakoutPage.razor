@@ -1,6 +1,7 @@
 @page "/"
 @using DrawnUi.Controls
 @using DrawnUi.Draw
+@using DrawnUi.Infrastructure.Enums
 @using DrawnUi.Views
 
 <PageTitle>Bricks Breaker</PageTitle>
@@ -15,7 +16,8 @@
         FitVisibleHeight="true"
         ViewportOffsetPixels="0">
 
-        <AspectLockedCanvas
+        <AspectLockedCanvas 
+            UpdateMode="@UpdateMode.Constant" 
             @ref="_canvas"
             Content="_canvasContent"
             LogicalWidth="@ViewportWidth"

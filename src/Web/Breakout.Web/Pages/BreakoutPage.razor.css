@@ -1,7 +1,5 @@
 .game-page {
     position: relative;
-    width: 100vw;
-    min-height: 100vh;
     background-color: #090b10;
     overflow: hidden;
     isolation: isolate;
