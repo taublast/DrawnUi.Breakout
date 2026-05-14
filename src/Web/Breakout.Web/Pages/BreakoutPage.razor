@@ -11,9 +11,10 @@
         AspectHeight="@ViewportHeight"
         BackgroundColor="#00000000"
         IsFullscreen="@_isFullscreen"
-        EmbeddedMargin="0"
+        EmbeddedMargin="0 auto"
         FitVisibleHeight="true"
         ViewportOffsetPixels="0">
+
         <AspectLockedCanvas
             @ref="_canvas"
             Content="_canvasContent"
@@ -25,8 +26,10 @@
             RenderingMode="@RenderingModeType.Accelerated"
             Gestures="@GesturesMode.Enabled"
             IsFullscreen="@_isFullscreen"
-            IsFullscreenChanged="OnFullscreenChanged" />
+            IsFullscreenChanged="OnFullscreenChanged"/>
+
     </AspectLockedViewportHost>
+
 </div>
 
 @code {
@@ -36,7 +39,7 @@
 
     private SkiaControl _canvasContent;
     private AspectLockedCanvas _canvas;
-    private bool _isFullscreen = true;
+    private bool _isFullscreen;
 
     public BreakoutPage()
     {

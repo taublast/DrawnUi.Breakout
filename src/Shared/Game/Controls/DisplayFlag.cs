@@ -21,6 +21,7 @@ public class DisplayFlag : SkiaLayout
     {
         HeightRequest = 28;
         WidthRequest = 56;
+        UseCache = SkiaCacheType.Operations;
         Children = new List<SkiaControl>()
         {
             new SkiaLayout()
@@ -54,8 +55,7 @@ public class DisplayFlag : SkiaLayout
                                 }),
                         }
                     },
-
-
+                    
                     //dropdown icon
                     new SkiaSvg()
                     {
