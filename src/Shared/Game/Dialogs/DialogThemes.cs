@@ -415,7 +415,7 @@ namespace Breakout.Game.Dialogs
             var buttonsLayout = new SkiaLayout()
             {
                 Type = LayoutType.Wrap,
-                Margin = new(16, 0, 16, 0),
+                Margin = new(12, 0, 12, 0),
                 HorizontalOptions = LayoutOptions.Fill,
                 Spacing = 16,
                 Children =
