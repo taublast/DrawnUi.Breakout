@@ -118,67 +118,99 @@
             }
         };
     </script>
+    <script src="_content/DrawnUi.Blazor.Core/drawnui-loader.js"></script>
     <script src="_framework/blazor.webassembly.js" autostart="false"></script>
     <script>
-        const searchParams = new URLSearchParams(globalThis.location.search);
-        const loaderPreview = searchParams.has('loader-preview');
-        const loaderProgressRaw = Number(searchParams.get('progress'));
-        const loaderProgress = Number.isFinite(loaderProgressRaw)
-            ? Math.max(0, Math.min(100, loaderProgressRaw))
-            : 46;
-        const loaderLabel = searchParams.get('label');
+        const loaderLabelMap = {
+            en: {
+                initialLabel: 'Loading',
+                initializingLabel: 'Initializing...',
+                failureLabel: 'Failed'
+            },
+            de: {
+                initialLabel: 'Laden',
+                initializingLabel: 'Initialisierung...',
+                failureLabel: 'Fehlgeschlagen'
+            },
+            es: {
+                initialLabel: 'Cargando',
+                initializingLabel: 'Inicializando...',
+                failureLabel: 'Error'
+            },
+            fr: {
+                initialLabel: 'Chargement',
+                initializingLabel: 'Initialisation...',
+                failureLabel: 'Echec'
+            },
+            it: {
+                initialLabel: 'Caricamento',
+                initializingLabel: 'Inizializzazione...',
+                failureLabel: 'Errore'
+            },
+            ru: {
+                initialLabel: 'Загрузка',
+                initializingLabel: 'Инициализация...',
+                failureLabel: 'Ошибка'
+            },
+            ja: {
+                initialLabel: '読み込み中',
+                initializingLabel: '初期化中...',
+                failureLabel: '失敗'
+            },
+            ko: {
+                initialLabel: '로딩 중',
+                initializingLabel: '초기화 중...',
+                failureLabel: '실패'
+            },
+            zh: {
+                initialLabel: '加载中',
+                initializingLabel: '初始化中...',
+                failureLabel: '失败'
+            }
+        };
 
-        const loaderDownloadCap = 98;
-        const loaderInitialProgress = 8;
-        let lastLoaderProgress = loaderInitialProgress;
-        let downloadsReachedCap = false;
+        function parseStartupCulture() {
+            const startupCultureRaw = globalThis.breakoutStorage.get('breakout.lang');
+            if (!startupCultureRaw) {
+                return undefined;
+            }
 
-        function setLoaderProgress(progress, label) {
-            const clampedProgress = Math.max(lastLoaderProgress, Math.min(100, progress));
-            const progressText = label || `${Math.floor(clampedProgress)}%`;
-
-            lastLoaderProgress = clampedProgress;
-            globalThis.document.documentElement.style.setProperty('--blazor-load-percentage', `${clampedProgress}%`);
-            globalThis.document.documentElement.style.setProperty('--blazor-load-percentage-text', `"${progressText}"`);
+            try {
+                return JSON.parse(startupCultureRaw);
+            } catch {
+                return startupCultureRaw;
+            }
         }
 
-        if (loaderPreview) {
-            setLoaderProgress(loaderProgress, loaderLabel);
-            globalThis.document.body.classList.add('loader-preview');
-            globalThis.document.getElementById('blazor-error-ui')?.style.setProperty('display', 'none');
+        function resolveLoaderLabels(culture) {
+            const normalizedCulture = typeof culture === 'string'
+                ? culture.toLowerCase().split('-')[0]
+                : 'en';
+
+            return loaderLabelMap[normalizedCulture] ?? loaderLabelMap.en;
         }
 
-        const startupCultureRaw = globalThis.breakoutStorage.get('breakout.lang');
-        const startupCulture = startupCultureRaw ? JSON.parse(startupCultureRaw) : undefined;
-        if (!loaderPreview) {
-            setLoaderProgress(loaderInitialProgress, 'Loading');
+        const startupCulture = parseStartupCulture();
+        const loaderLabels = resolveLoaderLabels(startupCulture);
 
-            Blazor.start({
-                applicationCulture: startupCulture,
-                onDownloadResourceProgress: (resourcesLoaded, totalResources) => {
-                    if (!Number.isFinite(totalResources) || totalResources <= 0) {
-                        return;
-                    }
-
-                    const clampedRatio = Math.max(0, Math.min(1, resourcesLoaded / totalResources));
-                    const isDownloadComplete = clampedRatio >= 1;
-                    const cappedProgress = clampedRatio * loaderDownloadCap;
-
-                    downloadsReachedCap = isDownloadComplete;
-                    setLoaderProgress(cappedProgress, isDownloadComplete ? 'Initializing...' : undefined);
-                }
-            })
-                .then(() => {
-                    setLoaderProgress(100, '100%');
-                })
-                .catch(error => {
-                    setLoaderProgress(downloadsReachedCap ? loaderDownloadCap : lastLoaderProgress, 'Failed');
-                    throw error;
-                });
+        if (typeof startupCulture === 'string' && startupCulture.length > 0) {
+            globalThis.document.documentElement.lang = startupCulture;
         }
+
+        globalThis.document.querySelector('.boot-shell')?.setAttribute(
+            'aria-label',
+            `${loaderLabels.initialLabel} Bricks Breaker`);
+
+        globalThis.DrawnUiLoader.startBlazorWithLoader({
+            applicationCulture: startupCulture
+        }, loaderLabels)
+            .catch(error => {
+                console.error(error);
+            });
     </script>
     <script>
-        if (!loaderPreview && 'serviceWorker' in navigator) {
+        const isLoaderPreview = new URLSearchParams(globalThis.location.search).has('loader-preview');
+        if (!isLoaderPreview && 'serviceWorker' in navigator) {
             navigator.serviceWorker.register('service-worker.js', { updateViaCache: 'none' });
         }
     </script>
