@@ -6,7 +6,10 @@
 
 <PageTitle>Bricks Breaker</PageTitle>
 
-<div class="game-page">
+<div class="game-page"
+     draggable="false"
+     @oncontextmenu:preventDefault="true"
+     @oncontextmenu:stopPropagation="true">
     <AspectLockedViewportHost
         AspectWidth="@ViewportWidth"
         AspectHeight="@ViewportHeight"

@@ -7,12 +7,18 @@ globalThis.breakoutAudio = (() => {
     let pendingBg = null; // {id, volume} — saved when startBg called on suspended ctx
     let lastError = '';
     let backgroundSuspendRequested = false;
+    let audioFailed = false;
 
     function ensureCtx() {
-        if (!ctx) {
+        if (audioFailed || ctx) return;
+        try {
             ctx = new AudioContext();
             masterGain = ctx.createGain();
             masterGain.connect(ctx.destination);
+        } catch (e) {
+            audioFailed = true;
+            lastError = e?.message || String(e);
+            console.warn('[audio] AudioContext unavailable:', lastError);
         }
     }
 
@@ -97,27 +103,37 @@ globalThis.breakoutAudio = (() => {
         },
 
         play(id, volume, balance, loop) {
-            const buf = buffers[id];
-            if (!buf || !ctx || ctx.state === 'suspended') return;
-            const src = ctx.createBufferSource();
-            src.buffer = buf;
-            src.loop = loop;
-            const gainNode = ctx.createGain();
-            gainNode.gain.value = volume;
-            const panner = ctx.createStereoPanner();
-            panner.pan.value = balance;
-            src.connect(panner);
-            panner.connect(gainNode);
-            gainNode.connect(masterGain);
-            src.start(0);
+            try {
+                const buf = buffers[id];
+                if (!buf || !ctx || ctx.state === 'suspended') return;
+                const src = ctx.createBufferSource();
+                src.buffer = buf;
+                src.loop = loop;
+                const gainNode = ctx.createGain();
+                gainNode.gain.value = volume;
+                const panner = ctx.createStereoPanner();
+                panner.pan.value = balance;
+                src.connect(panner);
+                panner.connect(gainNode);
+                gainNode.connect(masterGain);
+                src.start(0);
+            } catch (e) {
+                lastError = e?.message || String(e);
+                console.warn('[audio] play failed:', lastError);
+            }
         },
 
         startBg(id, volume) {
-            this.stopBg();
-            pendingBg = { id, volume };
-            ensureCtx();
-            if (ctx.state === 'suspended') return;
-            startBgNow(id, volume);
+            try {
+                this.stopBg();
+                pendingBg = { id, volume };
+                ensureCtx();
+                if (!ctx || ctx.state === 'suspended') return;
+                startBgNow(id, volume);
+            } catch (e) {
+                lastError = e?.message || String(e);
+                console.warn('[audio] startBg failed:', lastError);
+            }
         },
 
         stopBg() {

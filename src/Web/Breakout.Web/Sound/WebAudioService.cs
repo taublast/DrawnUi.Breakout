@@ -31,37 +31,43 @@ public partial class WebAudioService : IAudioService
 
             if (value)
             {
-                // truly stop — no volume-0 trick
-                Interop.StopBg();
+                try { Interop.StopBg(); } catch { }
             }
             else if (wasDisabled && _pendingBgId != null)
             {
-                // re-enable: restart bg music and unblock ctx if needed
-                Interop.StartBg(_pendingBgId, _pendingBgVolume * _masterVolume);
-                Interop.ResumeCtx();
+                try { Interop.StartBg(_pendingBgId, _pendingBgVolume * _masterVolume); } catch { }
+                try { Interop.ResumeCtx(); } catch { }
             }
         }
     }
 
-    public bool IsBackgroundMusicPlaying => !_isMuted && Interop.IsBgPlaying();
+    public bool IsBackgroundMusicPlaying
+    {
+        get { try { return !_isMuted && Interop.IsBgPlaying(); } catch { return false; } }
+    }
 
     public async Task<bool> TryResumeAfterUserGestureAsync()
     {
         LastErrorMessage = null;
-        Interop.ResumeCtx();
+        try { Interop.ResumeCtx(); } catch { }
         await Task.Delay(150);
 
-        var state = Interop.GetState();
-        if (string.Equals(state, "running", StringComparison.OrdinalIgnoreCase))
+        try
         {
-            return true;
-        }
+            var state = Interop.GetState();
+            if (string.Equals(state, "running", StringComparison.OrdinalIgnoreCase))
+                return true;
 
-        var error = Interop.GetLastError();
-        LastErrorMessage = !string.IsNullOrWhiteSpace(error)
-            ? error
-            : string.Format(CultureInfo.InvariantCulture,
-                "AudioContext stayed in '{0}' state after user gesture.", state);
+            var error = Interop.GetLastError();
+            LastErrorMessage = !string.IsNullOrWhiteSpace(error)
+                ? error
+                : string.Format(CultureInfo.InvariantCulture,
+                    "AudioContext stayed in '{0}' state after user gesture.", state);
+        }
+        catch (Exception ex)
+        {
+            LastErrorMessage = ex.Message;
+        }
         return false;
     }
 
@@ -88,24 +94,23 @@ public partial class WebAudioService : IAudioService
 
     public void PlaySound(string soundId, float volume = 1.0f, float balance = 0.0f, bool loop = false)
     {
-        if (_isMuted) return; // zero JS — no call at all
-        Interop.Play(soundId, volume * _masterVolume, balance, loop);
+        if (_isMuted) return;
+        try { Interop.Play(soundId, volume * _masterVolume, balance, loop); } catch { }
     }
 
     public void PlaySpatialSound(string soundId, Vector3 position, float volume = 1.0f, bool loop = false)
     {
-        if (_isMuted) return; // zero JS
-        // X is already normalized to ~[-1..1]: -1=left wall, +1=right wall
+        if (_isMuted) return;
         float balance = Math.Clamp(position.X, -1f, 1f);
-        Interop.Play(soundId, volume * _masterVolume, balance, loop);
+        try { Interop.Play(soundId, volume * _masterVolume, balance, loop); } catch { }
     }
 
     public void StartBackgroundMusic(string soundId, float volume = 0.3f)
     {
         _pendingBgId = soundId;
         _pendingBgVolume = volume;
-        if (_isMuted) return; // zero JS — state saved, will restart on unmute
-        Interop.StartBg(soundId, volume * _masterVolume);
+        if (_isMuted) return;
+        try { Interop.StartBg(soundId, volume * _masterVolume); } catch { }
     }
 
     public void StartBackgroundMusicFromFile(string filePath, float volume = 1.0f)
@@ -117,21 +122,21 @@ public partial class WebAudioService : IAudioService
     {
         _pendingBgId = null;
         _pendingBgVolume = 0f;
-        if (_isMuted) return; // already stopped (StopBg was called on mute)
-        Interop.StopBg();
+        if (_isMuted) return;
+        try { Interop.StopBg(); } catch { }
     }
 
     public void SetSoundVolume(string soundId, float volume)
     {
-        if (_isMuted) return; // zero JS
+        if (_isMuted) return;
         if (soundId == "background")
-            Interop.SetBgVolume(Math.Clamp(volume * _masterVolume, 0f, 1f));
+            try { Interop.SetBgVolume(Math.Clamp(volume * _masterVolume, 0f, 1f)); } catch { }
     }
 
     public void Dispose()
     {
         _pendingBgId = null;
-        Interop.StopBg();
+        try { Interop.StopBg(); } catch { }
     }
 
     private static partial class Interop

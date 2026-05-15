@@ -3,6 +3,10 @@
     background-color: #090b10;
     overflow: hidden;
     isolation: isolate;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .game-page::before {
@@ -25,4 +29,12 @@
 .game-page::deep .aspect-locked-host {
     position: relative;
     background: transparent;
+}
+
+.game-page::deep .aspect-locked-host,
+.game-page::deep canvas {
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-user-drag: none;
 }

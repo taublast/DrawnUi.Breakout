@@ -13,17 +13,17 @@
     <meta property="og:title" content="Bricks Breaker | Break'em all bricks!" />
     <meta property="og:description" content="A fast arcade paddle-vs-bricks action game inspired by Arkanoid and Breakout. Catch powerups, trigger Destroyer mode, and play across touch, keyboard, mouse, or controllers." />
     <meta property="og:url" content="https://bricks.appomobi.com/" />
-    <meta property="og:image" content="https://bricks.appomobi.com/og/icon.png" />
-    <meta property="og:image:secure_url" content="https://bricks.appomobi.com/og/icon.png" />
-    <meta property="og:image:type" content="image/png" />
-    <meta property="og:image:width" content="600" />
-    <meta property="og:image:height" content="600" />
+    <meta property="og:image" content="https://bricks.appomobi.com/og/icon.jpg" />
+    <meta property="og:image:secure_url" content="https://bricks.appomobi.com/og/icon.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="1200" />
     <meta property="og:image:alt" content="Bricks Breaker preview image" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Bricks Breaker | Break'em all bricks!" />
     <meta name="twitter:description" content="Smash bricks, catch powerups, unlock Destroyer mode, and play a fast arcade brick breaker inspired by Arkanoid and Breakout." />
     <meta name="twitter:url" content="https://bricks.appomobi.com/" />
-    <meta name="twitter:image" content="https://bricks.appomobi.com/og/icon.png" />
+    <meta name="twitter:image" content="https://bricks.appomobi.com/og/icon.jpg" />
     <title>Bricks Breaker</title>
     <base href="/" />
     <link rel="preload" id="webassembly" />
@@ -36,6 +36,57 @@
         };
         globalThis.writeVersionedScript = (src, extraAttributes = '') => {
             document.write(`<script src="${src}?v=${globalThis.breakoutAssetVersion}" ${extraAttributes}><\/script>`);
+        };
+
+        globalThis.breakoutBotDetection = {
+            tokens: [
+                'googlebot',
+                'google-inspectiontool',
+                'googleother',
+                'bingbot',
+                'slurp',
+                'duckduckbot',
+                'applebot',
+                'twitterbot',
+                'slackbot',
+                'discordbot',
+                'facebookexternalhit',
+                'facebot',
+                'linkedinbot',
+                'whatsapp',
+                'telegrambot',
+                'gptbot',
+                'claudebot',
+                'perplexitybot',
+                'yandexbot',
+                'ahrefsbot',
+                'semrushbot'
+            ],
+            isBot() {
+                const userAgent = (globalThis.navigator?.userAgent || '').toLowerCase();
+                if (!userAgent) {
+                    return false;
+                }
+
+                if (this.tokens.some(token => userAgent.includes(token))) {
+                    return true;
+                }
+
+                return /(?:bot|crawler|spider|preview)/i.test(userAgent);
+            },
+            applyFallback() {
+                const app = globalThis.document.getElementById('app');
+                if (!app) {
+                    return;
+                }
+
+                app.innerHTML = `
+                    <div class="bot-fallback">
+                        <h1>Bricks Breaker</h1>
+                        <p>Break'em all bricks in a fast arcade brick breaker inspired by Arkanoid and Breakout.</p>
+                        <p><a href="/">Play Bricks Breaker</a></p>
+                    </div>`;
+            }
         };
     </script>
     <script>
@@ -81,7 +132,7 @@
         </div>
     </div>
 
-    <div id="blazor-error-ui">
+    <div id="blazor-error-ui" style="display:none">
         An unhandled error has occurred.
         <a href="." class="reload">Reload</a>
         <span class="dismiss">&#x1F5D9;</span>
@@ -182,8 +233,10 @@
         };
     </script>
     <script>
-        globalThis.writeVersionedScript('_content/DrawnUi.Blazor.Core/drawnui-loader.js');
-        globalThis.writeVersionedScript('_framework/blazor.webassembly.js', 'autostart="false"');
+        if (!globalThis.breakoutBotDetection.isBot()) {
+            globalThis.writeVersionedScript('_content/DrawnUi.Blazor.Core/drawnui-loader.js');
+            globalThis.writeVersionedScript('_framework/blazor.webassembly.js', 'autostart="false"');
+        }
     </script>
     <script>
         const loaderLabelMap = {
@@ -357,22 +410,27 @@
             'aria-label',
             `${loaderLabels.initialLabel} Bricks Breaker`);
 
-        globalThis.DrawnUiLoader.startBlazorWithLoader({
-            applicationCulture: startupCulture
-        }, loaderLabels)
-            .then(() => {
-                clearBlazorRecoveryReloadState();
-            })
-            .catch(error => {
-                triggerBlazorRecoveryReload('Blazor startup failed.', error);
-            });
+        if (globalThis.breakoutBotDetection.isBot()) {
+            clearBlazorRecoveryReloadState();
+            globalThis.breakoutBotDetection.applyFallback();
+        } else {
+            globalThis.DrawnUiLoader.startBlazorWithLoader({
+                applicationCulture: startupCulture
+            }, loaderLabels)
+                .then(() => {
+                    clearBlazorRecoveryReloadState();
+                })
+                .catch(error => {
+                    triggerBlazorRecoveryReload('Blazor startup failed.', error);
+                });
+        }
     </script>
     <script>
         const isLoaderPreview = new URLSearchParams(globalThis.location.search).has('loader-preview');
         const isLocalhost = ['localhost', '127.0.0.1', '[::1]'].includes(globalThis.location.hostname);
         const localServiceWorkerResetKey = 'breakout-local-sw-reset';
 
-        if ('serviceWorker' in navigator) {
+        if ('serviceWorker' in navigator && !globalThis.breakoutBotDetection.isBot()) {
             if (!isLoaderPreview && !isLocalhost) {
                 navigator.serviceWorker.register('service-worker.js', { updateViaCache: 'none' });
             } else if (isLocalhost) {
