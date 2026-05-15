@@ -1,6 +1,7 @@
 using AppoMobi.Specials;
 using Breakout.Game.Ai;
 using Breakout.Game.Dialogs;
+using Breakout.Helpers;
 using SkiaSharp;
 using System.Diagnostics;
 using System.Numerics;
@@ -63,6 +64,8 @@ namespace Breakout.Game
         public AIPaddleController AIController => _aiController ??= new AIPaddleController(this, AIDifficulty.Medium);
 
         public IAudioService? _audioService;
+        public int AppLaunchCount { get; private set; }
+        public bool IsFirstAppRun { get; private set; }
 
         public BreakoutGame()
         {
@@ -77,23 +80,36 @@ namespace Breakout.Game
 
             Instance = this;
 
+            InitializeStartupState();
+
             InitializeInput();
 
             InitDialogs();
 
+#if BROWSER
+            BeginStartupAssetLoading();
+#else
             if (USE_SOUND)
             {
                 _ = InitializeAudioAsync();
             }
+#endif
 
             _aiController = new AIPaddleController(this, AIDifficulty.Hard);
 
-#if !BROWSER
             //pause/resume loop background music etc
             Super.OnNativeAppResumed += Super_OnNativeAppResumed;
             Super.OnNativeAppPaused += Super_OnNativeAppPaused;
-#endif
         }
+
+    private void InitializeStartupState()
+    {
+        AppLaunchCount = AppSettings.Get(AppSettings.AppLaunchCount, AppSettings.AppLaunchCountDefault);
+        IsFirstAppRun = AppLaunchCount == 0;
+
+        AppSettings.ApplyStartupBootstrapIfNeeded();
+        AppSettings.Set(AppSettings.AppLaunchCount, AppLaunchCount + 1);
+    }
 
         #endregion
 
@@ -106,11 +122,9 @@ namespace Breakout.Game
 
         public override void OnWillDisposeWithChildren()
         {
-#if !BROWSER
             Super.OnNativeAppResumed -= Super_OnNativeAppResumed;
 
             Super.OnNativeAppPaused -= Super_OnNativeAppPaused;
-#endif
 
             _audioService?.Dispose();
 
@@ -122,17 +136,15 @@ namespace Breakout.Game
             base.OnWillDisposeWithChildren();
         }
 
-#if !BROWSER
-        private void Super_OnNativeAppPaused(object sender, EventArgs e)
+        private void Super_OnNativeAppPaused(object? sender, EventArgs e)
         {
             Pause();
         }
 
-        private void Super_OnNativeAppResumed(object sender, EventArgs e)
+        private void Super_OnNativeAppResumed(object? sender, EventArgs e)
         {
             Resume();
         }
-#endif
 
         /// <summary>
         /// So it can get paused/resumed from anywhere in the app
@@ -230,7 +242,7 @@ namespace Breakout.Game
 
             _initialized = true;
 
-            PresentGame();
+            PrepareStartupPresentation();
         }
 
         protected override void Draw(DrawingContext context)

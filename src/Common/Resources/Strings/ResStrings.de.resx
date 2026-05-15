@@ -582,4 +582,7 @@ Du bist ein Breakout-Meister!</value>
   <data name="Fullscreen" xml:space="preserve">
     <value>Vollbild</value>
   </data>
+  <data name="LoadingAssets" xml:space="preserve">
+    <value>Assets werden geladen.</value>
+  </data>
 </root>

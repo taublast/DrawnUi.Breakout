@@ -29,9 +29,20 @@
     <link rel="preload" id="webassembly" />
     <link rel="preload" href="_content/DrawnUi.Blazor.Core/drawnui-logo.svg" as="image" type="image/svg+xml" />
     <link rel="icon" type="image/svg+xml" href="_content/DrawnUi.Blazor.Core/drawnui-logo.svg" />
-    <link rel="stylesheet" href="css/app.css" />
-    <link rel="stylesheet" href="_content/DrawnUi.Blazor.Core/drawnui-loader.css" />
-    <link href="Breakout.Web.styles.css" rel="stylesheet" />
+    <script>
+        globalThis.breakoutAssetVersion = Date.now().toString();
+        globalThis.writeVersionedStylesheet = (href) => {
+            document.write(`<link rel="stylesheet" href="${href}?v=${globalThis.breakoutAssetVersion}" />`);
+        };
+        globalThis.writeVersionedScript = (src, extraAttributes = '') => {
+            document.write(`<script src="${src}?v=${globalThis.breakoutAssetVersion}" ${extraAttributes}><\/script>`);
+        };
+    </script>
+    <script>
+        globalThis.writeVersionedStylesheet('css/app.css');
+        globalThis.writeVersionedStylesheet('_content/DrawnUi.Blazor.Core/drawnui-loader.css');
+        globalThis.writeVersionedStylesheet('Breakout.Web.styles.css');
+    </script>
     <script type="importmap"></script>
     <style>
         html, body {
@@ -75,7 +86,9 @@
         <a href="." class="reload">Reload</a>
         <span class="dismiss">&#x1F5D9;</span>
     </div>
-    <script src="breakout-audio.js"></script>
+    <script>
+        globalThis.writeVersionedScript('breakout-audio.js');
+    </script>
     <script>
         globalThis.breakoutStorage = {
             get(key) {
@@ -93,33 +106,85 @@
             }
         };
 
+        globalThis.breakoutBrowser = {
+            isMobileBrowser() {
+                const navigatorRef = globalThis.navigator;
+                if (!navigatorRef) {
+                    return false;
+                }
+
+                if (typeof navigatorRef.userAgentData?.mobile === 'boolean') {
+                    return navigatorRef.userAgentData.mobile;
+                }
+
+                const userAgent = navigatorRef.userAgent || navigatorRef.vendor || '';
+                const matchesMobileUa = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(userAgent);
+                if (matchesMobileUa) {
+                    return true;
+                }
+
+                const coarsePointer = globalThis.matchMedia?.('(pointer: coarse)')?.matches === true;
+                const smallViewport = globalThis.matchMedia?.('(max-width: 900px)')?.matches === true;
+                const hasTouch = (navigatorRef.maxTouchPoints || 0) > 1;
+
+                return coarsePointer && smallViewport && hasTouch;
+            }
+        };
+
         globalThis.breakoutFullscreen = {
+            _simulated: false,
             isEnabled() {
                 try {
-                    return !!globalThis.document.fullscreenElement;
+                    return !!globalThis.document.fullscreenElement || this._simulated;
                 } catch {
-                    return false;
+                    return this._simulated;
                 }
             },
             setEnabled(enabled) {
+                const doc = globalThis.document;
+                // If Fullscreen API is unavailable (WebView, Telegram in-app browser, etc.),
+                // dispatch a custom event so the DrawnUI resize module can simulate fullscreen via CSS.
+                if (!doc.fullscreenEnabled) {
+                    this._simulated = enabled;
+                    doc.dispatchEvent(new CustomEvent('drawnui-simulated-fullscreen', { detail: { enabled } }));
+                    return;
+                }
                 try {
                     if (enabled) {
-                        if (!globalThis.document.fullscreenElement) {
-                            const target = globalThis.document.documentElement;
+                        if (!doc.fullscreenElement) {
+                            const target = doc.documentElement;
                             if (target?.requestFullscreen) {
-                                void target.requestFullscreen();
+                                target.requestFullscreen().catch(() => {
+                                    // requestFullscreen rejected (browser policy, non-user-gesture path, etc.)
+                                    // Fall back to CSS-simulated fullscreen.
+                                    this._simulated = true;
+                                    doc.dispatchEvent(new CustomEvent('drawnui-simulated-fullscreen', { detail: { enabled: true } }));
+                                });
+                            } else {
+                                this._simulated = enabled;
+                                doc.dispatchEvent(new CustomEvent('drawnui-simulated-fullscreen', { detail: { enabled } }));
                             }
                         }
-                    } else if (globalThis.document.fullscreenElement && globalThis.document.exitFullscreen) {
-                        void globalThis.document.exitFullscreen();
+                    } else {
+                        if (doc.fullscreenElement && doc.exitFullscreen) {
+                            void doc.exitFullscreen();
+                        }
+                        if (this._simulated) {
+                            this._simulated = false;
+                            doc.dispatchEvent(new CustomEvent('drawnui-simulated-fullscreen', { detail: { enabled: false } }));
+                        }
                     }
                 } catch {
+                    this._simulated = enabled;
+                    doc.dispatchEvent(new CustomEvent('drawnui-simulated-fullscreen', { detail: { enabled } }));
                 }
             }
         };
     </script>
-    <script src="_content/DrawnUi.Blazor.Core/drawnui-loader.js"></script>
-    <script src="_framework/blazor.webassembly.js" autostart="false"></script>
+    <script>
+        globalThis.writeVersionedScript('_content/DrawnUi.Blazor.Core/drawnui-loader.js');
+        globalThis.writeVersionedScript('_framework/blazor.webassembly.js', 'autostart="false"');
+    </script>
     <script>
         const loaderLabelMap = {
             en: {
@@ -192,6 +257,97 @@
 
         const startupCulture = parseStartupCulture();
         const loaderLabels = resolveLoaderLabels(startupCulture);
+        const blazorRecoveryReloadKey = 'breakout-blazor-recovery-reload';
+        const blazorRecoveryWindowMs = 15000;
+
+        function clearBlazorRecoveryReloadState() {
+            try {
+                sessionStorage.removeItem(blazorRecoveryReloadKey);
+            } catch {
+            }
+        }
+
+        function shouldAutoReloadAfterBlazorFailure() {
+            try {
+                const now = Date.now();
+                const raw = sessionStorage.getItem(blazorRecoveryReloadKey);
+                const state = raw ? JSON.parse(raw) : null;
+
+                if (!state || typeof state.timestamp !== 'number' || now - state.timestamp > blazorRecoveryWindowMs) {
+                    sessionStorage.setItem(blazorRecoveryReloadKey, JSON.stringify({
+                        timestamp: now,
+                        attempts: 1
+                    }));
+                    return true;
+                }
+
+                if ((state.attempts ?? 0) >= 1) {
+                    return false;
+                }
+
+                state.timestamp = now;
+                state.attempts = (state.attempts ?? 0) + 1;
+                sessionStorage.setItem(blazorRecoveryReloadKey, JSON.stringify(state));
+                return true;
+            } catch {
+                return true;
+            }
+        }
+
+        function showBlazorErrorUiFallback() {
+            const errorUi = globalThis.document.getElementById('blazor-error-ui');
+            if (errorUi) {
+                errorUi.style.display = 'block';
+            }
+        }
+
+        function isBlazorErrorUiVisible(errorUi) {
+            if (!errorUi) {
+                return false;
+            }
+
+            const computed = globalThis.getComputedStyle?.(errorUi);
+            return computed?.display !== 'none' && errorUi.getClientRects().length > 0;
+        }
+
+        function triggerBlazorRecoveryReload(reason, error) {
+            if (error) {
+                console.error(reason, error);
+            } else {
+                console.error(reason);
+            }
+
+            if (!shouldAutoReloadAfterBlazorFailure()) {
+                showBlazorErrorUiFallback();
+                return;
+            }
+
+            globalThis.location.reload();
+        }
+
+        function watchBlazorErrorUi() {
+            const errorUi = globalThis.document.getElementById('blazor-error-ui');
+            if (!errorUi) {
+                return;
+            }
+
+            const onVisible = () => {
+                if (isBlazorErrorUiVisible(errorUi)) {
+                    observer.disconnect();
+                    triggerBlazorRecoveryReload('Blazor runtime error UI became visible.');
+                }
+            };
+
+            const observer = new MutationObserver(onVisible);
+            observer.observe(errorUi, {
+                attributes: true,
+                attributeFilter: ['style', 'class', 'hidden']
+            });
+
+            onVisible();
+        }
+
+        watchBlazorErrorUi();
 
         if (typeof startupCulture === 'string' && startupCulture.length > 0) {
             globalThis.document.documentElement.lang = startupCulture;
@@ -204,14 +360,44 @@
         globalThis.DrawnUiLoader.startBlazorWithLoader({
             applicationCulture: startupCulture
         }, loaderLabels)
+            .then(() => {
+                clearBlazorRecoveryReloadState();
+            })
             .catch(error => {
-                console.error(error);
+                triggerBlazorRecoveryReload('Blazor startup failed.', error);
             });
     </script>
     <script>
         const isLoaderPreview = new URLSearchParams(globalThis.location.search).has('loader-preview');
-        if (!isLoaderPreview && 'serviceWorker' in navigator) {
-            navigator.serviceWorker.register('service-worker.js', { updateViaCache: 'none' });
+        const isLocalhost = ['localhost', '127.0.0.1', '[::1]'].includes(globalThis.location.hostname);
+        const localServiceWorkerResetKey = 'breakout-local-sw-reset';
+
+        if ('serviceWorker' in navigator) {
+            if (!isLoaderPreview && !isLocalhost) {
+                navigator.serviceWorker.register('service-worker.js', { updateViaCache: 'none' });
+            } else if (isLocalhost) {
+                (async () => {
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    await Promise.all(registrations.map(registration => registration.unregister()));
+
+                    if ('caches' in globalThis) {
+                        const cacheKeys = await caches.keys();
+                        await Promise.all(cacheKeys.map(cacheKey => caches.delete(cacheKey)));
+                    }
+
+                    if (navigator.serviceWorker.controller) {
+                        if (!sessionStorage.getItem(localServiceWorkerResetKey)) {
+                            sessionStorage.setItem(localServiceWorkerResetKey, '1');
+                            globalThis.location.reload();
+                            return;
+                        }
+                    }
+
+                    sessionStorage.removeItem(localServiceWorkerResetKey);
+                })().catch(error => {
+                    console.warn('Failed to clear local service worker state', error);
+                });
+            }
         }
     </script>
 </body>

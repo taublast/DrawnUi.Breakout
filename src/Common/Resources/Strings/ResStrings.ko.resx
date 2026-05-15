@@ -582,4 +582,7 @@
   <data name="Fullscreen" xml:space="preserve">
     <value>전체 화면</value>
   </data>
+  <data name="LoadingAssets" xml:space="preserve">
+    <value>자산 로드 중..</value>
+  </data>
 </root>

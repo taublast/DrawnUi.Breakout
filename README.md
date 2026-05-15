@@ -84,6 +84,13 @@ Discover game content on your own, no sploilers here!
 * `MainPage.HotPreview.cs` contains all the HotPreview items. Read an article about [how to use HotPreview](https://github.com/BretJohnson/hot-preview). 
 * `Soundflow` solved Android performance playing sounds/music.
 
+### Blazor/Web
+
+* Web versioning uses a hardcoded constant in `src/Web/Breakout.Web/Helpers/AppVersion.cs`.
+* On Blazor startup, `src/Web/Breakout.Web/App.razor` compares the current version with the last version stored in browser local storage via shared `AppSettings`.
+* If versions mismatch, the app stores the new version and forces a hard browser reload with `NavigateTo(..., forceLoad: true)` so stale WASM/runtime state is dropped and fresh assets are loaded.
+* When shipping a new web build, bump `AppVersion.Current`.
+
 ## Credits
 
 * **Music** - All by `Eric Matyas` ([Soundimage.org](https://Soundimage.org)) please visit his site if you need high quality gaming audio content

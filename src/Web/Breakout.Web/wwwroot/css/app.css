@@ -3,6 +3,9 @@
     margin: 0;
     padding: 0;
     overflow: hidden;
+    /* Prevent browser swipe-to-navigate and overscroll effects (e.g. Telegram in-app browser swipe-to-close) */
+    overscroll-behavior: none;
+    touch-action: none;
 }
 
 html,

@@ -6,6 +6,32 @@ namespace Breakout.Game
 {
     public partial class BreakoutGame : MauiGame
     {
+        private static readonly (string SoundId, string FilePath)[] StartupAudioAssets =
+        {
+            ("oops", "Fx/ballout.mp3"),
+            ("collide", "Fx/bricksynth.wav"),
+            ("aggro", "Fx/powerup27.mp3"),
+            ("dlg", "Fx/quirky26.mp3"),
+            ("sel", "Fx/quirky7.mp3"),
+            ("joy", "Fx/synthchime2.mp3"),
+            ("sad", "Fx/bells1.mp3"),
+            ("brick", "Sounds/tik.wav"),
+            ("board2", "Sounds/bricksynth2.wav"),
+            ("board3", "Sounds/bricksynth3.wav"),
+            ("wall", "Sounds/brickglass.wav"),
+            ("start", "Sounds/gamestart.wav"),
+            ("ball", "Sounds/pong.wav"),
+            ("bip", "Sounds/bip.wav"),
+            ("bip1", "Sounds/bip1.wav"),
+            ("bip2", "Sounds/bip2.wav"),
+            ("one", "Sounds/one.wav"),
+            ("two", "Sounds/two.wav"),
+            ("demo", "Music/demoHypnoticPuzzle4.mp3"),
+            ("play", "Music/lvl1PixelCityGroovin.mp3"),
+            ("speedy", "Music/MonkeyDrama.mp3"),
+            ("tronic", "Music/TechnoTronic.mp3")
+        };
+
         #region AUDIO
 
         public enum Sound
@@ -31,45 +57,42 @@ namespace Breakout.Game
         }
 
         private bool soundsOn;
+        private bool _webAudioResumeFailureShown;
 
-        private async Task InitializeAudioAsync()
+        private int GetAudioStartupAssetCount()
         {
-            IAudioService audioService;
+            return StartupAudioAssets.Length;
+        }
 
+        private static IAudioService CreateAudioService()
+        {
 #if BROWSER
-            audioService = new WebAudioService();
+            return new WebAudioService();
 #elif ANDROID
-            audioService = new SoundFlowAudioService();
+            return new SoundFlowAudioService();
 #else
-            audioService = new AudioMixerService(Plugin.Maui.Audio.AudioManager.Current);
+            return new AudioMixerService(Plugin.Maui.Audio.AudioManager.Current);
 #endif
+        }
 
-            // Preload
-            await audioService.PreloadSoundAsync("oops", "Fx/ballout.mp3");
-            await audioService.PreloadSoundAsync("collide", "Fx/bricksynth.wav");
-            await audioService.PreloadSoundAsync("aggro", "Fx/powerup27.mp3");
-            await audioService.PreloadSoundAsync("dlg", "Fx/quirky26.mp3");
-            await audioService.PreloadSoundAsync("sel", "Fx/quirky7.mp3");
-            await audioService.PreloadSoundAsync("joy", "Fx/synthchime2.mp3");
-            await audioService.PreloadSoundAsync("sad", "Fx/bells1.mp3");
+        private async Task InitializeAudioAsync(Action<int, int, string>? reportProgress = null)
+        {
+            var audioService = CreateAudioService();
+            var totalAssets = StartupAudioAssets.Length;
 
-            await audioService.PreloadSoundAsync("brick", "Sounds/tik.wav");
-            await audioService.PreloadSoundAsync("board2", "Sounds/bricksynth2.wav");
-            await audioService.PreloadSoundAsync("board3", "Sounds/bricksynth3.wav");
-            await audioService.PreloadSoundAsync("wall", "Sounds/brickglass.wav");
-            await audioService.PreloadSoundAsync("start", "Sounds/gamestart.wav");
-            await audioService.PreloadSoundAsync("ball", "Sounds/pong.wav");
-            await audioService.PreloadSoundAsync("bip", "Sounds/bip.wav");
-            await audioService.PreloadSoundAsync("bip1", "Sounds/bip1.wav");
-            await audioService.PreloadSoundAsync("bip2", "Sounds/bip2.wav");
+            reportProgress?.Invoke(0, totalAssets, ResStrings.LoadingAssets);
 
-            await audioService.PreloadSoundAsync("one", "Sounds/one.wav");
-            await audioService.PreloadSoundAsync("two", "Sounds/two.wav");
+            for (int index = 0; index < StartupAudioAssets.Length; index++)
+            {
+                var asset = StartupAudioAssets[index];
+                var loaded = await audioService.PreloadSoundAsync(asset.SoundId, asset.FilePath);
+                if (!loaded)
+                {
+                    throw CreateAudioInitializationException(audioService, asset.SoundId, asset.FilePath);
+                }
 
-            await audioService.PreloadSoundAsync("demo", "Music/demoHypnoticPuzzle4.mp3");
-            await audioService.PreloadSoundAsync("play", "Music/lvl1PixelCityGroovin.mp3");
-            await audioService.PreloadSoundAsync("speedy", "Music/MonkeyDrama.mp3");
-            await audioService.PreloadSoundAsync("tronic", "Music/TechnoTronic.mp3");
+                reportProgress?.Invoke(index + 1, totalAssets, ResStrings.LoadingAssets);
+            }
 
             _audioService = audioService;
 
@@ -77,6 +100,21 @@ namespace Breakout.Game
             EnableSounds(soundsOn);
 
             SetupBackgroundMusic();
+        }
+
+        private static Exception CreateAudioInitializationException(IAudioService audioService, string soundId,
+            string filePath)
+        {
+            var message = $"Failed to load audio asset '{soundId}' from '{filePath}'.";
+
+#if BROWSER
+            if (audioService is WebAudioService webAudio && !string.IsNullOrWhiteSpace(webAudio.LastErrorMessage))
+            {
+                message = $"{message} {webAudio.LastErrorMessage}";
+            }
+#endif
+
+            return new InvalidOperationException(message);
         }
 
 
@@ -221,6 +259,43 @@ namespace Breakout.Game
         }
 
         public bool IsBackgroundMusicPlaying => _audioService?.IsBackgroundMusicPlaying == true;
+
+        private void NotifyAudioUserGesture()
+        {
+#if BROWSER
+            if (_audioService is WebAudioService webAudio)
+            {
+                _ = EnsureWebAudioRunningAfterGestureAsync(webAudio);
+            }
+#endif
+        }
+
+#if BROWSER
+        private async Task EnsureWebAudioRunningAfterGestureAsync(WebAudioService webAudio)
+        {
+            if (!AppSettings.Get(AppSettings.MusicOn, AppSettings.MusicOnDefault)
+                && !AppSettings.Get(AppSettings.SoundsOn, AppSettings.SoundsOnDefault))
+            {
+                return;
+            }
+
+            if (await webAudio.TryResumeAfterUserGestureAsync())
+            {
+                return;
+            }
+
+            if (_webAudioResumeFailureShown)
+            {
+                return;
+            }
+
+            _webAudioResumeFailureShown = true;
+            ShowStartupAssetFailureDialog(new StartupAssetFailure(
+                "Audio could not start.",
+                "The game will continue without sound.",
+                webAudio.LastErrorMessage));
+        }
+#endif
 
         #endregion
     }

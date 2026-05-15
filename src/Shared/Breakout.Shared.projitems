@@ -27,6 +27,7 @@
     <!-- Resources - ResStrings for Web only (Mobile uses resx auto-generated) -->
     <!-- Game - main partials -->
     <Compile Include="$(MSBuildThisFileDirectory)Game\BreakoutGame.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\BreakoutGame.StartupAssets.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\BreakoutGame.Input.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\BreakoutGame.Sound.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\BreakoutGame.Ui.cs" />

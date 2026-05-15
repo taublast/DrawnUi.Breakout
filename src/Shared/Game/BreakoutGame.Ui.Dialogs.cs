@@ -29,8 +29,51 @@ namespace Breakout.Game
                 UiElements.DialogPrompt(message),
                 ResStrings.StartGame.ToUpperInvariant(), onOk: () =>
                 {
+                    NotifyAudioUserGesture();
                     StartNewGamePlayer();
                 });
+        }
+
+        void ShowStartupAssetFailureDialog(StartupAssetFailure failure, Action? onOk = null)
+        {
+            var content = new SkiaLayout()
+            {
+                Type = LayoutType.Column,
+                Spacing = 12,
+                HorizontalOptions = LayoutOptions.Fill,
+                Children =
+                {
+                    new SkiaRichLabel()
+                    {
+                        Text = failure.Title.ToUpperInvariant(),
+                        FontFamily = AppFonts.Default,
+                        FontSize = 20,
+                        TextColor = AmstradColors.White,
+                        HorizontalTextAlignment = DrawTextAlignment.Center,
+                        HorizontalOptions = LayoutOptions.Fill,
+                        UseCache = SkiaCacheType.Operations,
+                    },
+
+                    UiElements.DialogPrompt(failure.Message),
+
+                    new SkiaRichLabel()
+                    {
+                        Text = failure.Details ?? string.Empty,
+                        FontFamily = AppFonts.Default,
+                        FontSize = 13,
+                        TextColor = Colors.White.WithAlpha(0.8f),
+                        HorizontalTextAlignment = DrawTextAlignment.Center,
+                        HorizontalOptions = LayoutOptions.Fill,
+                        UseCache = SkiaCacheType.Operations,
+                        IsVisible = !string.IsNullOrWhiteSpace(failure.Details),
+                    }
+                }
+            };
+
+            GameDialog.Show(this, content, ResStrings.BtnOk.ToUpperInvariant(), onOk: () =>
+            {
+                onOk?.Invoke();
+            });
         }
 
         void ShowGameOverDialog()
@@ -94,7 +137,7 @@ namespace Breakout.Game
                 Tag = "Options",
                 Type = LayoutType.Column,
                 Spacing = 20,
-                Padding = new Thickness(12,16,12,-12),
+                Padding = new Thickness(12,0,12,-12),
                 HorizontalOptions = LayoutOptions.Fill,
                 Children = new List<SkiaControl>
                 {
@@ -248,6 +291,39 @@ namespace Breakout.Game
                         }
                     },
 
+                    // Press input mode for HUD
+                    new OptionWithTappable("HudSwitch")
+                    {
+                        HorizontalOptions = LayoutOptions.Fill,
+                        Children = new List<SkiaControl>
+                        {
+                            new SkiaRichLabel()
+                            {
+                                Text = ResStrings.PressHud.ToUpperInvariant(),
+                                FontFamily = AppFonts.Default,
+                                FontSize = 18,
+                                TextColor = AmstradColors.White,
+                                VerticalOptions = LayoutOptions.Center,
+                                HorizontalOptions = LayoutOptions.Start,
+                                UseCache = SkiaCacheType.Operations,
+                            },
+
+                            new GameSwitch()
+                                {
+                                    Tag="HudSwitch",
+                                    HorizontalOptions = LayoutOptions.End,
+                                    VerticalOptions = LayoutOptions.Center,
+                                }
+                                .Initialize(me =>
+                                {
+                                    me.IsToggled = AppSettings.Get(AppSettings.InputPressEnabled,
+                                        AppSettings.InputPressEnabledDefault);
+
+                                    me.Toggled += (_, state) => { SetInputPressMode(state); };
+                                }),
+                        }
+                    },
+
 #if BROWSER
                     new OptionWithTappable("BrowserFullscreenSwitch")
                     {
@@ -281,52 +357,30 @@ namespace Breakout.Game
                                 }),
                         }
                     },
-#else
-                    // Press input mode for HUD
-                    new OptionWithTappable("HudSwitch")
-                    {
-                        HorizontalOptions = LayoutOptions.Fill,
-                        Children = new List<SkiaControl>
-                        {
-                            new SkiaRichLabel()
-                            {
-                                Text = ResStrings.PressHud.ToUpperInvariant(),
-                                FontFamily = AppFonts.Default,
-                                FontSize = 18,
-                                TextColor = AmstradColors.White,
-                                VerticalOptions = LayoutOptions.Center,
-                                HorizontalOptions = LayoutOptions.Start,
-                                UseCache = SkiaCacheType.Operations,
-                            },
-
-                            new GameSwitch()
-                                {
-                                    Tag="HudSwitch",
-                                    HorizontalOptions = LayoutOptions.End,
-                                    VerticalOptions = LayoutOptions.Center,
-                                }
-                                .Initialize(me =>
-                                {
-                                    if (_audioService != null)
-                                    {
-                                        me.IsToggled = AppSettings.Get(AppSettings.InputPressEnabled,
-                                            AppSettings.InputPressEnabledDefault);
-                                    }
-                                    me.Toggled += (_, state) => { SetInputPressMode(state); };
-                                }),
-                        }
-                    },
 #endif
+
+                    new SkiaRichLabel()
+                    {
+                        Text = AppVersion.Current,
+                        FontFamily = AppFonts.Default,
+                        FontSize = 10,
+                        TextColor = AmstradColors.White,
+                        HorizontalOptions = LayoutOptions.Center,
+                        UseCache = SkiaCacheType.Operations,
+                        Margin = new Thickness(0, 0, 0, -8)
+                    },
 
                     //RESTART
                     UiElements.Button(ResStrings.NewGame.ToUpperInvariant(), async () =>
                     {
+                        NotifyAudioUserGesture();
                         StartNewGamePlayer();
                     }).FillX().WithMargin(new Thickness(0,16,0,-16)),
 
                     //DEMO
                     UiElements.Button(ResStrings.DemoMode.ToUpperInvariant(), async () =>
                     {
+                        NotifyAudioUserGesture();
                         StartNewGameDemo();
                     }).FillX().WithMargin(new Thickness(0,16,0,0)),
 

@@ -582,4 +582,7 @@
   <data name="Fullscreen" xml:space="preserve">
     <value>Фулскрин</value>
   </data>
+  <data name="LoadingAssets" xml:space="preserve">
+    <value>Загрузка ресурсов..</value>
+  </data>
 </root>

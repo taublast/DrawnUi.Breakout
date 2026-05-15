@@ -73,14 +73,14 @@ namespace Breakout.Game
             HorizontalOptions = LayoutOptions.Fill;
             VerticalOptions = LayoutOptions.Fill;
 
-            BackgroundColor = Colors.DarkSlateBlue.WithAlpha(0.975f);
-
             Children = new List<SkiaControl>()
             {
                 //game and controls below
                 new SkiaStack()
                 {
                     Tag = "GameStack",
+                    BackgroundColor = Colors.DarkSlateBlue.WithAlpha(0.975f),
+                    IsVisible = true,
                     VerticalOptions = LayoutOptions.Fill,
                     Spacing = 0,
                     Children =
@@ -263,7 +263,114 @@ namespace Breakout.Game
                             }
                         }
                     }
-                },
+                }.ObserveProperty(this, nameof(ShowStartupGameContent), me =>
+                {
+                    me.IsVisible = ShowStartupGameContent;
+                }),
+
+                new SkiaLayer()
+                {
+                    ZIndex = 900,
+                    HorizontalOptions = LayoutOptions.Fill,
+                    VerticalOptions = LayoutOptions.Fill,
+                    IsVisible = false,
+                    Children =
+                    {
+                        //new SkiaShape()
+                        //{
+                        //    HorizontalOptions = LayoutOptions.Fill,
+                        //    VerticalOptions = LayoutOptions.Fill,
+                        //    BackgroundColor = Colors.Black.WithAlpha(0.72f),
+                        //},
+
+                        new SkiaShape()
+                        {
+                            CornerRadius = 18,
+                            Padding = new Thickness(20, 18, 20, 18),
+                            WidthRequest = 280,
+                            HorizontalOptions = LayoutOptions.Center,
+                            VerticalOptions = LayoutOptions.Center,
+                            BackgroundColor = Colors.Black.WithAlpha(0.94f),
+                            StrokeColor = UiElements.ColorPrimary.WithAlpha(0.45f),
+                            StrokeWidth = 2,
+                            BevelType = BevelType.Bevel,
+                            Bevel = new SkiaBevel()
+                            {
+                                Depth = 2,
+                                LightColor = Colors.White,
+                                ShadowColor = Colors.Black,
+                                Opacity = 0.18f,
+                            },
+                            Children =
+                            {
+                                new SkiaLayout()
+                                {
+                                    Type = LayoutType.Column,
+                                    Spacing = 14,
+                                    HorizontalOptions = LayoutOptions.Fill,
+                                    VerticalOptions = LayoutOptions.Center,
+                                    Children =
+                                    {
+                                        new SkiaRichLabel()
+                                        {
+                                            FontFamily = AppFonts.Default,
+                                            FontSize = 20 * AppFonts.GameAdjustSize,
+                                            TextColor = AmstradColors.White,
+                                            HorizontalTextAlignment = DrawTextAlignment.Center,
+                                            HorizontalOptions = LayoutOptions.Fill,
+                                            Text = "Loading data...",
+                                            UseCache = SkiaCacheType.Operations,
+                                        }.ObserveProperty(this, nameof(StartupAssetsStatusText), me =>
+                                        {
+                                            me.Text = StartupAssetsStatusText;
+                                        }),
+
+                                        new SkiaShape()
+                                        {
+                                            WidthRequest = 220,
+                                            HeightRequest = 12,
+                                            CornerRadius = 6,
+                                            HorizontalOptions = LayoutOptions.Center,
+                                            BackgroundColor = Colors.White.WithAlpha(0.12f),
+                                            Children =
+                                            {
+                                                new SkiaShape()
+                                                {
+                                                    WidthRequest = 0,
+                                                    HeightRequest = 12,
+                                                    CornerRadius = 6,
+                                                    HorizontalOptions = LayoutOptions.Start,
+                                                    BackgroundColor = UiElements.ColorPrimary,
+                                                }.ObserveProperty(this, nameof(StartupAssetsProgress), me =>
+                                                {
+                                                    me.WidthRequest = 220 * StartupAssetsProgress;
+                                                })
+                                            }
+                                        },
+
+                                        new SkiaRichLabel()
+                                        {
+                                            FontFamily = AppFonts.Default,
+                                            FontSize = 15,
+                                            TextColor = AmstradColors.White.WithAlpha(0.85f),
+                                            HorizontalTextAlignment = DrawTextAlignment.Center,
+                                            HorizontalOptions = LayoutOptions.Fill,
+                                            Text = "0 / 0",
+                                            UseCache = SkiaCacheType.Operations,
+                                        }.ObserveProperties(this,
+                                            [nameof(StartupAssetsLoadedCount), nameof(StartupAssetsTotalCount)], me =>
+                                        {
+                                            me.Text = $"{StartupAssetsLoadedCount} / {StartupAssetsTotalCount}";
+                                        }),
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }.ObserveProperty(this, nameof(ShowStartupAssetsOverlay), me =>
+                {
+                    me.IsVisible = ShowStartupAssetsOverlay;
+                }),
             };
         }
 

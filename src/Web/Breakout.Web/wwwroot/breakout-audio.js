@@ -5,6 +5,8 @@ globalThis.breakoutAudio = (() => {
     let bgSource = null;
     let bgGain = null;
     let pendingBg = null; // {id, volume} — saved when startBg called on suspended ctx
+    let lastError = '';
+    let backgroundSuspendRequested = false;
 
     function ensureCtx() {
         if (!ctx) {
@@ -28,26 +30,67 @@ globalThis.breakoutAudio = (() => {
     }
 
     function resumeCtx() {
+        ensureCtx();
         if (!ctx || ctx.state !== 'suspended') return;
+        lastError = '';
         ctx.resume().then(() => {
             if (pendingBg && !bgSource) {
                 startBgNow(pendingBg.id, pendingBg.volume);
             }
+        }).catch((e) => {
+            lastError = e?.message || String(e);
+            console.error('[audio] resume failed:', e);
         });
+    }
+
+    function suspendForBackground() {
+        if (!ctx || ctx.state !== 'running') {
+            return;
+        }
+
+        backgroundSuspendRequested = true;
+        lastError = '';
+        ctx.suspend().catch((e) => {
+            lastError = e?.message || String(e);
+            console.error('[audio] suspend failed:', e);
+        });
+    }
+
+    function resumeAfterBackground() {
+        if (!backgroundSuspendRequested) {
+            return;
+        }
+
+        backgroundSuspendRequested = false;
+        resumeCtx();
     }
 
     // Resume AudioContext on first user gesture (browser autoplay policy)
     document.addEventListener('pointerdown', resumeCtx, { once: true });
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            suspendForBackground();
+        } else {
+            resumeAfterBackground();
+        }
+    });
+    globalThis.addEventListener('pagehide', suspendForBackground);
+    globalThis.addEventListener('pageshow', resumeAfterBackground);
 
     return {
         async preload(id, url) {
             try {
+                lastError = '';
                 ensureCtx();
                 const resp = await fetch(url);
+                if (!resp.ok) {
+                    throw new Error(`HTTP ${resp.status} while loading ${url}`);
+                }
                 const buf = await resp.arrayBuffer();
                 buffers[id] = await ctx.decodeAudioData(buf);
                 return true;
             } catch (e) {
+                lastError = e?.message || String(e);
                 console.error('[audio] preload failed:', id, e);
                 return false;
             }
@@ -94,6 +137,14 @@ globalThis.breakoutAudio = (() => {
 
         isBgPlaying() {
             return bgSource !== null;
+        },
+
+        getLastError() {
+            return lastError;
+        },
+
+        getState() {
+            return ctx ? ctx.state : 'none';
         }
     };
 })();

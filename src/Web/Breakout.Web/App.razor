@@ -1,6 +1,27 @@
+@using Breakout.Helpers
+@inject NavigationManager Navigation
+
 <Router AppAssembly="@typeof(App).Assembly" NotFoundPage="typeof(Pages.NotFound)">
     <Found Context="routeData">
         <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)"/>
         <FocusOnNavigate RouteData="@routeData" Selector="h1" />
     </Found>
 </Router>
+
+@code {
+    protected override void OnInitialized()
+    {
+        var lastSeenVersion = AppSettings.Get(AppVersion.LastSeenVersionKey, string.Empty);
+        if (string.IsNullOrWhiteSpace(lastSeenVersion))
+        {
+            AppSettings.Set(AppVersion.LastSeenVersionKey, AppVersion.Current);
+            return;
+        }
+
+        if (!string.Equals(lastSeenVersion, AppVersion.Current, StringComparison.Ordinal))
+        {
+            AppSettings.Set(AppVersion.LastSeenVersionKey, AppVersion.Current);
+            Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
+        }
+    }
+}

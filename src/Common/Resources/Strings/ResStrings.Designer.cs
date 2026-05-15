@@ -682,6 +682,15 @@ namespace Breakout.Common.Resources.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Loading assets...
+        /// </summary>
+        public static string LoadingAssets {
+            get {
+                return ResourceManager.GetString("LoadingAssets", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Log Out.
         /// </summary>
         public static string LogOut {

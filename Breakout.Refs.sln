@@ -39,6 +39,10 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "DrawnUi.SharedNet", "..\Dra
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrawnUi.Blazor", "..\DrawnUi\src\Blazor\DrawnUi\DrawnUi.Blazor.csproj", "{6FD0BDB3-9A67-C7C4-F675-5BC97DBE2247}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppoMobi.Gestures", "..\AppoMobi.Maui.Gestures\src\AppoMobi.Gestures\AppoMobi.Gestures.csproj", "{F72622CB-2698-B631-2953-12BAA4C8EACE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppoMobi.Blazor.Gestures", "..\AppoMobi.Maui.Gestures\src\AppoMobi.Blazor.Gestures\AppoMobi.Blazor.Gestures.csproj", "{80BE2A6D-9A1A-623C-7C06-9C3E2F804133}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -78,6 +82,14 @@ Global
 		{6FD0BDB3-9A67-C7C4-F675-5BC97DBE2247}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6FD0BDB3-9A67-C7C4-F675-5BC97DBE2247}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6FD0BDB3-9A67-C7C4-F675-5BC97DBE2247}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F72622CB-2698-B631-2953-12BAA4C8EACE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F72622CB-2698-B631-2953-12BAA4C8EACE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F72622CB-2698-B631-2953-12BAA4C8EACE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F72622CB-2698-B631-2953-12BAA4C8EACE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80BE2A6D-9A1A-623C-7C06-9C3E2F804133}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80BE2A6D-9A1A-623C-7C06-9C3E2F804133}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80BE2A6D-9A1A-623C-7C06-9C3E2F804133}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80BE2A6D-9A1A-623C-7C06-9C3E2F804133}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -93,6 +105,8 @@ Global
 		{88B97761-329B-54E0-94E1-CCD8F32186E5} = {2369F8AB-3C8D-4118-BB87-F04AD45D5B02}
 		{C4D8F2A1-7B3E-4F9C-A8D6-5E1B9F2C8D3A} = {21DBF3EE-B66A-4759-A2F7-2A5E466E540E}
 		{6FD0BDB3-9A67-C7C4-F675-5BC97DBE2247} = {21DBF3EE-B66A-4759-A2F7-2A5E466E540E}
+		{F72622CB-2698-B631-2953-12BAA4C8EACE} = {2369F8AB-3C8D-4118-BB87-F04AD45D5B02}
+		{80BE2A6D-9A1A-623C-7C06-9C3E2F804133} = {21DBF3EE-B66A-4759-A2F7-2A5E466E540E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0D7B9789-07CE-492A-9DC4-C9823A73B2B6}

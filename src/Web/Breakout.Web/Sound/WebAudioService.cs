@@ -1,6 +1,7 @@
 #if BROWSER
 using System.Numerics;
 using System.Runtime.InteropServices.JavaScript;
+using System.Globalization;
 
 namespace Breakout.Game;
 
@@ -8,6 +9,7 @@ public partial class WebAudioService : IAudioService
 {
     private float _masterVolume = 1.0f;
     private bool _isMuted;
+    public string? LastErrorMessage { get; private set; }
 
     // bg music state tracked in C# — JS is only called when not muted
     private string? _pendingBgId;
@@ -43,14 +45,43 @@ public partial class WebAudioService : IAudioService
 
     public bool IsBackgroundMusicPlaying => !_isMuted && Interop.IsBgPlaying();
 
+    public async Task<bool> TryResumeAfterUserGestureAsync()
+    {
+        LastErrorMessage = null;
+        Interop.ResumeCtx();
+        await Task.Delay(150);
+
+        var state = Interop.GetState();
+        if (string.Equals(state, "running", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        var error = Interop.GetLastError();
+        LastErrorMessage = !string.IsNullOrWhiteSpace(error)
+            ? error
+            : string.Format(CultureInfo.InvariantCulture,
+                "AudioContext stayed in '{0}' state after user gesture.", state);
+        return false;
+    }
+
     public async Task<bool> PreloadSoundAsync(string soundId, string filePath)
     {
+        LastErrorMessage = null;
+
         try
         {
-            return await Interop.Preload(soundId, "/" + filePath);
+            var loaded = await Interop.Preload(soundId, "/" + filePath);
+            if (!loaded)
+            {
+                LastErrorMessage = Interop.GetLastError();
+            }
+
+            return loaded;
         }
-        catch
+        catch (Exception ex)
         {
+            LastErrorMessage = $"{ex.GetType().Name}: {ex.Message}";
             return false;
         }
     }
@@ -125,6 +156,12 @@ public partial class WebAudioService : IAudioService
 
         [JSImport("globalThis.breakoutAudio.isBgPlaying")]
         public static partial bool IsBgPlaying();
+
+        [JSImport("globalThis.breakoutAudio.getLastError")]
+        public static partial string GetLastError();
+
+        [JSImport("globalThis.breakoutAudio.getState")]
+        public static partial string GetState();
     }
 }
 #endif
