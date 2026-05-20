@@ -1,9 +1,10 @@
 using System.Diagnostics;
 using System.Numerics;
+using DrawnUi.Gaming;
 
 namespace Breakout.Game
 {
-    public partial class BreakoutGame : MauiGame
+    public partial class BreakoutGame : DrawnGame
     {
         #region GAME LOOP
 

@@ -17,13 +17,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game\Input\IInputController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Input\KeyboardController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Input\KeyState.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)GlobalAliases.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AppSvg.cs" />
     <!-- Helpers -->
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\AppConstants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\AppFonts.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\AppLanguage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\AppSettings.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\BlazorCompatExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\BrowserFullscreen.cs" />
     <!-- Resources - ResStrings for Web only (Mobile uses resx auto-generated) -->
     <!-- Game - main partials -->
     <Compile Include="$(MSBuildThisFileDirectory)Game\BreakoutGame.cs" />

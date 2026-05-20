@@ -2,9 +2,8 @@
 
 	<PropertyGroup>
 
-    <!--<TargetFrameworks>net10.0-android;</TargetFrameworks>-->
-    <!--<TargetFrameworks>net10.0-ios;</TargetFrameworks>-->
-    <!--<TargetFrameworks>net10.0-windows10.0.19041.0</TargetFrameworks>-->
+    <!-- use nugets or ref drawnui source-->
+    <UseSource>true</UseSource>
 
     <TargetFrameworks>net10.0-android;net10.0-ios;net10.0-maccatalyst</TargetFrameworks>
     <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net10.0-windows10.0.19041.0</TargetFrameworks>
@@ -82,15 +81,23 @@
     <None Include="..\README.md" Link="README.md" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(UseSource)' != 'true'">
+    <PackageReference Include="DrawnUi.Maui.Game" Version="1.10.0.1-preview1.1" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UseSource)' == 'true'">
+    <ProjectReference Include="..\..\..\DrawnUi\src\Maui\Addons\DrawnUi.Maui.Game\DrawnUi.Maui.Game.csproj" />
+  </ItemGroup>
+
   <ItemGroup>
-    
+
     <!--can replace this with usual plugin if PR is merged-->
     <PackageReference Include="AppoMobi.Preview.Plugin.Maui.Audio" Version="3.0.2.1-pre1" />
     <PackageReference Include="Bijington.Orbit.Input" Version="0.2.2-preview.1" />
-        <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.20" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
+      <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.20" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
     <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.20" />
-      </ItemGroup>
+  </ItemGroup>
 
   <ItemGroup Condition="$(TargetFramework.Contains('android'))">
     <PackageReference Include="SoundFlow" Version="1.2.1" />
@@ -108,8 +115,8 @@
     <ProjectReference Include="..\..\DrawnUi.Maui\src\Maui\Addons\DrawnUi.Maui.Game\DrawnUi.Maui.Game.csproj" />
   </ItemGroup>-->
 
+  <!-- Common game binary -->
   <ItemGroup>
-    <ProjectReference Include="..\..\..\DrawnUi\src\Maui\Addons\DrawnUi.Maui.Game\DrawnUi.Maui.Game.csproj" />
     <ProjectReference Include="..\Common\Breakout.Common.csproj" />
   </ItemGroup>
  

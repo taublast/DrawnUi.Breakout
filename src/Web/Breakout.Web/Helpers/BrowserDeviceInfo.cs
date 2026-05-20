@@ -1,16 +1,10 @@
-using System.Runtime.InteropServices.JavaScript;
+using DrawnUi.Views;
 
 namespace Breakout.Helpers;
 
 public static class BrowserDeviceInfo
 {
-    public static bool IsMobileBrowser() => BrowserInterop.IsMobileBrowser();
+    public static bool IsMobileBrowser() => BrowserApi.IsMobileBrowser();
 
     public static bool IsDesktopBrowser() => !IsMobileBrowser();
-}
-
-internal static partial class BrowserInterop
-{
-    [JSImport("globalThis.breakoutBrowser.isMobileBrowser")]
-    internal static partial bool IsMobileBrowser();
 }

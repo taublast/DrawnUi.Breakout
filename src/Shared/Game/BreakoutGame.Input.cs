@@ -1,10 +1,11 @@
 using Breakout.Game.Dialogs;
 using Breakout.Game.Input;
 using Breakout.Helpers;
+using DrawnUi.Gaming;
 
 namespace Breakout.Game
 {
-    public partial class BreakoutGame : MauiGame
+    public partial class BreakoutGame : DrawnGame
     {
         #region GESTURES AND KEYS
 

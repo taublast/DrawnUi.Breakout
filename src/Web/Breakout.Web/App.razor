@@ -11,16 +11,16 @@
 @code {
     protected override void OnInitialized()
     {
-        var lastSeenVersion = AppSettings.Get(AppVersion.LastSeenVersionKey, string.Empty);
+        var lastSeenVersion = AppSettings.Get(AppConstants.LastSeenVersionKey, string.Empty);
         if (string.IsNullOrWhiteSpace(lastSeenVersion))
         {
-            AppSettings.Set(AppVersion.LastSeenVersionKey, AppVersion.Current);
+            AppSettings.Set(AppConstants.LastSeenVersionKey, AppConstants.Current);
             return;
         }
 
-        if (!string.Equals(lastSeenVersion, AppVersion.Current, StringComparison.Ordinal))
+        if (!string.Equals(lastSeenVersion, AppConstants.Current, StringComparison.Ordinal))
         {
-            AppSettings.Set(AppVersion.LastSeenVersionKey, AppVersion.Current);
+            AppSettings.Set(AppConstants.LastSeenVersionKey, AppConstants.Current);
             Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
         }
     }

@@ -2,14 +2,18 @@ using AppoMobi.Specials;
 using Breakout.Game.Dialogs;
 using Breakout.Game.Input;
 using Breakout.Helpers;
+#if BROWSER
+using DrawnUi.Views;
+#endif
 #if !BROWSER
 using DrawnUi.Controls;
 #endif
 using System.Globalization;
+using DrawnUi.Gaming;
 
 namespace Breakout.Game
 {
-    public partial class BreakoutGame : MauiGame
+    public partial class BreakoutGame : DrawnGame
     {
         #region DIALOGS
 
@@ -349,10 +353,13 @@ namespace Breakout.Game
                                 }
                                 .Initialize(me =>
                                 {
-                                    me.IsToggled = BrowserFullscreen.IsEnabled();
-                                    me.Toggled += (_, state) =>
+                                    me.IsToggled = Superview is Canvas canvas && canvas.IsFullscreen;
+                                    me.Toggled += async (_, state) =>
                                     {
-                                        BrowserFullscreen.SetEnabled(state);
+                                        if (Superview is Canvas currentCanvas)
+                                        {
+                                            await BrowserApi.SetFullscreenEnabledAsync(currentCanvas.HostReference, state);
+                                        }
                                     };
                                 }),
                         }
@@ -361,7 +368,7 @@ namespace Breakout.Game
 
                     new SkiaRichLabel()
                     {
-                        Text = AppVersion.Current,
+                        Text = AppConstants.Current,
                         FontFamily = AppFonts.Default,
                         FontSize = 10,
                         TextColor = AmstradColors.White,

@@ -1,10 +1,11 @@
 using Breakout.Helpers;
 using System.Numerics;
 using AppoMobi.Specials;
+using DrawnUi.Gaming;
 
 namespace Breakout.Game
 {
-    public partial class BreakoutGame : MauiGame
+    public partial class BreakoutGame : DrawnGame
     {
         private static readonly (string SoundId, string FilePath)[] StartupAudioAssets =
         {

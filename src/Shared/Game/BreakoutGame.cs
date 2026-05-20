@@ -7,21 +7,21 @@ using System.Diagnostics;
 using System.Numerics;
 using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
-using static Breakout.Game.BreakoutGame;
+using DrawnUi.Gaming;
 
 namespace Breakout.Game
 {
-    public partial class BreakoutGame : MauiGame
+    public partial class BreakoutGame : DrawnGame
     {
         #region CONSTANTS
 
         public const int WIDTH = 360;
         public const int HEIGHT = 760;
 
-        public const float BALL_SPEED = 375f;
+        public const float BALL_SPEED = 295f;
         public const float POWERUP_SPEED = 120;
         public const float PADDLE_SPEED = 475;
-        public const float PADDLE_WIDTH = 80;
+        public const float PADDLE_WIDTH = 85;
         public const int MAX_BRICKS_COLUMNS = 8;
         public const int MAX_BRICKS_ROWS = 15;
         public const int MAX_BRICKS = MAX_BRICKS_COLUMNS * MAX_BRICKS_ROWS + 1;
@@ -73,7 +73,7 @@ namespace Breakout.Game
 
 #if ANDROID //|| BROWSER
             //prefer skipping frames than go smooth because this game is dynamic
-            MauiGame.FrameInterpolatorDisabled = true;
+            DrawnGame.FrameInterpolatorDisabled = true;
 #endif
 
             BindingContext = this;
@@ -1449,7 +1449,7 @@ namespace Breakout.Game
         {
             foreach (var ball in ActiveBalls)
             {
-                ball.SpeedRatio = 1 + 0.05f * (Level - 1);
+                ball.SpeedRatio = 1 + 0.033f * (Level - 1);
             }
         }
 
@@ -1695,7 +1695,7 @@ namespace Breakout.Game
             {
                 foreach (var ball in ActiveBalls)
                 {
-                    ball.SpeedRatio *= 2.0f;
+                    ball.SpeedRatio *= 1.5f;
                 }
             }
             else if (powerUpType == PowerupType.MultiBall)

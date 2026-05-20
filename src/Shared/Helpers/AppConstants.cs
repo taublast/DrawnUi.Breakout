@@ -1,6 +1,6 @@
 namespace Breakout.Helpers;
 
-public static class AppVersion
+public static class AppConstants
 {
     public const string Current = "1.0.1.9";
 

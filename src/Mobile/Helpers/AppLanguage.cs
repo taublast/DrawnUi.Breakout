@@ -4,24 +4,8 @@ using System.Globalization;
 
 namespace Breakout.Resources.Fonts;
 
-public static class AppLanguage
+public static partial class AppLanguage
 {
-    /// <summary>
-    /// Enabled languages
-    /// </summary>
-    public static List<string> EnabledLanguages = new List<string>
-    {
-        "en", //FIRST is fallback
-        "de",
-        "es",
-        "fr",
-        "it",
-        "ru",
-        "ja",
-        "ko",
-        "zh",
-    };
-
     /// <summary>
     /// Applies the selected language or detects device language on first start
     /// </summary>
@@ -49,28 +33,6 @@ public static class AppLanguage
         {
             var lang = AppSettings.Get(AppSettings.Lang, AppSettings.LangDefault);
             Set(lang);
-        }
-    }
-
-    public static void Set(string lang)
-    {
-        ResStrings.Culture = CultureInfo.CreateSpecificCulture(lang);
-        Thread.CurrentThread.CurrentCulture = ResStrings.Culture;
-        Thread.CurrentThread.CurrentUICulture = ResStrings.Culture;
-
-        AppSettings.Set(AppSettings.Lang, lang);
-
-        switch (lang)
-        {
-            case "zh":
-                AppFonts.UseGameFont(AppFonts.GameZh, 1.1);
-                break;
-            case "ko":
-                AppFonts.UseGameFont(AppFonts.GameKo, 1.1);
-                break;
-            default:
-                AppFonts.UseGameFont(AppFonts.Game);
-                break;
         }
     }
 

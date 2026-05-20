@@ -6,7 +6,7 @@ namespace Breakout.Game
 
 #if PREVIEWS
 
-    public partial class BreakoutGame : MauiGame
+    public partial class BreakoutGame : DrawnGame
     {
         public void ApplyPreviewState(PreviewAppState previewAppState)
         {

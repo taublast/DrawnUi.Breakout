@@ -2,11 +2,12 @@ using System.Diagnostics;
 using Breakout.Game.Controls;
 using Breakout.Game.Dialogs;
 using Breakout.Game.Input;
+using DrawnUi.Gaming;
 using SkiaSharp;
 
 namespace Breakout.Game
 {
-    public partial class BreakoutGame : MauiGame
+    public partial class BreakoutGame : DrawnGame
     {
         #region UI
 

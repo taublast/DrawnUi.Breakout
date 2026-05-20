@@ -1,6 +1,7 @@
 using System.Text.Json;
 #if BROWSER
 using System.Runtime.InteropServices.JavaScript;
+using DrawnUi.Views;
 #endif
 
 namespace Breakout.Helpers;
@@ -48,7 +49,7 @@ public static class AppSettings
     public static bool GetInitialInputPressEnabledDefault()
     {
 #if BROWSER
-        return BrowserDeviceSettingsInterop.IsMobileBrowser();
+        return BrowserApi.IsMobileBrowser();
 #else
         return InputPressEnabledDefault;
 #endif
@@ -132,11 +133,5 @@ internal static partial class BrowserStorageInterop
 
     [JSImport("globalThis.breakoutStorage.set")]
     internal static partial void Set(string key, string value);
-}
-
-internal static partial class BrowserDeviceSettingsInterop
-{
-    [JSImport("globalThis.breakoutBrowser.isMobileBrowser")]
-    internal static partial bool IsMobileBrowser();
 }
 #endif

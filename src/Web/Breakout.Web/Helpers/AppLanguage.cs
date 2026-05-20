@@ -2,26 +2,12 @@ using AppoMobi.Specials;
 using Breakout.Game;
 using Breakout.Game.Controls;
 using Breakout.Helpers;
-using System.Runtime.InteropServices.JavaScript;
 using System.Globalization;
 
 namespace Breakout.Resources.Fonts;
 
-public static class AppLanguage
+public static partial class AppLanguage
 {
-    public static List<string> EnabledLanguages = new()
-    {
-        "en",
-        "de",
-        "es",
-        "fr",
-        "it",
-        "ru",
-        "ja",
-        "ko",
-        "zh",
-    };
-
     public static void ApplySelected()
     {
         var lang = AppSettings.Get(AppSettings.Lang, AppSettings.LangDefault);
@@ -40,30 +26,10 @@ public static class AppLanguage
         Set(lang);
     }
 
-    public static void Set(string lang)
-    {
-        ResStrings.Culture = CultureInfo.CreateSpecificCulture(lang);
-
-        AppSettings.Set(AppSettings.Lang, lang);
-
-        switch (lang)
-        {
-            case "zh":
-                AppFonts.UseGameFont(AppFonts.GameZh, 1.1);
-                break;
-            case "ko":
-                AppFonts.UseGameFont(AppFonts.GameKo, 1.1);
-                break;
-            default:
-                AppFonts.UseGameFont(AppFonts.Game);
-                break;
-        }
-    }
-
     public static void SetAndApply(string lang)
     {
         Set(lang);
-        BrowserPageInterop.Reload();
+        BrowserApi.ReloadPage();
     }
 
     public static void SelectNextAndSet()
@@ -103,7 +69,9 @@ public static class AppLanguage
                 UseCache = SkiaCacheType.Image,
                 CornerRadius = 8,
                 BackgroundColor = Colors.Black,
-                StrokeColor = isSelected ? BreakoutGame.UiElements.ColorPrimary : BreakoutGame.UiElements.ColorIconSecondary,
+                StrokeColor = isSelected
+                    ? BreakoutGame.UiElements.ColorPrimary
+                    : BreakoutGame.UiElements.ColorIconSecondary,
                 StrokeWidth = isSelected ? 2 : 1,
                 BevelType = BevelType.Bevel,
                 Bevel = new SkiaBevel()
@@ -203,27 +171,6 @@ public static class AppLanguage
         };
 
         Game.Dialogs.GameDialog.Show(game, pickerContent, ResStrings.BtnClose.ToUpperInvariant(), null,
-            onOk: () =>
-            {
-                Tasks.StartDelayed(TimeSpan.FromMilliseconds(50), () => { game.ShowOptions(); });
-            });
+            onOk: () => { Tasks.StartDelayed(TimeSpan.FromMilliseconds(50), () => { game.ShowOptions(); }); });
     }
-
-    public static string GetCurrentCode()
-    {
-        var lang = AppSettings.Get(AppSettings.Lang, AppSettings.LangDefault);
-        if (string.IsNullOrWhiteSpace(lang))
-        {
-            lang = EnabledLanguages.First();
-        }
-
-        return lang.ToUpperInvariant();
-    }
-
-}
-
-internal static partial class BrowserPageInterop
-{
-    [JSImport("globalThis.location.reload")]
-    internal static partial void Reload();
 }

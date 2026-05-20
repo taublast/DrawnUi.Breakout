@@ -10,19 +10,31 @@
     <WasmBuildNative>true</WasmBuildNative>
     <DefineConstants>$(DefineConstants);BROWSER</DefineConstants>
     <RootNamespace>Breakout</RootNamespace>
+
+    <!-- use nugets or ref drawnui source-->
+    <UseSource>true</UseSource>
+
   </PropertyGroup>
 
   <!-- Shared game code -->
   <Import Project="../../Shared/Breakout.Shared.projitems" Label="Shared" />
 
+  <ItemGroup Condition="'$(UseSource)' != 'true'">
+    <PackageReference Include="DrawnUi.Blazor.Game" Version="1.10.0.1-preview1.1" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UseSource)' == 'true'">
+    <ProjectReference Include="..\..\..\..\DrawnUi\src\Blazor\Addons\DrawnUi.Blazor.Game\DrawnUi.Blazor.Game.csproj" />
+  </ItemGroup>
+
+  <!-- Common game binary -->
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.7" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.7" PrivateAssets="all" />
+    <ProjectReference Include="..\..\Common\Breakout.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\DrawnUi\src\Blazor\Addons\DrawnUi.Gaming.Blazor\DrawnUi.Gaming.Blazor.csproj" />
-    <ProjectReference Include="..\..\Common\Breakout.Common.csproj" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.7" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
