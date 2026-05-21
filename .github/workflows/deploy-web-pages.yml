@@ -13,6 +13,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      pages-artifact-id: ${{ steps.upload-pages-artifact.outputs.artifact_id }}
 
     steps:
       - name: Checkout
@@ -63,9 +65,11 @@ jobs:
           New-Item -ItemType File -Path (Join-Path $siteRoot '.nojekyll') -Force | Out-Null
 
       - name: Upload Pages artifact
+        id: upload-pages-artifact
         uses: actions/upload-pages-artifact@v4
         with:
           path: ${{ runner.temp }}/github-pages/wwwroot
+          retention-days: 1
 
   deploy:
     needs: build
@@ -81,3 +85,20 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  cleanup:
+    needs:
+      - build
+      - deploy
+    if: ${{ needs.build.outputs.pages-artifact-id != '' }}
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+
+    steps:
+      - name: Delete Pages artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          ARTIFACT_ID: ${{ needs.build.outputs.pages-artifact-id }}
+        run: gh api -X DELETE /repos/$env:REPOSITORY/actions/artifacts/$env:ARTIFACT_ID
