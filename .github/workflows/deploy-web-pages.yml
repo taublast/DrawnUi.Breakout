@@ -101,4 +101,4 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           REPOSITORY: ${{ github.repository }}
           ARTIFACT_ID: ${{ needs.build.outputs.pages-artifact-id }}
-        run: gh api -X DELETE /repos/$env:REPOSITORY/actions/artifacts/$env:ARTIFACT_ID
+        run: gh api -X DELETE "/repos/${REPOSITORY}/actions/artifacts/${ARTIFACT_ID}"

@@ -37,8 +37,14 @@
         globalThis.writeVersionedScript = (src, extraAttributes = '') => {
             document.write(`<script src="${src}?v=${globalThis.breakoutAssetVersion}" ${extraAttributes}><\/script>`);
         };
-        globalThis.writeModuleImport = (src) => {
-            document.write(`<script type="module">import '${src}';<\/script>`);
+        globalThis.preloadModule = (src) => import(src);
+
+        globalThis.ensureBlazorRuntime = () => {
+            if (!globalThis.breakoutBlazorModule) {
+                globalThis.breakoutBlazorModule = globalThis.preloadModule('./_framework/blazor.webassembly.js');
+            }
+
+            return globalThis.breakoutBlazorModule;
         };
 
         globalThis.breakoutBotDetection = {
@@ -238,7 +244,7 @@
     <script>
         if (!globalThis.breakoutBotDetection.isBot()) {
             globalThis.writeVersionedScript('_content/DrawnUi.Blazor.Core/drawnui-loader.js');
-            globalThis.writeModuleImport('./_framework/blazor.webassembly.js');
+            globalThis.ensureBlazorRuntime();
         }
     </script>
     <script>
@@ -417,9 +423,10 @@
             clearBlazorRecoveryReloadState();
             globalThis.breakoutBotDetection.applyFallback();
         } else {
-            globalThis.DrawnUiLoader.startBlazorWithLoader({
-                applicationCulture: startupCulture
-            }, loaderLabels)
+            globalThis.ensureBlazorRuntime()
+                .then(() => globalThis.DrawnUiLoader.startBlazorWithLoader({
+                    applicationCulture: startupCulture
+                }, loaderLabels))
                 .then(() => {
                     clearBlazorRecoveryReloadState();
                 })
