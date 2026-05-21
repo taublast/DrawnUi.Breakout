@@ -8,7 +8,7 @@
       "cwd": "${workspaceFolder}",
       "browser": "edge",
       "url": "https://localhost:60395",
-      "webRoot": "${workspaceFolder}/src/Web/Breakout.Web/wwwroot",
+      "webRoot": "${workspaceFolder}/src/Web/wwwroot",
       "timeout": 60000
     },
     {
@@ -16,7 +16,7 @@
       "type": "blazorwasm",
       "request": "attach",
       "url": "https://localhost:60395",
-      "webRoot": "${workspaceFolder}/src/Web/Breakout.Web/wwwroot",
+      "webRoot": "${workspaceFolder}/src/Web/wwwroot",
       "timeout": 60000
     }
   ]

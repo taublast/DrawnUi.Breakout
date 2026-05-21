@@ -29,7 +29,7 @@ jobs:
         uses: actions/configure-pages@v5
 
       - name: Restore required workloads
-        run: dotnet workload restore ./src/Web/Breakout.Web/Breakout.Web.csproj
+        run: dotnet workload restore ./src/Web/Breakout.Web.csproj
 
       - name: Publish Blazor WebAssembly app
         shell: pwsh
@@ -41,7 +41,7 @@ jobs:
               Remove-Item $publishRoot -Recurse -Force
           }
 
-          dotnet publish ./src/Web/Breakout.Web/Breakout.Web.csproj -c Release -o $publishRoot
+          dotnet publish ./src/Web/Breakout.Web.csproj -c Release -o $publishRoot
           if ($LASTEXITCODE -ne 0) {
               exit $LASTEXITCODE
           }

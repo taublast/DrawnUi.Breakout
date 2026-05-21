@@ -11,7 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Breakout.Mobile", "src\Mobile\Breakout.Mobile.csproj", "{4DBF783C-9D94-0EEB-4983-939FF2D7049C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Breakout.Web", "src\Web\Breakout.Web\Breakout.Web.csproj", "{A3881CCF-435D-1C81-19B7-5838C960B74E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Breakout.Web", "src\Web\Breakout.Web.csproj", "{A3881CCF-435D-1C81-19B7-5838C960B74E}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Breakout.Shared", "src\Shared\Breakout.Shared.shproj", "{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}"
 EndProject

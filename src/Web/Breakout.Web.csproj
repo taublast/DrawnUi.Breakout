@@ -17,19 +17,19 @@
   </PropertyGroup>
 
   <!-- Shared game code -->
-  <Import Project="../../Shared/Breakout.Shared.projitems" Label="Shared" />
+  <Import Project="../Shared/Breakout.Shared.projitems" Label="Shared" />
 
   <ItemGroup Condition="'$(UseSource)' != 'true'">
     <PackageReference Include="DrawnUi.Blazor.Game" Version="1.10.0.1-preview1.1" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(UseSource)' == 'true'">
-    <ProjectReference Include="..\..\..\..\DrawnUi\src\Blazor\Addons\DrawnUi.Blazor.Game\DrawnUi.Blazor.Game.csproj" />
+    <ProjectReference Include="..\..\..\DrawnUi\src\Blazor\Addons\DrawnUi.Blazor.Game\DrawnUi.Blazor.Game.csproj" />
   </ItemGroup>
 
   <!-- Common game binary -->
   <ItemGroup>
-    <ProjectReference Include="..\..\Common\Breakout.Common.csproj" />
+    <ProjectReference Include="..\Common\Breakout.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>
