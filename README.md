@@ -1,6 +1,16 @@
 # Bricks Breaker
 
-A cross-platform Arkanoid/Breakout style game to play on **iOS, MacCatalyst, Android and Windows** and now also [on the Web](https://taublast.github.io/DrawnUi.Breakout/), made with DrawnUI for .NET.
+A cross-platform Arkanoid/Breakout style game to play on **iOS, MacCatalyst, Android, Windows and Browse**, made with DrawnUI for .NET.
+
+### Install
+
+* [Play in browser](https://taublast.github.io/DrawnUi.Breakout) 
+
+* [Google Play](https://play.google.com/store/apps/details?id=com.appomobi.drawnui.breakout) 
+
+* [AppStore](https://apps.apple.com/us/app/bricks-breaker/id6749823869?platform=iphone) 
+
+* Run on Windows and MacCatalyst compiling from source code
 
 ## Game Features
 * 12 levels of madness, ball versus bricks!
@@ -19,15 +29,6 @@ Support: [ask your question here](https://github.com/taublast/DrawnUi.Breakout/d
 
 https://github.com/user-attachments/assets/0bd6e340-a895-42e6-83f4-558f2323d37d
 
-### Install
-
-* Run [in browser](https://taublast.github.io/DrawnUi.Breakout/)
-
-* [Google Play](https://play.google.com/store/apps/details?id=com.appomobi.drawnui.breakout) 
-
-* [AppStore](https://apps.apple.com/us/app/bricks-breaker/id6749823869?platform=iphone) 
-
-* Run on Windows and MacCatalyst compiling from source code
 
 ### What's New
 
