@@ -23,8 +23,8 @@ DrawnExtensions.RegisterFont("FontGameZh", BuildAssetUrl(assetBaseUri, "fonts/Ma
 DrawnExtensions.RegisterFont("FontSystem", BuildAssetUrl(assetBaseUri, "fonts/amstrad_cpc464.ttf"));
 
 // Game images
-DrawnExtensions.RegisterImage(@"Images\glass.jpg", BuildAssetUrl(assetBaseUri, "Images/glass.jpg"));
-DrawnExtensions.RegisterImage(@"Images\back.jpg", BuildAssetUrl(assetBaseUri, "Images/back.jpg"));
+DrawnExtensions.RegisterImage("Images/glass.jpg", BuildAssetUrl(assetBaseUri, "Images/glass.jpg"));
+DrawnExtensions.RegisterImage("Images/back.jpg", BuildAssetUrl(assetBaseUri, "Images/back.jpg"));
 
 var host = await builder.UseDrawnUiAsync(new DrawnUiStartupSettings
 {
