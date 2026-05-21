@@ -132,6 +132,7 @@ publish/
 # Publish Web Output
 *.[Pp]ublish.xml
 *.azurePubxml
+artifacts/
 
 # NuGet Packages Directory
 packages/
