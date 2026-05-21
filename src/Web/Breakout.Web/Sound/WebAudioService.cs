@@ -77,7 +77,7 @@ public partial class WebAudioService : IAudioService
 
         try
         {
-            var loaded = await Interop.Preload(soundId, "/" + filePath);
+            var loaded = await Interop.Preload(soundId, NormalizeAssetPath(filePath));
             if (!loaded)
             {
                 LastErrorMessage = Interop.GetLastError();
@@ -137,6 +137,11 @@ public partial class WebAudioService : IAudioService
     {
         _pendingBgId = null;
         try { Interop.StopBg(); } catch { }
+    }
+
+    private static string NormalizeAssetPath(string filePath)
+    {
+        return filePath.Replace('\\', '/').TrimStart('/');
     }
 
     private static partial class Interop

@@ -9,20 +9,22 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
-DrawnExtensions.RegisterFont("FontEmoji", "/fonts/NotoColorEmoji-Regular.ttf");
+var assetBaseUri = new Uri(builder.HostEnvironment.BaseAddress);
+
+DrawnExtensions.RegisterFont("FontEmoji", BuildAssetUrl(assetBaseUri, "fonts/NotoColorEmoji-Regular.ttf"));
 
 // Text / UI fonts
-DrawnExtensions.RegisterFont("FontText", "/fonts/ZenMaruGothic-Bold.ttf");
+DrawnExtensions.RegisterFont("FontText", BuildAssetUrl(assetBaseUri, "fonts/ZenMaruGothic-Bold.ttf"));
 
 // Game fonts
-DrawnExtensions.RegisterFont("FontGame", "/fonts/DelaGothicOne-Regular.ttf");
-DrawnExtensions.RegisterFont("FontGameKo", "/fonts/BlackHanSans-Regular.ttf");
-DrawnExtensions.RegisterFont("FontGameZh", "/fonts/MaShanZheng-Regular.ttf");
-DrawnExtensions.RegisterFont("FontSystem", "/fonts/amstrad_cpc464.ttf");
+DrawnExtensions.RegisterFont("FontGame", BuildAssetUrl(assetBaseUri, "fonts/DelaGothicOne-Regular.ttf"));
+DrawnExtensions.RegisterFont("FontGameKo", BuildAssetUrl(assetBaseUri, "fonts/BlackHanSans-Regular.ttf"));
+DrawnExtensions.RegisterFont("FontGameZh", BuildAssetUrl(assetBaseUri, "fonts/MaShanZheng-Regular.ttf"));
+DrawnExtensions.RegisterFont("FontSystem", BuildAssetUrl(assetBaseUri, "fonts/amstrad_cpc464.ttf"));
 
 // Game images
-DrawnExtensions.RegisterImage(@"Images\glass.jpg", "/Images/glass.jpg");
-DrawnExtensions.RegisterImage(@"Images\back.jpg", "/Images/back.jpg");
+DrawnExtensions.RegisterImage(@"Images\glass.jpg", BuildAssetUrl(assetBaseUri, "Images/glass.jpg"));
+DrawnExtensions.RegisterImage(@"Images\back.jpg", BuildAssetUrl(assetBaseUri, "Images/back.jpg"));
 
 var host = await builder.UseDrawnUiAsync(new DrawnUiStartupSettings
 {
@@ -32,3 +34,8 @@ var host = await builder.UseDrawnUiAsync(new DrawnUiStartupSettings
 AppLanguage.ApplySelected();
 
 await host.RunAsync();
+
+static string BuildAssetUrl(Uri baseUri, string relativePath)
+{
+    return new Uri(baseUri, relativePath).ToString();
+}
