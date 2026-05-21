@@ -12,7 +12,7 @@
     <RootNamespace>Breakout</RootNamespace>
 
     <!-- use nugets or ref drawnui source-->
-    <UseSource>true</UseSource>
+    <UseSource>false</UseSource>
 
   </PropertyGroup>
 
