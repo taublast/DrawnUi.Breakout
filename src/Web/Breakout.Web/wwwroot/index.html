@@ -27,7 +27,6 @@
     <title>Bricks Breaker</title>
     <base href="/" />
     <link rel="preload" id="webassembly" />
-    <link rel="preload" id="blazor-webassembly-script" href="_framework/blazor.webassembly.js" as="script" />
     <link rel="preload" href="_content/DrawnUi.Blazor.Core/drawnui-logo.svg" as="image" type="image/svg+xml" />
     <link rel="icon" type="image/svg+xml" href="_content/DrawnUi.Blazor.Core/drawnui-logo.svg" />
     <script>
@@ -38,8 +37,8 @@
         globalThis.writeVersionedScript = (src, extraAttributes = '') => {
             document.write(`<script src="${src}?v=${globalThis.breakoutAssetVersion}" ${extraAttributes}><\/script>`);
         };
-        globalThis.writeScript = (src, extraAttributes = '') => {
-            document.write(`<script src="${src}" ${extraAttributes}><\/script>`);
+        globalThis.writeModuleImport = (src) => {
+            document.write(`<script type="module">import '${src}';<\/script>`);
         };
 
         globalThis.breakoutBotDetection = {
@@ -239,10 +238,7 @@
     <script>
         if (!globalThis.breakoutBotDetection.isBot()) {
             globalThis.writeVersionedScript('_content/DrawnUi.Blazor.Core/drawnui-loader.js');
-            const blazorWebAssemblyScript = globalThis.document
-                .getElementById('blazor-webassembly-script')
-                ?.getAttribute('href') ?? '_framework/blazor.webassembly.js';
-            globalThis.writeScript(blazorWebAssemblyScript, 'autostart="false"');
+            globalThis.writeModuleImport('./_framework/blazor.webassembly.js');
         }
     </script>
     <script>

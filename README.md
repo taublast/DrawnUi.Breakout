@@ -27,6 +27,8 @@ Please star ⭐ if you like it!
 
 Support: [ask your question here](https://github.com/taublast/DrawnUi.Breakout/discussions)
 
+🤓 Read the article: [Breakout: Building A Cross-Platform Game in .NET MAUI with DrawnUI and Hot Preview](https://taublast.github.io/posts/Breakout)
+
 https://github.com/user-attachments/assets/0bd6e340-a895-42e6-83f4-558f2323d37d
 
 
@@ -53,7 +55,6 @@ Esc to open Settings
 
 Discover game content on your own, no sploilers here!
 
-🤓 Read the article: [Breakout: Building A Cross-Platform Game in .NET MAUI with DrawnUI and Hot Preview](https://taublast.github.io/posts/Breakout)
 
 ## App Features
 * Cross-platform for iOS, MacCatalyst, Android and Windows with hardware acceleration
