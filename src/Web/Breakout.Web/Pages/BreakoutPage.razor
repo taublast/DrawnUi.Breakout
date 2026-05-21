@@ -1,0 +1,87 @@
+@page "/"
+@using DrawnUi.Controls
+@using DrawnUi.Draw
+@using DrawnUi.Infrastructure.Enums
+@using DrawnUi.Views
+
+<PageTitle>Bricks Breaker</PageTitle>
+
+<div class="game-page"
+     draggable="false"
+     @oncontextmenu:preventDefault="true"
+     @oncontextmenu:stopPropagation="true">
+    <AspectLockedViewportHost
+        AspectWidth="@ViewportWidth"
+        AspectHeight="@ViewportHeight"
+        BackgroundColor="#00000000"
+        IsFullscreen="@_isFullscreen"
+        EmbeddedMargin="0 auto"
+        FitVisibleHeight="true"
+        ViewportOffsetPixels="0">
+
+        <AspectLockedCanvas 
+            UpdateMode="@UpdateModeType.Constant" 
+            @ref="_canvas"
+            Content="_canvasContent"
+            LogicalWidth="@ViewportWidth"
+            LogicalHeight="@ViewportHeight"
+            HorizontalOptions="LayoutOptions.Fill"
+            VerticalOptions="LayoutOptions.Fill"
+            BackgroundColor="#00000000"
+            RenderingMode="@RenderingModeType.Accelerated"
+            Gestures="@GesturesMode.Lock"
+            IsFullscreen="@_isFullscreen"
+            IsFullscreenChanged="OnFullscreenChanged"/>
+
+    </AspectLockedViewportHost>
+
+</div>
+
+@code {
+
+    private const float ViewportWidth = 360f;
+    private const float ViewportHeight = 760f;
+
+    private SkiaControl _canvasContent;
+    private AspectLockedCanvas _canvas;
+    private bool _isFullscreen;
+
+    public BreakoutPage()
+    {
+        _canvasContent = new SkiaLayer()
+        {
+            VerticalOptions = LayoutOptions.Fill,
+            HorizontalOptions = LayoutOptions.Fill,
+            Children =
+            {
+                new Breakout.Game.BreakoutGame()
+                {
+                    WidthRequest = ViewportWidth,
+                    HeightRequest = ViewportHeight,
+                    HorizontalOptions = LayoutOptions.Center,
+                    VerticalOptions = LayoutOptions.Center,
+                },
+#if DEBUG
+                new SkiaLabelFps()
+                {
+                    Margin = new(0, 0, 4, 24),
+                    VerticalOptions = LayoutOptions.End,
+                    HorizontalOptions = LayoutOptions.End,
+                    Rotation = -45,
+                    FontSize = 11,
+                    BackgroundColor = Colors.DarkRed,
+                    TextColor = Colors.White,
+                    ZIndex = 110,
+                }
+#endif
+            }
+        };
+    }
+
+    private Task OnFullscreenChanged(bool isFullscreen)
+    {
+        _isFullscreen = isFullscreen;
+        _canvas?.InvalidateChildren();
+        return Task.CompletedTask;
+    }
+}

@@ -1,0 +1,40 @@
+.game-page {
+    position: relative;
+    background-color: #090b10;
+    overflow: hidden;
+    isolation: isolate;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.game-page::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+        radial-gradient(circle at center, rgba(0, 0, 0, 0) 18%, rgba(0, 0, 0, 0.45) 48%, rgba(0, 0, 0, 0.66) 66%, rgba(0, 0, 0, 0.9) 100%),
+        url('/Images/back.jpg');
+    background-position: center center, center center;
+    background-repeat: no-repeat, no-repeat;
+    background-size: cover, cover;
+    filter: brightness(0.5);
+    transform: scale(1.02);
+    transform-origin: center;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.game-page::deep .aspect-locked-host {
+    position: relative;
+    background: transparent;
+}
+
+.game-page::deep .aspect-locked-host,
+.game-page::deep canvas {
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-user-drag: none;
+}

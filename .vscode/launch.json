@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug Breakout.Web",
+      "type": "blazorwasm",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "browser": "edge",
+      "url": "https://localhost:60395",
+      "webRoot": "${workspaceFolder}/src/Web/Breakout.Web/wwwroot",
+      "timeout": 60000
+    },
+    {
+      "name": "Attach Breakout.Web",
+      "type": "blazorwasm",
+      "request": "attach",
+      "url": "https://localhost:60395",
+      "webRoot": "${workspaceFolder}/src/Web/Breakout.Web/wwwroot",
+      "timeout": 60000
+    }
+  ]
+}

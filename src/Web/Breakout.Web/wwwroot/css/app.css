@@ -1,0 +1,97 @@
+﻿html, body {
+    font-family: "Segoe UI Variable Text", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    /* Prevent browser swipe-to-navigate and overscroll effects (e.g. Telegram in-app browser swipe-to-close) */
+    overscroll-behavior: none;
+    touch-action: none;
+}
+
+html,
+body,
+#app {
+    min-height: 100%;
+    height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    height: 100vh;
+    color-scheme: dark;
+    color: #eef2f8;
+    background:
+        radial-gradient(circle at 18% 20%, rgba(75, 142, 249, 0.16), transparent 0 24%),
+        radial-gradient(circle at 82% 14%, rgba(120, 84, 158, 0.18), transparent 0 26%),
+        radial-gradient(circle at 50% 100%, rgba(242, 85, 54, 0.12), transparent 0 28%),
+        linear-gradient(180deg, #11131b 0%, #090b10 62%, #05060a 100%);
+}
+
+#app > .page {
+    min-height: 100vh;
+    height: 100vh;
+}
+
+@supports (height: 100dvh) {
+    body {
+        min-height: 100dvh;
+        height: 100dvh;
+    }
+
+    #app > .page {
+        min-height: 100dvh;
+        height: 100dvh;
+    }
+}
+
+#app > .page > main {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+    height: 100%;
+}
+
+#app > .page > main > .content {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    height: 100%;
+    padding: 0;
+}
+
+#app > .page > main > .content > .xaml-element {
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.game-page {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    height: 100%;
+    width: 100%;
+}
+
+#blazor-error-ui {
+    color-scheme: light only;
+    background: lightyellow;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+}
+
+/* boot loader styles live in _content/DrawnUi.Blazor.Core/drawnui-loader.css */
+

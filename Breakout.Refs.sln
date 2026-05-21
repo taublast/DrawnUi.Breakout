@@ -1,0 +1,126 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11201.2
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "DrawnUi.Shared", "..\DrawnUi\src\Shared\DrawnUi.Shared.shproj", "{C7C09E4D-077A-4D88-B5FD-0C5AA6E56E07}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrawnUi.Maui", "..\DrawnUi\src\Maui\DrawnUi\DrawnUi.Maui.csproj", "{271D08CE-B54F-D972-9739-FC773C6487ED}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SharedGame", "..\DrawnUi\src\SharedGame\SharedGame.shproj", "{F1532DEC-E3EE-4616-8F16-B594C891FCC3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrawnUi.Maui.Game", "..\DrawnUi\src\Maui\Addons\DrawnUi.Maui.Game\DrawnUi.Maui.Game.csproj", "{009C691E-7C5F-DE88-E25A-DB18AE01FEEB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Maui", "Maui", "{04747C2C-7FC6-4C42-884A-9E35D3DACD9A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Blazor", "Blazor", "{21DBF3EE-B66A-4759-A2F7-2A5E466E540E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{2369F8AB-3C8D-4118-BB87-F04AD45D5B02}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrawnUi.Blazor.Wasm", "..\DrawnUi\src\Blazor\DrawnUi.Wasm\DrawnUi.Blazor.Wasm.csproj", "{5A35945D-257B-5279-BDEE-9479AA38269C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Breakout.Mobile", "src\Mobile\Breakout.Mobile.csproj", "{4DBF783C-9D94-0EEB-4983-939FF2D7049C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Breakout.Web", "src\Web\Breakout.Web\Breakout.Web.csproj", "{A3881CCF-435D-1C81-19B7-5838C960B74E}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Breakout.Shared", "src\Shared\Breakout.Shared.shproj", "{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Breakout.Common", "src\Common\Breakout.Common.csproj", "{88B97761-329B-54E0-94E1-CCD8F32186E5}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "DrawnUi.SharedNet", "..\DrawnUi\src\SharedNet\DrawnUi.SharedNet.shproj", "{C4D8F2A1-7B3E-4F9C-A8D6-5E1B9F2C8D3A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrawnUi.Blazor", "..\DrawnUi\src\Blazor\DrawnUi\DrawnUi.Blazor.csproj", "{6FD0BDB3-9A67-C7C4-F675-5BC97DBE2247}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppoMobi.Gestures", "..\AppoMobi.Maui.Gestures\src\AppoMobi.Gestures\AppoMobi.Gestures.csproj", "{F72622CB-2698-B631-2953-12BAA4C8EACE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppoMobi.Blazor.Gestures", "..\AppoMobi.Maui.Gestures\src\AppoMobi.Blazor.Gestures\AppoMobi.Blazor.Gestures.csproj", "{80BE2A6D-9A1A-623C-7C06-9C3E2F804133}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrawnUi.Blazor.Game", "..\DrawnUi\src\Blazor\Addons\DrawnUi.Blazor.Game\DrawnUi.Blazor.Game.csproj", "{9A57D0FD-2477-71E5-5448-E275DCD8EBE6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{271D08CE-B54F-D972-9739-FC773C6487ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{271D08CE-B54F-D972-9739-FC773C6487ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{271D08CE-B54F-D972-9739-FC773C6487ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{271D08CE-B54F-D972-9739-FC773C6487ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{009C691E-7C5F-DE88-E25A-DB18AE01FEEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{009C691E-7C5F-DE88-E25A-DB18AE01FEEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{009C691E-7C5F-DE88-E25A-DB18AE01FEEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{009C691E-7C5F-DE88-E25A-DB18AE01FEEB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A35945D-257B-5279-BDEE-9479AA38269C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A35945D-257B-5279-BDEE-9479AA38269C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A35945D-257B-5279-BDEE-9479AA38269C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A35945D-257B-5279-BDEE-9479AA38269C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4DBF783C-9D94-0EEB-4983-939FF2D7049C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4DBF783C-9D94-0EEB-4983-939FF2D7049C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4DBF783C-9D94-0EEB-4983-939FF2D7049C}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{4DBF783C-9D94-0EEB-4983-939FF2D7049C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4DBF783C-9D94-0EEB-4983-939FF2D7049C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3881CCF-435D-1C81-19B7-5838C960B74E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3881CCF-435D-1C81-19B7-5838C960B74E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3881CCF-435D-1C81-19B7-5838C960B74E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3881CCF-435D-1C81-19B7-5838C960B74E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88B97761-329B-54E0-94E1-CCD8F32186E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88B97761-329B-54E0-94E1-CCD8F32186E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88B97761-329B-54E0-94E1-CCD8F32186E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88B97761-329B-54E0-94E1-CCD8F32186E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FD0BDB3-9A67-C7C4-F675-5BC97DBE2247}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FD0BDB3-9A67-C7C4-F675-5BC97DBE2247}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FD0BDB3-9A67-C7C4-F675-5BC97DBE2247}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FD0BDB3-9A67-C7C4-F675-5BC97DBE2247}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F72622CB-2698-B631-2953-12BAA4C8EACE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F72622CB-2698-B631-2953-12BAA4C8EACE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F72622CB-2698-B631-2953-12BAA4C8EACE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F72622CB-2698-B631-2953-12BAA4C8EACE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80BE2A6D-9A1A-623C-7C06-9C3E2F804133}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80BE2A6D-9A1A-623C-7C06-9C3E2F804133}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80BE2A6D-9A1A-623C-7C06-9C3E2F804133}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80BE2A6D-9A1A-623C-7C06-9C3E2F804133}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A57D0FD-2477-71E5-5448-E275DCD8EBE6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A57D0FD-2477-71E5-5448-E275DCD8EBE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A57D0FD-2477-71E5-5448-E275DCD8EBE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A57D0FD-2477-71E5-5448-E275DCD8EBE6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C7C09E4D-077A-4D88-B5FD-0C5AA6E56E07} = {2369F8AB-3C8D-4118-BB87-F04AD45D5B02}
+		{271D08CE-B54F-D972-9739-FC773C6487ED} = {04747C2C-7FC6-4C42-884A-9E35D3DACD9A}
+		{F1532DEC-E3EE-4616-8F16-B594C891FCC3} = {2369F8AB-3C8D-4118-BB87-F04AD45D5B02}
+		{009C691E-7C5F-DE88-E25A-DB18AE01FEEB} = {04747C2C-7FC6-4C42-884A-9E35D3DACD9A}
+		{5A35945D-257B-5279-BDEE-9479AA38269C} = {21DBF3EE-B66A-4759-A2F7-2A5E466E540E}
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890} = {2369F8AB-3C8D-4118-BB87-F04AD45D5B02}
+		{88B97761-329B-54E0-94E1-CCD8F32186E5} = {2369F8AB-3C8D-4118-BB87-F04AD45D5B02}
+		{C4D8F2A1-7B3E-4F9C-A8D6-5E1B9F2C8D3A} = {21DBF3EE-B66A-4759-A2F7-2A5E466E540E}
+		{6FD0BDB3-9A67-C7C4-F675-5BC97DBE2247} = {21DBF3EE-B66A-4759-A2F7-2A5E466E540E}
+		{F72622CB-2698-B631-2953-12BAA4C8EACE} = {2369F8AB-3C8D-4118-BB87-F04AD45D5B02}
+		{80BE2A6D-9A1A-623C-7C06-9C3E2F804133} = {21DBF3EE-B66A-4759-A2F7-2A5E466E540E}
+		{9A57D0FD-2477-71E5-5448-E275DCD8EBE6} = {21DBF3EE-B66A-4759-A2F7-2A5E466E540E}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0D7B9789-07CE-492A-9DC4-C9823A73B2B6}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\DrawnUi\src\SharedGame\SharedGame.projitems*{009c691e-7c5f-de88-e25a-db18ae01feeb}*SharedItemsImports = 5
+		..\DrawnUi\src\Shared\Shared.projitems*{271d08ce-b54f-d972-9739-fc773c6487ed}*SharedItemsImports = 5
+		src\Shared\Breakout.Shared.projitems*{4dbf783c-9d94-0eeb-4983-939ff2d7049c}*SharedItemsImports = 5
+		..\DrawnUi\src\Shared\Shared.projitems*{6fd0bdb3-9a67-c7c4-f675-5bc97dbe2247}*SharedItemsImports = 5
+		..\DrawnUi\src\SharedGame\SharedGame.projitems*{9a57d0fd-2477-71e5-5448-e275dcd8ebe6}*SharedItemsImports = 5
+		src\Shared\Breakout.Shared.projitems*{a1b2c3d4-e5f6-7890-abcd-ef1234567890}*SharedItemsImports = 13
+		src\Shared\Breakout.Shared.projitems*{a3881ccf-435d-1c81-19b7-5838c960b74e}*SharedItemsImports = 5
+		..\DrawnUi\src\SharedNet\SharedNet.projitems*{c4d8f2a1-7b3e-4f9c-a8d6-5e1b9f2c8d3a}*SharedItemsImports = 13
+		..\DrawnUi\src\Shared\Shared.projitems*{c7c09e4d-077a-4d88-b5fd-0c5aa6e56e07}*SharedItemsImports = 13
+		..\DrawnUi\src\SharedGame\SharedGame.projitems*{f1532dec-e3ee-4616-8f16-b594c891fcc3}*SharedItemsImports = 13
+	EndGlobalSection
+EndGlobal

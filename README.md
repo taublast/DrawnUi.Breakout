@@ -1,9 +1,9 @@
 # Bricks Breaker
 
-A cross-platform Arkanoid/Breakout style game to play on **iOS, MacCatalyst, Android and Windows** made with DrawnUI for .NET MAUI.
+A cross-platform Arkanoid/Breakout style game to play on **iOS, MacCatalyst, Android and Windows** and now also [on the Web](...), made with DrawnUI for .NET.
 
 ## Game Features
-* 12 levels of ball versus bricks madness!
+* 12 levels of madness, ball versus bricks!
 * Catch powerups destroying the bricks!
 * If you are lucky enough shoot at bricks in Destroyer mode!
 * Discover hidden music by catching rare powerups
@@ -83,6 +83,13 @@ Discover game content on your own, no sploilers here!
     ```
 * `MainPage.HotPreview.cs` contains all the HotPreview items. Read an article about [how to use HotPreview](https://github.com/BretJohnson/hot-preview). 
 * `Soundflow` solved Android performance playing sounds/music.
+
+### Blazor/Web
+
+* Web versioning uses a hardcoded constant in `src/Web/Breakout.Web/Helpers/AppVersion.cs`.
+* On Blazor startup, `src/Web/Breakout.Web/App.razor` compares the current version with the last version stored in browser local storage via shared `AppSettings`.
+* If versions mismatch, the app stores the new version and forces a hard browser reload with `NavigateTo(..., forceLoad: true)` so stale WASM/runtime state is dropped and fresh assets are loaded.
+* When shipping a new web build, bump `AppVersion.Current`.
 
 ## Credits
 

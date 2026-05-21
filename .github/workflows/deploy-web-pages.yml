@@ -1,0 +1,74 @@
+name: Deploy Blazor Web to GitHub Pages
+
+"on":
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Publish Blazor WebAssembly app
+        shell: pwsh
+        run: |
+          $publishRoot = Join-Path $PWD 'artifacts/github-pages'
+
+          dotnet publish ./src/Web/Breakout.Web/Breakout.Web.csproj -c Release -o $publishRoot
+
+          $siteRoot = Join-Path $publishRoot 'wwwroot'
+          $repoName = ($env:GITHUB_REPOSITORY -split '/')[1]
+
+          if ($repoName.EndsWith('.github.io')) {
+              $basePath = '/'
+          }
+          else {
+              $basePath = "/$repoName/"
+          }
+
+          $indexPath = Join-Path $siteRoot 'index.html'
+          $indexHtml = Get-Content $indexPath -Raw
+          $indexHtml = $indexHtml.Replace('<base href="/" />', "<base href=`"$basePath`" />")
+          Set-Content -Path $indexPath -Value $indexHtml
+
+          Copy-Item $indexPath (Join-Path $siteRoot '404.html') -Force
+          New-Item -ItemType File -Path (Join-Path $siteRoot '.nojekyll') -Force | Out-Null
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./artifacts/github-pages/wwwroot
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

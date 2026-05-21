@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#090b10" />
+    <meta name="description" content="Break'em all bricks in a fast arcade brick breaker inspired by Arkanoid and Breakout. Smash bricks, catch powerups, unlock Destroyer mode, and play with touch, keyboard, mouse, or controllers." />
+    <meta name="application-name" content="Bricks Breaker" />
+    <meta name="apple-itunes-app" content="app-id=6749823869" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Bricks Breaker" />
+    <meta property="og:title" content="Bricks Breaker | Break'em all bricks!" />
+    <meta property="og:description" content="A fast arcade paddle-vs-bricks action game inspired by Arkanoid and Breakout. Catch powerups, trigger Destroyer mode, and play across touch, keyboard, mouse, or controllers." />
+    <meta property="og:url" content="https://bricks.appomobi.com/" />
+    <meta property="og:image" content="https://bricks.appomobi.com/og/icon.jpg" />
+    <meta property="og:image:secure_url" content="https://bricks.appomobi.com/og/icon.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="1200" />
+    <meta property="og:image:alt" content="Bricks Breaker preview image" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Bricks Breaker | Break'em all bricks!" />
+    <meta name="twitter:description" content="Smash bricks, catch powerups, unlock Destroyer mode, and play a fast arcade brick breaker inspired by Arkanoid and Breakout." />
+    <meta name="twitter:url" content="https://bricks.appomobi.com/" />
+    <meta name="twitter:image" content="https://bricks.appomobi.com/og/icon.jpg" />
+    <title>Bricks Breaker</title>
+    <base href="/" />
+    <link rel="preload" id="webassembly" />
+    <link rel="preload" href="_content/DrawnUi.Blazor.Core/drawnui-logo.svg" as="image" type="image/svg+xml" />
+    <link rel="icon" type="image/svg+xml" href="_content/DrawnUi.Blazor.Core/drawnui-logo.svg" />
+    <script>
+        globalThis.breakoutAssetVersion = Date.now().toString();
+        globalThis.writeVersionedStylesheet = (href) => {
+            document.write(`<link rel="stylesheet" href="${href}?v=${globalThis.breakoutAssetVersion}" />`);
+        };
+        globalThis.writeVersionedScript = (src, extraAttributes = '') => {
+            document.write(`<script src="${src}?v=${globalThis.breakoutAssetVersion}" ${extraAttributes}><\/script>`);
+        };
+
+        globalThis.breakoutBotDetection = {
+            tokens: [
+                'googlebot',
+                'google-inspectiontool',
+                'googleother',
+                'bingbot',
+                'slurp',
+                'duckduckbot',
+                'applebot',
+                'twitterbot',
+                'slackbot',
+                'discordbot',
+                'facebookexternalhit',
+                'facebot',
+                'linkedinbot',
+                'whatsapp',
+                'telegrambot',
+                'gptbot',
+                'claudebot',
+                'perplexitybot',
+                'yandexbot',
+                'ahrefsbot',
+                'semrushbot'
+            ],
+            isBot() {
+                const userAgent = (globalThis.navigator?.userAgent || '').toLowerCase();
+                if (!userAgent) {
+                    return false;
+                }
+
+                if (this.tokens.some(token => userAgent.includes(token))) {
+                    return true;
+                }
+
+                return /(?:bot|crawler|spider|preview)/i.test(userAgent);
+            },
+            applyFallback() {
+                const app = globalThis.document.getElementById('app');
+                if (!app) {
+                    return;
+                }
+
+                app.innerHTML = `
+                    <div class="bot-fallback">
+                        <h1>Bricks Breaker</h1>
+                        <p>Break'em all bricks in a fast arcade brick breaker inspired by Arkanoid and Breakout.</p>
+                        <p><a href="./">Play Bricks Breaker</a></p>
+                    </div>`;
+            }
+        };
+    </script>
+    <script>
+        globalThis.writeVersionedStylesheet('css/app.css');
+        globalThis.writeVersionedStylesheet('_content/DrawnUi.Blazor.Core/drawnui-loader.css');
+        globalThis.writeVersionedStylesheet('Breakout.Web.styles.css');
+    </script>
+    <script type="importmap"></script>
+    <style>
+        html, body {
+            background: #090b10;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="boot-shell" aria-label="Loading Bricks Breaker">
+            <div class="boot-stage">
+                <div class="boot-logo-wrap">
+                    <img class="boot-logo" src="_content/DrawnUi.Blazor.Core/drawnui-logo.svg" alt="DrawnUI" />
+                    <span class="boot-spark" style="--a:15deg;--r:6.8rem;--du:2.1s;--de:0s;--c:#4b8ef9"></span>
+                    <span class="boot-spark" style="--a:72deg;--r:6.4rem;--du:1.8s;--de:0.38s;--c:#f25536"></span>
+                    <span class="boot-spark" style="--a:138deg;--r:7rem;--du:2.4s;--de:0.72s;--c:#e4a130"></span>
+                    <span class="boot-spark" style="--a:195deg;--r:6.2rem;--du:1.9s;--de:1.08s;--c:#78549e"></span>
+                    <span class="boot-spark" style="--a:252deg;--r:6.8rem;--du:2.2s;--de:1.44s;--c:#4b8ef9"></span>
+                    <span class="boot-spark" style="--a:315deg;--r:6rem;--du:1.7s;--de:0.56s;--c:#f25536"></span>
+                    <span class="boot-spark" style="--a:42deg;--r:7.4rem;--du:2.6s;--de:0.92s;--c:#e4a130"></span>
+                    <span class="boot-spark" style="--a:172deg;--r:7.6rem;--du:2s;--de:1.6s;--c:#78549e"></span>
+                </div>
+
+                <div class="boot-foot">
+                    <div class="boot-copy">Bricks Breaker</div>
+
+                    <div class="boot-progress" aria-hidden="true">
+                        <div class="boot-progress-track">
+                            <div class="boot-progress-fill"></div>
+                        </div>
+                        <div class="boot-progress-text"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="blazor-error-ui" style="display:none">
+        An unhandled error has occurred.
+        <a href="." class="reload">Reload</a>
+        <span class="dismiss">&#x1F5D9;</span>
+    </div>
+    <script>
+        globalThis.writeVersionedScript('breakout-audio.js');
+    </script>
+    <script>
+        globalThis.breakoutStorage = {
+            get(key) {
+                try {
+                    return globalThis.localStorage.getItem(key);
+                } catch {
+                    return null;
+                }
+            },
+            set(key, value) {
+                try {
+                    globalThis.localStorage.setItem(key, value);
+                } catch {
+                }
+            }
+        };
+
+        globalThis.breakoutBrowser = {
+            isMobileBrowser() {
+                const navigatorRef = globalThis.navigator;
+                if (!navigatorRef) {
+                    return false;
+                }
+
+                if (typeof navigatorRef.userAgentData?.mobile === 'boolean') {
+                    return navigatorRef.userAgentData.mobile;
+                }
+
+                const userAgent = navigatorRef.userAgent || navigatorRef.vendor || '';
+                const matchesMobileUa = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(userAgent);
+                if (matchesMobileUa) {
+                    return true;
+                }
+
+                const coarsePointer = globalThis.matchMedia?.('(pointer: coarse)')?.matches === true;
+                const smallViewport = globalThis.matchMedia?.('(max-width: 900px)')?.matches === true;
+                const hasTouch = (navigatorRef.maxTouchPoints || 0) > 1;
+
+                return coarsePointer && smallViewport && hasTouch;
+            }
+        };
+
+        globalThis.breakoutFullscreen = {
+            _simulated: false,
+            isEnabled() {
+                try {
+                    return !!globalThis.document.fullscreenElement || this._simulated;
+                } catch {
+                    return this._simulated;
+                }
+            },
+            setEnabled(enabled) {
+                const doc = globalThis.document;
+                // If Fullscreen API is unavailable (WebView, Telegram in-app browser, etc.),
+                // dispatch a custom event so the DrawnUI resize module can simulate fullscreen via CSS.
+                if (!doc.fullscreenEnabled) {
+                    this._simulated = enabled;
+                    doc.dispatchEvent(new CustomEvent('drawnui-simulated-fullscreen', { detail: { enabled } }));
+                    return;
+                }
+                try {
+                    if (enabled) {
+                        if (!doc.fullscreenElement) {
+                            const target = doc.documentElement;
+                            if (target?.requestFullscreen) {
+                                target.requestFullscreen().catch(() => {
+                                    // requestFullscreen rejected (browser policy, non-user-gesture path, etc.)
+                                    // Fall back to CSS-simulated fullscreen.
+                                    this._simulated = true;
+                                    doc.dispatchEvent(new CustomEvent('drawnui-simulated-fullscreen', { detail: { enabled: true } }));
+                                });
+                            } else {
+                                this._simulated = enabled;
+                                doc.dispatchEvent(new CustomEvent('drawnui-simulated-fullscreen', { detail: { enabled } }));
+                            }
+                        }
+                    } else {
+                        if (doc.fullscreenElement && doc.exitFullscreen) {
+                            void doc.exitFullscreen();
+                        }
+                        if (this._simulated) {
+                            this._simulated = false;
+                            doc.dispatchEvent(new CustomEvent('drawnui-simulated-fullscreen', { detail: { enabled: false } }));
+                        }
+                    }
+                } catch {
+                    this._simulated = enabled;
+                    doc.dispatchEvent(new CustomEvent('drawnui-simulated-fullscreen', { detail: { enabled } }));
+                }
+            }
+        };
+    </script>
+    <script>
+        if (!globalThis.breakoutBotDetection.isBot()) {
+            globalThis.writeVersionedScript('_content/DrawnUi.Blazor.Core/drawnui-loader.js');
+            globalThis.writeVersionedScript('_framework/blazor.webassembly.js', 'autostart="false"');
+        }
+    </script>
+    <script>
+        const loaderLabelMap = {
+            en: {
+                initialLabel: 'Loading',
+                initializingLabel: 'Initializing...',
+                failureLabel: 'Failed'
+            },
+            de: {
+                initialLabel: 'Laden',
+                initializingLabel: 'Initialisierung...',
+                failureLabel: 'Fehlgeschlagen'
+            },
+            es: {
+                initialLabel: 'Cargando',
+                initializingLabel: 'Inicializando...',
+                failureLabel: 'Error'
+            },
+            fr: {
+                initialLabel: 'Chargement',
+                initializingLabel: 'Initialisation...',
+                failureLabel: 'Echec'
+            },
+            it: {
+                initialLabel: 'Caricamento',
+                initializingLabel: 'Inizializzazione...',
+                failureLabel: 'Errore'
+            },
+            ru: {
+                initialLabel: 'Загрузка',
+                initializingLabel: 'Инициализация...',
+                failureLabel: 'Ошибка'
+            },
+            ja: {
+                initialLabel: '読み込み中',
+                initializingLabel: '初期化中...',
+                failureLabel: '失敗'
+            },
+            ko: {
+                initialLabel: '로딩 중',
+                initializingLabel: '초기화 중...',
+                failureLabel: '실패'
+            },
+            zh: {
+                initialLabel: '加载中',
+                initializingLabel: '初始化中...',
+                failureLabel: '失败'
+            }
+        };
+
+        function parseStartupCulture() {
+            const startupCultureRaw = globalThis.breakoutStorage.get('breakout.lang');
+            if (!startupCultureRaw) {
+                return undefined;
+            }
+
+            try {
+                return JSON.parse(startupCultureRaw);
+            } catch {
+                return startupCultureRaw;
+            }
+        }
+
+        function resolveLoaderLabels(culture) {
+            const normalizedCulture = typeof culture === 'string'
+                ? culture.toLowerCase().split('-')[0]
+                : 'en';
+
+            return loaderLabelMap[normalizedCulture] ?? loaderLabelMap.en;
+        }
+
+        const startupCulture = parseStartupCulture();
+        const loaderLabels = resolveLoaderLabels(startupCulture);
+        const blazorRecoveryReloadKey = 'breakout-blazor-recovery-reload';
+        const blazorRecoveryWindowMs = 15000;
+
+        function clearBlazorRecoveryReloadState() {
+            try {
+                sessionStorage.removeItem(blazorRecoveryReloadKey);
+            } catch {
+            }
+        }
+
+        function shouldAutoReloadAfterBlazorFailure() {
+            try {
+                const now = Date.now();
+                const raw = sessionStorage.getItem(blazorRecoveryReloadKey);
+                const state = raw ? JSON.parse(raw) : null;
+
+                if (!state || typeof state.timestamp !== 'number' || now - state.timestamp > blazorRecoveryWindowMs) {
+                    sessionStorage.setItem(blazorRecoveryReloadKey, JSON.stringify({
+                        timestamp: now,
+                        attempts: 1
+                    }));
+                    return true;
+                }
+
+                if ((state.attempts ?? 0) >= 1) {
+                    return false;
+                }
+
+                state.timestamp = now;
+                state.attempts = (state.attempts ?? 0) + 1;
+                sessionStorage.setItem(blazorRecoveryReloadKey, JSON.stringify(state));
+                return true;
+            } catch {
+                return true;
+            }
+        }
+
+        function showBlazorErrorUiFallback() {
+            const errorUi = globalThis.document.getElementById('blazor-error-ui');
+            if (errorUi) {
+                errorUi.style.display = 'block';
+            }
+        }
+
+        function isBlazorErrorUiVisible(errorUi) {
+            if (!errorUi) {
+                return false;
+            }
+
+            const computed = globalThis.getComputedStyle?.(errorUi);
+            return computed?.display !== 'none' && errorUi.getClientRects().length > 0;
+        }
+
+        function triggerBlazorRecoveryReload(reason, error) {
+            if (error) {
+                console.error(reason, error);
+            } else {
+                console.error(reason);
+            }
+
+            if (!shouldAutoReloadAfterBlazorFailure()) {
+                showBlazorErrorUiFallback();
+                return;
+            }
+
+            globalThis.location.reload();
+        }
+
+        function watchBlazorErrorUi() {
+            const errorUi = globalThis.document.getElementById('blazor-error-ui');
+            if (!errorUi) {
+                return;
+            }
+
+            const onVisible = () => {
+                if (isBlazorErrorUiVisible(errorUi)) {
+                    observer.disconnect();
+                    triggerBlazorRecoveryReload('Blazor runtime error UI became visible.');
+                }
+            };
+
+            const observer = new MutationObserver(onVisible);
+            observer.observe(errorUi, {
+                attributes: true,
+                attributeFilter: ['style', 'class', 'hidden']
+            });
+
+            onVisible();
+        }
+
+        watchBlazorErrorUi();
+
+        if (typeof startupCulture === 'string' && startupCulture.length > 0) {
+            globalThis.document.documentElement.lang = startupCulture;
+        }
+
+        globalThis.document.querySelector('.boot-shell')?.setAttribute(
+            'aria-label',
+            `${loaderLabels.initialLabel} Bricks Breaker`);
+
+        if (globalThis.breakoutBotDetection.isBot()) {
+            clearBlazorRecoveryReloadState();
+            globalThis.breakoutBotDetection.applyFallback();
+        } else {
+            globalThis.DrawnUiLoader.startBlazorWithLoader({
+                applicationCulture: startupCulture
+            }, loaderLabels)
+                .then(() => {
+                    clearBlazorRecoveryReloadState();
+                })
+                .catch(error => {
+                    triggerBlazorRecoveryReload('Blazor startup failed.', error);
+                });
+        }
+    </script>
+    <script>
+        const isLoaderPreview = new URLSearchParams(globalThis.location.search).has('loader-preview');
+        const isLocalhost = ['localhost', '127.0.0.1', '[::1]'].includes(globalThis.location.hostname);
+        const localServiceWorkerResetKey = 'breakout-local-sw-reset';
+
+        if ('serviceWorker' in navigator && !globalThis.breakoutBotDetection.isBot()) {
+            if (!isLoaderPreview && !isLocalhost) {
+                navigator.serviceWorker.register('service-worker.js', { updateViaCache: 'none' });
+            } else if (isLocalhost) {
+                (async () => {
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    await Promise.all(registrations.map(registration => registration.unregister()));
+
+                    if ('caches' in globalThis) {
+                        const cacheKeys = await caches.keys();
+                        await Promise.all(cacheKeys.map(cacheKey => caches.delete(cacheKey)));
+                    }
+
+                    if (navigator.serviceWorker.controller) {
+                        if (!sessionStorage.getItem(localServiceWorkerResetKey)) {
+                            sessionStorage.setItem(localServiceWorkerResetKey, '1');
+                            globalThis.location.reload();
+                            return;
+                        }
+                    }
+
+                    sessionStorage.removeItem(localServiceWorkerResetKey);
+                })().catch(error => {
+                    console.warn('Failed to clear local service worker state', error);
+                });
+            }
+        }
+    </script>
+</body>
+
+</html>

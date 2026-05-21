@@ -1,0 +1,124 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+
+    <!-- use nugets or ref drawnui source-->
+    <UseSource>true</UseSource>
+
+    <TargetFrameworks>net10.0-android;net10.0-ios;net10.0-maccatalyst</TargetFrameworks>
+    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net10.0-windows10.0.19041.0</TargetFrameworks>
+
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Breakout</RootNamespace>
+    <UseMaui>true</UseMaui>
+    <SingleProject>true</SingleProject>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- Display name -->
+    <ApplicationTitle>Bricks Breaker</ApplicationTitle>
+    
+    <!-- App Identifier -->
+    <ApplicationId>com.appomobi.drawnui.breakout</ApplicationId>
+    <ApplicationIdGuid>230e07b0-ebc2-4fde-9ac8-074d3c3d69a9</ApplicationIdGuid>
+
+    <!-- Versions -->
+    <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+    <ApplicationVersion>1</ApplicationVersion>
+
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.2</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</SupportedOSPlatformVersion>
+    <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</TargetPlatformMinVersion>
+    <WindowsPackageType>None</WindowsPackageType>
+  </PropertyGroup>
+
+  <!-- Custom Android icons: workaround for MAUI Android bug not including webp resources-->
+  <ItemGroup Condition="$(TargetFramework.Contains('android'))">
+    <AndroidResource Include="Platforms\Android\Resources\**\*.webp" />
+  </ItemGroup>
+
+  <!--Custom iOS icons-->
+  <ItemGroup Condition="$(TargetFramework.Contains('ios')) == true">
+    <BundleResource Include="Platforms\iOS\Assets.xcassets\**\*" />
+  </ItemGroup>
+
+  <ItemGroup>
+
+    <!-- App Icon, ios and android will override this with our custom icons -->
+    <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" ForegroundScale="0.8" Color="#212529" />
+
+		<!-- Splash Screen -->
+		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#212529" BaseSize="120,120" />
+
+		<!-- Images -->
+		<MauiImage Include="Resources\Images\*" />
+		<MauiImage Update="Resources\Images\dotnet_bot.png" Resize="True" BaseSize="300,185" />
+
+		<!-- Custom Fonts -->
+		<MauiFont Include="Resources\Fonts\*" />
+
+		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
+		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+	</ItemGroup>
+
+  <!--dev provisioning for iPhone-->
+  <Import Project="../../Breakout.targets" Condition="Exists('../../Breakout.targets')" />
+
+  <!--DEBUG-->
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <ProvisioningType>manual</ProvisioningType>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <PackageReference Include="HotPreview.App.Maui" Version="0.17.30" />
+  </ItemGroup>
+
+  <!-- Shared code from Breakout.Shared -->
+  <Import Project="../Shared/Breakout.Shared.projitems" Label="Shared" />
+
+  <ItemGroup>
+    <None Include="..\README.md" Link="README.md" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UseSource)' != 'true'">
+    <PackageReference Include="DrawnUi.Maui.Game" Version="1.10.0.1-preview1.1" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UseSource)' == 'true'">
+    <ProjectReference Include="..\..\..\DrawnUi\src\Maui\Addons\DrawnUi.Maui.Game\DrawnUi.Maui.Game.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+
+    <!--can replace this with usual plugin if PR is merged-->
+    <PackageReference Include="AppoMobi.Preview.Plugin.Maui.Audio" Version="3.0.2.1-pre1" />
+    <PackageReference Include="Bijington.Orbit.Input" Version="0.2.2-preview.1" />
+      <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.20" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.20" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$(TargetFramework.Contains('android'))">
+    <PackageReference Include="SoundFlow" Version="1.2.1" />
+  </ItemGroup>
+
+  <!--https://github.com/BretJohnson/hot-preview-->
+  <!-- !!! uncomment this if you install dotnet tool hotpreviews !!! -->
+  <!--<ItemGroup Condition="$(Configuration) == 'Debug'">
+    <PackageReference Include="HotPreview.App.Maui" Version="0.14.31" />
+  </ItemGroup>-->
+
+  <!--for development-->
+  <!--<ItemGroup>
+    <ProjectReference Include="..\..\DrawnUi.Maui\src\Maui\DrawnUi\DrawnUi.Maui.csproj" />
+    <ProjectReference Include="..\..\DrawnUi.Maui\src\Maui\Addons\DrawnUi.Maui.Game\DrawnUi.Maui.Game.csproj" />
+  </ItemGroup>-->
+
+  <!-- Common game binary -->
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Breakout.Common.csproj" />
+  </ItemGroup>
+ 
+
+</Project>

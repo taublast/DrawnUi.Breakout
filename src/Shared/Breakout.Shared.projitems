@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>a1b2c3d4-e5f6-7890-abcd-ef1234567890</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Breakout</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Cross-platform aliases and utilities -->
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Input\EventType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Input\GameKey.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Input\HudController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Input\IGameKeyHandler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Input\IInputController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Input\KeyboardController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Input\KeyState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AppSvg.cs" />
+    <!-- Helpers -->
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\AppConstants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\AppFonts.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\AppLanguage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\AppSettings.cs" />
+    <!-- Resources - ResStrings for Web only (Mobile uses resx auto-generated) -->
+    <!-- Game - main partials -->
+    <Compile Include="$(MSBuildThisFileDirectory)Game\BreakoutGame.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\BreakoutGame.StartupAssets.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\BreakoutGame.Input.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\BreakoutGame.Sound.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\BreakoutGame.Ui.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\BreakoutGame.Ui.Dialogs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\BreakoutGame.Loop.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\BreakoutGameExtensions.cs" />
+    <!-- Controls -->
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Controls\DisplayFlag.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Controls\GameSwitch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Controls\HudArrows.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Controls\OptionWithTappable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Controls\SelectableGameButton.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Controls\StableCacheLayout.cs" />
+    <!-- Dialogs -->
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Dialogs\DialogAnimations.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Dialogs\DialogTemplate.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Dialogs\DialogThemes.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Dialogs\GameDialog.cs" />
+    <!-- Internals -->
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Internals\CollisionFace.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Internals\GameState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Internals\IReusableSprite.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Internals\IWithHitBox.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Internals\MauiGameExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Internals\RaycastCollision.cs" />
+    <!-- AI -->
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Ai\AIDifficulty.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Ai\AIPaddleController.cs" />
+    <!-- Levels -->
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Levels\BrickPosition.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Levels\BrickPreset.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Levels\BrickPresets.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Levels\FormationType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Levels\LevelManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Levels\PowerupType.cs" />
+    <!-- Sprites -->
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Sprites\BallSprite.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Sprites\BrickSprite.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Sprites\BulletSprite.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Sprites\LifeSprite.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Sprites\PaddleSprite.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Sprites\PowerupSprite.cs" />
+    <!-- Sound interface (implementations stay in platform projects) -->
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Sound\IAudioService.cs" />
+    <!-- Input (except GameControllerInput which is MAUI-only) -->
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Resources\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)Game\Dialogs\Dialogs.md" />
+    <None Include="$(MSBuildThisFileDirectory)Game\Internals\COLLISION_SYSTEMS.md" />
+  </ItemGroup>
+</Project>
