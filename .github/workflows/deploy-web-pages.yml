@@ -1,15 +1,10 @@
 name: Deploy Blazor Web to GitHub Pages
 
 "on":
-  push:
-    branches:
-      - main
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
   group: github-pages
@@ -26,17 +21,28 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 10.0.x
+          global-json-file: ./global.json
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
+      - name: Restore required workloads
+        run: dotnet workload restore ./src/Web/Breakout.Web/Breakout.Web.csproj
+
       - name: Publish Blazor WebAssembly app
         shell: pwsh
         run: |
-          $publishRoot = Join-Path $PWD 'artifacts/github-pages'
+          $ErrorActionPreference = 'Stop'
+          $publishRoot = Join-Path $env:RUNNER_TEMP 'github-pages'
+
+          if (Test-Path $publishRoot) {
+              Remove-Item $publishRoot -Recurse -Force
+          }
 
           dotnet publish ./src/Web/Breakout.Web/Breakout.Web.csproj -c Release -o $publishRoot
+          if ($LASTEXITCODE -ne 0) {
+              exit $LASTEXITCODE
+          }
 
           $siteRoot = Join-Path $publishRoot 'wwwroot'
           $repoName = ($env:GITHUB_REPOSITORY -split '/')[1]
@@ -57,13 +63,16 @@ jobs:
           New-Item -ItemType File -Path (Join-Path $siteRoot '.nojekyll') -Force | Out-Null
 
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
-          path: ./artifacts/github-pages/wwwroot
+          path: ${{ runner.temp }}/github-pages/wwwroot
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
