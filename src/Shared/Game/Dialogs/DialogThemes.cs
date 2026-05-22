@@ -440,7 +440,7 @@ namespace Breakout.Game.Dialogs
                     BackgroundColor = Colors.DarkRed,
                     WidthRequest = -1,
                     MinimumWidthRequest = 100,
-                };
+                }.WithAccessibilityButton();
 
                 cancelButton.OnTapped(async me => await dialog.CloseWithCancelAsync());
                 buttonsLayout.AddSubView(cancelButton);

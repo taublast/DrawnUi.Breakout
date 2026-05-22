@@ -75,6 +75,20 @@ body {
     width: 100%;
 }
 
+.game-page .xaml-canvas:fullscreen,
+.game-page .xaml-canvas:-webkit-full-screen,
+.game-page .xaml-canvas:fullscreen::backdrop,
+.game-page .xaml-canvas:-webkit-full-screen::backdrop {
+    background-color: #090b10;
+    background-image:
+        linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+        radial-gradient(circle at center, rgba(0, 0, 0, 0) 18%, rgba(0, 0, 0, 0.45) 48%, rgba(0, 0, 0, 0.66) 66%, rgba(0, 0, 0, 0.9) 100%),
+        url('../Images/back.jpg');
+    background-position: center center, center center, center center;
+    background-repeat: no-repeat, no-repeat, no-repeat;
+    background-size: cover, cover, cover;
+}
+
 #blazor-error-ui {
     color-scheme: light only;
     background: lightyellow;

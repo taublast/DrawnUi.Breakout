@@ -82,7 +82,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(UseSource)' != 'true'">
-    <PackageReference Include="DrawnUi.Maui.Game" Version="1.10.0.1-preview1.5" />
+    <PackageReference Include="DrawnUi.Maui.Game" Version="1.10.0.1-preview1.6" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(UseSource)' == 'true'">

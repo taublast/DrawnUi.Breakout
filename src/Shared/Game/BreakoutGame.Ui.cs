@@ -1,9 +1,11 @@
-using System.Diagnostics;
 using Breakout.Game.Controls;
 using Breakout.Game.Dialogs;
 using Breakout.Game.Input;
 using DrawnUi.Gaming;
+using DrawnUi.Models;
+using Microsoft.VisualBasic;
 using SkiaSharp;
+using System.Diagnostics;
 
 namespace Breakout.Game
 {
@@ -137,6 +139,7 @@ namespace Breakout.Game
                                                     }
                                                 }
                                             }
+                                            .WithAccessibilityText()
                                             .ObserveProperties(this, [nameof(Score), nameof(State)], me =>
                                             {
                                                 me.FontFamily = AppFonts.GameAutoselect;
@@ -175,6 +178,7 @@ namespace Breakout.Game
                                                     }
                                                 }
                                             }
+                                            .WithAccessibilityText()
                                             .ObserveProperty(this, nameof(Level), me =>
                                             {
                                                 me.FontFamily = AppFonts.GameAutoselect;
@@ -224,6 +228,7 @@ namespace Breakout.Game
                                         VerticalOptions = LayoutOptions.Center,
                                         Margin = new(12, 0, 0, 0),
                                     }
+                                    .WithAccessibilityButton(ResStrings.Options)
                                     .OnTapped(me => { TogglePause(); }),
 
 
@@ -324,7 +329,7 @@ namespace Breakout.Game
                                         }.ObserveProperty(this, nameof(StartupAssetsStatusText), me =>
                                         {
                                             me.Text = StartupAssetsStatusText;
-                                        }),
+                                        }).WithAccessibilityText(),
 
                                         new SkiaShape()
                                         {
@@ -362,7 +367,7 @@ namespace Breakout.Game
                                             [nameof(StartupAssetsLoadedCount), nameof(StartupAssetsTotalCount)], me =>
                                         {
                                             me.Text = $"{StartupAssetsLoadedCount} / {StartupAssetsTotalCount}";
-                                        }),
+                                        }).WithAccessibilityText(),
                                     }
                                 }
                             }
@@ -397,7 +402,7 @@ namespace Breakout.Game
                     CharacterSpacing = 1.33,
                     FontSize = 18,
                     TextColor = AmstradColors.White,
-                };
+                }.WithAccessibilityText();
             }
 
             public static void SetButtonPressed(SkiaShape btn)
@@ -435,6 +440,7 @@ namespace Breakout.Game
                     {
                         new SkiaRichLabel()
                         {
+                            AccessibilityRole=null,
                             Text = caption,
                             Margin = new Thickness(16, 8, 16, 10),
                             UseCache = SkiaCacheType.Operations,
@@ -457,7 +463,9 @@ namespace Breakout.Game
                             UiElements.ColorPrimaryDark,
                         }
                     },
-                }.WithGestures((me, args, b) =>
+                }
+                    .WithAccessibilityButton(caption)
+                    .WithGestures((me, args, b) =>
                 {
                     if (args.Type == TouchActionResult.Tapped)
                     {

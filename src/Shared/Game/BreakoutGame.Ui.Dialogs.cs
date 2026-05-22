@@ -10,6 +10,7 @@ using DrawnUi.Controls;
 #endif
 using System.Globalization;
 using DrawnUi.Gaming;
+using DrawnUi.Models;
 
 namespace Breakout.Game
 {
@@ -155,7 +156,7 @@ namespace Breakout.Game
                         HorizontalTextAlignment = DrawTextAlignment.Center,
                         HorizontalOptions = LayoutOptions.Fill,
                         UseCache = SkiaCacheType.Operations
-                    },
+                    }.WithAccessibilityText(),
 
                     // LANGUAGE setting row
                     new OptionWithTappable("LangFlag")
@@ -172,7 +173,7 @@ namespace Breakout.Game
                                 VerticalOptions = LayoutOptions.Center,
                                 HorizontalOptions = LayoutOptions.Start,
                                 UseCache = SkiaCacheType.Operations,
-                            },
+                            }.WithAccessibilityText(),
                             new DisplayFlag()
                                 {
                                     Tag="LangFlag",
@@ -184,6 +185,7 @@ namespace Breakout.Game
                                     var lang = AppSettings.Get(AppSettings.Lang, AppSettings.LangDefault);
                                     me.Lang = lang;
                                 })
+                                .WithAccessibilityButton(ResStrings.Language)
                                 .OnTapped((me, a) =>
                                 {
                                     if (a.Parameters.Event != null)
@@ -213,13 +215,15 @@ namespace Breakout.Game
                                 VerticalOptions = LayoutOptions.Center,
                                 HorizontalOptions = LayoutOptions.Start,
                                 UseCache = SkiaCacheType.Operations,
-                            },
+                            }.WithAccessibilityText(),
+
                             new GameSwitch()
                                 {
                                     Tag="SoundSwitch",
                                     HorizontalOptions = LayoutOptions.End,
                                     VerticalOptions = LayoutOptions.Center,
                                 }
+                                .WithAccessibilityToggle(ResStrings.Sounds)
                                 .Initialize(me =>
                                 {
                                     if (_audioService != null)
@@ -254,7 +258,7 @@ namespace Breakout.Game
                                 VerticalOptions = LayoutOptions.Center,
                                 HorizontalOptions = LayoutOptions.Start,
                                 UseCache = SkiaCacheType.Operations,
-                            },
+                            }.WithAccessibilityText(),
 
                             new GameSwitch()
                                 {
@@ -262,6 +266,7 @@ namespace Breakout.Game
                                     HorizontalOptions = LayoutOptions.End,
                                     VerticalOptions = LayoutOptions.Center,
                                 }
+                                .WithAccessibilityToggle(ResStrings.Music)
                                 .Initialize(me =>
                                 {
                                     if (_audioService != null)
@@ -310,7 +315,7 @@ namespace Breakout.Game
                                 VerticalOptions = LayoutOptions.Center,
                                 HorizontalOptions = LayoutOptions.Start,
                                 UseCache = SkiaCacheType.Operations,
-                            },
+                            }.WithAccessibilityText(),
 
                             new GameSwitch()
                                 {
@@ -318,6 +323,7 @@ namespace Breakout.Game
                                     HorizontalOptions = LayoutOptions.End,
                                     VerticalOptions = LayoutOptions.Center,
                                 }
+                                .WithAccessibilityToggle(ResStrings.PressHud)
                                 .Initialize(me =>
                                 {
                                     me.IsToggled = AppSettings.Get(AppSettings.InputPressEnabled,
@@ -343,7 +349,7 @@ namespace Breakout.Game
                                 VerticalOptions = LayoutOptions.Center,
                                 HorizontalOptions = LayoutOptions.Start,
                                 UseCache = SkiaCacheType.Operations,
-                            },
+                            }.WithAccessibilityText(),
 
                             new GameSwitch()
                                 {
@@ -351,6 +357,7 @@ namespace Breakout.Game
                                     HorizontalOptions = LayoutOptions.End,
                                     VerticalOptions = LayoutOptions.Center,
                                 }
+                                .WithAccessibilityToggle(ResStrings.Fullscreen)
                                 .Initialize(me =>
                                 {
                                     me.IsToggled = Superview is Canvas canvas && canvas.IsFullscreen;

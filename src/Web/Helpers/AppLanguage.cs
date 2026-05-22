@@ -3,6 +3,7 @@ using Breakout.Game;
 using Breakout.Game.Controls;
 using Breakout.Helpers;
 using System.Globalization;
+using DrawnUi.Models;
 
 namespace Breakout.Resources.Fonts;
 
@@ -64,7 +65,9 @@ public static partial class AppLanguage
         {
             var isSelected = string.Equals(lang, currentLang, StringComparison.OrdinalIgnoreCase);
 
-            pickerTiles.Add(new SelectableGameButton()
+            pickerTiles.Add(
+            
+            new SelectableGameButton()
             {
                 UseCache = SkiaCacheType.Image,
                 CornerRadius = 8,
@@ -82,7 +85,6 @@ public static partial class AppLanguage
                     Opacity = 0.2,
                 },
                 WidthRequest = 86,
-                MinimumWidthRequest = 86,
                 HeightRequest = 82,
                 FillGradient = new SkiaGradient()
                 {
@@ -112,7 +114,6 @@ public static partial class AppLanguage
                                 StrokeColor = BreakoutGame.UiElements.ColorIconSecondary,
                                 StrokeWidth = 1,
                                 HorizontalOptions = LayoutOptions.Center,
-                                VerticalOptions = LayoutOptions.Center,
                                 Children =
                                 {
                                     new SkiaSvg()
@@ -126,6 +127,7 @@ public static partial class AppLanguage
                             },
                             new SkiaRichLabel()
                             {
+                                AccessibilityRole = null,
                                 Text = lang.ToUpperInvariant(),
                                 FontFamily = AppFonts.Default,
                                 FontSize = 14,
@@ -139,7 +141,9 @@ public static partial class AppLanguage
                         }
                     }
                 }
-            }.WithGestures((me, args, apply) =>
+            }
+                .WithAccessibilityButton(lang)
+                .WithGestures((me, args, apply) =>
             {
                 if (args.Type == TouchActionResult.Tapped &&
                     !string.Equals(lang, currentLang, StringComparison.OrdinalIgnoreCase))
@@ -154,7 +158,7 @@ public static partial class AppLanguage
         var pickerWrap = new SkiaLayout()
         {
             Type = LayoutType.Wrap,
-            Spacing = 10,
+            Spacing = 0,
             HorizontalOptions = LayoutOptions.Center,
             Children = pickerTiles,
         };
