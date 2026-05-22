@@ -14,13 +14,13 @@
         var lastSeenVersion = AppSettings.Get(AppConstants.LastSeenVersionKey, string.Empty);
         if (string.IsNullOrWhiteSpace(lastSeenVersion))
         {
-            AppSettings.Set(AppConstants.LastSeenVersionKey, AppConstants.Current);
+            AppSettings.Set(AppConstants.LastSeenVersionKey, AppConstants.Version);
             return;
         }
 
-        if (!string.Equals(lastSeenVersion, AppConstants.Current, StringComparison.Ordinal))
+        if (!string.Equals(lastSeenVersion, AppConstants.Version, StringComparison.Ordinal))
         {
-            AppSettings.Set(AppConstants.LastSeenVersionKey, AppConstants.Current);
+            AppSettings.Set(AppConstants.LastSeenVersionKey, AppConstants.Version);
             Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
         }
     }

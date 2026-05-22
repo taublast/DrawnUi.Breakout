@@ -93,7 +93,7 @@ Discover game content on your own, no sploilers here!
 * Web versioning uses a hardcoded constant in `src/Web/Helpers/AppVersion.cs`.
 * On Blazor startup, `src/Web/App.razor` compares the current version with the last version stored in browser local storage via shared `AppSettings`.
 * If versions mismatch, the app stores the new version and forces a hard browser reload with `NavigateTo(..., forceLoad: true)` so stale WASM/runtime state is dropped and fresh assets are loaded.
-* When shipping a new web build, bump `AppConstants.Current`.
+* When shipping a new web build, bump `AppConstants.Version`.
 
 ## Credits
 

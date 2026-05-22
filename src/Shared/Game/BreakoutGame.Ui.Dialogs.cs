@@ -368,7 +368,7 @@ namespace Breakout.Game
 
                     new SkiaRichLabel()
                     {
-                        Text = AppConstants.Current,
+                        Text = AppConstants.Version,
                         FontFamily = AppFonts.Default,
                         FontSize = 10,
                         TextColor = AmstradColors.White,

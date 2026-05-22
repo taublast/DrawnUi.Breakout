@@ -19,7 +19,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game\Input\KeyState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AppSvg.cs" />
     <!-- Helpers -->
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\AppConstants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\AppFonts.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\AppLanguage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\AppSettings.cs" />
