@@ -35,7 +35,13 @@ https://github.com/user-attachments/assets/0bd6e340-a895-42e6-83f4-558f2323d37d
 ### What's New
 
 * Desktop version for Windows and Linux
-* Browser version loads much faster
+* Browser version loads much faster, fonts now ship only the characters the game draws:
+
+  | Fonts download | Before | After |
+  |---|---|---|
+  | Files | 35.1 MB | 0.62 MB |
+  | Compressed (gzip) | 14.8 MB | 0.36 MB |
+
 * Ready for Android 16
 * Physical keyboard and controller support
 
