@@ -8,6 +8,8 @@ namespace Breakout.Helpers;
 
 public static class AppSettings
 {
+    private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
+
     public static readonly string Lang = "lang";
     public static readonly string LangDefault = string.Empty;
 
@@ -41,6 +43,11 @@ public static class AppSettings
         {
             return false;
         }
+#elif DESKTOP
+        lock (DesktopSettingsSync)
+        {
+            return GetDesktopSettings().ContainsKey(key);
+        }
 #else
         return Preferences.Default.ContainsKey(key);
 #endif
@@ -71,7 +78,6 @@ public static class AppSettings
 
 #if BROWSER
     private static readonly Dictionary<string, object> _settings = new();
-    private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
     public static T Get<T>(string key, T defaultValue)
     {
@@ -112,6 +118,82 @@ public static class AppSettings
     }
 
     private static string GetBrowserKey(string key) => $"breakout.{key}";
+#elif DESKTOP
+    private static readonly object DesktopSettingsSync = new();
+    private static Dictionary<string, string>? _desktopSettings;
+
+    public static T Get<T>(string key, T defaultValue)
+    {
+        lock (DesktopSettingsSync)
+        {
+            if (GetDesktopSettings().TryGetValue(key, out var serializedValue))
+            {
+                try
+                {
+                    var deserialized = JsonSerializer.Deserialize<T>(serializedValue, JsonOptions);
+                    if (deserialized is not null)
+                    {
+                        return deserialized;
+                    }
+                }
+                catch
+                {
+                }
+            }
+
+            return defaultValue;
+        }
+    }
+
+    public static void Set<T>(string key, T value)
+    {
+        lock (DesktopSettingsSync)
+        {
+            var settings = GetDesktopSettings();
+            settings[key] = JsonSerializer.Serialize(value, JsonOptions);
+            SaveDesktopSettings(settings);
+        }
+    }
+
+    private static Dictionary<string, string> GetDesktopSettings()
+    {
+        if (_desktopSettings != null)
+            return _desktopSettings;
+
+        if (!File.Exists(DesktopSettingsPath))
+        {
+            _desktopSettings = new();
+            return _desktopSettings;
+        }
+
+        try
+        {
+            var json = File.ReadAllText(DesktopSettingsPath);
+            _desktopSettings = JsonSerializer.Deserialize<Dictionary<string, string>>(json, JsonOptions) ?? new();
+        }
+        catch
+        {
+            _desktopSettings = new();
+        }
+
+        return _desktopSettings;
+    }
+
+    private static void SaveDesktopSettings(Dictionary<string, string> settings)
+    {
+        var settingsDirectory = Path.GetDirectoryName(DesktopSettingsPath);
+        if (!string.IsNullOrEmpty(settingsDirectory))
+        {
+            Directory.CreateDirectory(settingsDirectory);
+        }
+
+        File.WriteAllText(DesktopSettingsPath, JsonSerializer.Serialize(settings, JsonOptions));
+    }
+
+    private static string DesktopSettingsPath => Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+        "DrawnUi.Breakout",
+        "settings.json");
 #else
     public static T Get<T>(string key, T defaultValue)
     {

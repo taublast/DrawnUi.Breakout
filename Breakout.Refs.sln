@@ -29,6 +29,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Breakout.Mobile", "src\Mobi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Breakout.Web", "src\Web\Breakout.Web.csproj", "{A3881CCF-435D-1C81-19B7-5838C960B74E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Breakout.Desktop", "src\Desktop\Breakout.Desktop.csproj", "{C6F1172A-8E43-4A96-81B7-03DD5BB0B708}"
+EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Breakout.Shared", "src\Shared\Breakout.Shared.shproj", "{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Breakout.Common", "src\Common\Breakout.Common.csproj", "{88B97761-329B-54E0-94E1-CCD8F32186E5}"
@@ -70,6 +72,10 @@ Global
 		{A3881CCF-435D-1C81-19B7-5838C960B74E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A3881CCF-435D-1C81-19B7-5838C960B74E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A3881CCF-435D-1C81-19B7-5838C960B74E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6F1172A-8E43-4A96-81B7-03DD5BB0B708}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6F1172A-8E43-4A96-81B7-03DD5BB0B708}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6F1172A-8E43-4A96-81B7-03DD5BB0B708}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6F1172A-8E43-4A96-81B7-03DD5BB0B708}.Release|Any CPU.Build.0 = Release|Any CPU
 		{88B97761-329B-54E0-94E1-CCD8F32186E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{88B97761-329B-54E0-94E1-CCD8F32186E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{88B97761-329B-54E0-94E1-CCD8F32186E5}.Release|Any CPU.ActiveCfg = Release|Any CPU

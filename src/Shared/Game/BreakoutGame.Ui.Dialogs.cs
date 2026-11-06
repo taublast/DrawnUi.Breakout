@@ -25,7 +25,7 @@ namespace Breakout.Game
 
         void ShowWelcomeDialog()
         {
-#if WINDOWS || MACCATALYST || BROWSER
+#if WINDOWS || MACCATALYST || BROWSER || DESKTOP
             var message = ResStrings.MessageWelcomeDesktop;
 #else
             var message = ResStrings.MessageWelcome;

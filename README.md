@@ -1,6 +1,6 @@
 # Bricks Breaker
 
-A cross-platform Arkanoid/Breakout style game to play on **iOS, MacCatalyst, Android, Windows and Browse**, made with DrawnUI for .NET.
+A cross-platform Arkanoid/Breakout style game to play on **iOS, MacCatalyst, Android, Windows, Linux and in Browser**, made with DrawnUI for .NET.
 
 ### Install
 
@@ -10,7 +10,7 @@ A cross-platform Arkanoid/Breakout style game to play on **iOS, MacCatalyst, And
 
 * [AppStore](https://apps.apple.com/us/app/bricks-breaker/id6749823869?platform=iphone) 
 
-* Run on Windows and MacCatalyst compiling from source code
+* Run on Windows, Linux and MacCatalyst compiling from source code
 
 ## Game Features
 * 12 levels of madness, ball versus bricks!
@@ -57,7 +57,7 @@ Discover game content on your own, no sploilers here!
 
 
 ## App Features
-* Cross-platform for iOS, MacCatalyst, Android and Windows with hardware acceleration
+* Cross-platform for iOS, MacCatalyst, Android, Windows and Linux with hardware acceleration
 * Control with touch/mouse/keyboard, customizable keys
 * Background music and multichannel sounds
 * Localized to 9 languages, auto-selects font upon language
@@ -88,12 +88,66 @@ Discover game content on your own, no sploilers here!
 * `MainPage.HotPreview.cs` contains all the HotPreview items. Read an article about [how to use HotPreview](https://github.com/BretJohnson/hot-preview). 
 * `Soundflow` solved Android performance playing sounds/music.
 
+### Desktop: Windows and Linux (OpenTK)
+
+Desktop host project:
+
+```text
+src/Desktop/Breakout.Desktop.csproj
+```
+
+Run from source:
+
+```bash
+dotnet run --project ./src/Desktop/Breakout.Desktop.csproj --configuration Debug
+```
+
+Publish framework-dependent for Linux:
+
+```bash
+dotnet publish ./src/Desktop/Breakout.Desktop.csproj --configuration Release -r linux-x64 --self-contained false
+```
+
+Publish self-contained for Linux:
+
+```bash
+dotnet publish ./src/Desktop/Breakout.Desktop.csproj --configuration Release -r linux-x64 --self-contained true
+```
+
+Publish output:
+
+```text
+src/Desktop/bin/Release/net10.0/linux-x64/publish/
+```
+
+On Linux:
+
+```bash
+chmod +x ./BricksBreaker
+./BricksBreaker
+```
+
+Linux runtime requirements:
+
+* graphical desktop session
+* working GPU or Mesa drivers
+* OS OpenGL/window-system runtime libraries for your distro
+
+Windows single-file exe (self-contained, trimmed):
+
+```bash
+dotnet publish ./src/Desktop/Breakout.Desktop.csproj -p:PublishProfile=FolderProfile
+```
+
+Output: `src/Desktop/bin/Release/net10.0/publish/win-x64/BricksBreaker.exe`. Compile `src/Desktop/innosetup.iss` with Inno Setup 6 to get the `BricksBreakerSetup.exe` installer.
+
 ### Blazor/Web
 
-* Web versioning uses a hardcoded constant in `src/Web/Helpers/AppVersion.cs`.
+* Web versioning uses a hardcoded constant `AppConstants.Version` in `src/Shared/Helpers/AppConstants.cs`.
 * On Blazor startup, `src/Web/App.razor` compares the current version with the last version stored in browser local storage via shared `AppSettings`.
 * If versions mismatch, the app stores the new version and forces a hard browser reload with `NavigateTo(..., forceLoad: true)` so stale WASM/runtime state is dropped and fresh assets are loaded.
 * When shipping a new web build, bump `AppConstants.Version`.
+* Fonts are served as subsets that contain only the characters the game draws (`src/Web/wwwroot/fonts/*-Subset.ttf`, about 630 KB instead of 37 MB). After changing localized strings or emoji, rebuild them with `python dev/fonts/subset_web_fonts.py` (needs `pip install fonttools`).
 
 ## Credits
 

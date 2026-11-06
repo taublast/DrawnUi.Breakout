@@ -71,6 +71,8 @@ namespace Breakout.Game
             return new WebAudioService();
 #elif ANDROID
             return new SoundFlowAudioService();
+    #elif DESKTOP
+            return new DesktopAudioService();
 #else
             return new AudioMixerService(Plugin.Maui.Audio.AudioManager.Current);
 #endif
@@ -79,6 +81,7 @@ namespace Breakout.Game
         private async Task InitializeAudioAsync(Action<int, int, string>? reportProgress = null)
         {
             var audioService = CreateAudioService();
+
             var totalAssets = StartupAudioAssets.Length;
 
             reportProgress?.Invoke(0, totalAssets, ResStrings.LoadingAssets);

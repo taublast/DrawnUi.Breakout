@@ -270,7 +270,7 @@ public class SoundFlowAudioService : IAudioService
     /// </summary>
     /// <param name="filePath">Path to the background music file</param>
     /// <param name="volume">Volume level (0.0 to 1.0)</param>
-    public async void StartBackgroundMusicFromFile(string filePath, float volume = 1.0f)
+    public async void StartBackgroundMusicFromFile(string filePath, float volume)
     {
         StopBackgroundMusic();
 

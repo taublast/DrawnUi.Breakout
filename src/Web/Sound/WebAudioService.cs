@@ -105,7 +105,7 @@ public partial class WebAudioService : IAudioService
         try { Interop.Play(soundId, volume * _masterVolume, balance, loop); } catch { }
     }
 
-    public void StartBackgroundMusic(string soundId, float volume = 0.3f)
+    public void StartBackgroundMusic(string soundId, float volume = 0.1f)
     {
         _pendingBgId = soundId;
         _pendingBgVolume = volume;
@@ -113,7 +113,7 @@ public partial class WebAudioService : IAudioService
         try { Interop.StartBg(soundId, volume * _masterVolume); } catch { }
     }
 
-    public void StartBackgroundMusicFromFile(string filePath, float volume = 1.0f)
+    public void StartBackgroundMusicFromFile(string filePath, float volume)
     {
         // Not supported — browser requires preloaded buffers via PreloadSoundAsync
     }

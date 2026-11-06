@@ -36,13 +36,6 @@ public static partial class AppLanguage
         }
     }
 
-    public static void RestartWith(string lang)
-    {
-        Set(lang);
-
-        MainThread.BeginInvokeOnMainThread(() => { App.Current.MainPage = new NavigationPage(new MainPage()); });
-    }
-
     static List<KeyValuePair<string, string>> DisplayLanguages;
 
     public static void SetAndApply(string lang)

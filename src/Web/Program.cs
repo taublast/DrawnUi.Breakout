@@ -9,33 +9,45 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
-var assetBaseUri = new Uri(builder.HostEnvironment.BaseAddress);
-
-DrawnExtensions.RegisterFont("FontEmoji", BuildAssetUrl(assetBaseUri, "fonts/NotoColorEmoji-Regular.ttf"));
-
-// Text / UI fonts
-DrawnExtensions.RegisterFont("FontText", BuildAssetUrl(assetBaseUri, "fonts/ZenMaruGothic-Bold.ttf"));
-
-// Game fonts
-DrawnExtensions.RegisterFont("FontGame", BuildAssetUrl(assetBaseUri, "fonts/DelaGothicOne-Regular.ttf"));
-DrawnExtensions.RegisterFont("FontGameKo", BuildAssetUrl(assetBaseUri, "fonts/BlackHanSans-Regular.ttf"));
-DrawnExtensions.RegisterFont("FontGameZh", BuildAssetUrl(assetBaseUri, "fonts/MaShanZheng-Regular.ttf"));
-DrawnExtensions.RegisterFont("FontSystem", BuildAssetUrl(assetBaseUri, "fonts/amstrad_cpc464.ttf"));
-
-// Game images
-DrawnExtensions.RegisterImage("Images/glass.jpg", BuildAssetUrl(assetBaseUri, "Images/glass.jpg"));
-DrawnExtensions.RegisterImage("Images/back.jpg", BuildAssetUrl(assetBaseUri, "Images/back.jpg"));
-
-var host = await builder.UseDrawnUiAsync(new DrawnUiStartupSettings
-{
-    UseDesktopKeyboard = true
-});
-
 AppLanguage.ApplySelected();
 
-await host.RunAsync();
+await Super.UseDrawnUi(builder)
+    .WithBaseUrl(builder.HostEnvironment.BaseAddress)
+    .WithOptions(options => options.UseDesktopKeyboard = true)
+    .ConfigureFonts(fonts =>
+    {
+        // Subsets with only the glyphs the game draws, built by dev/fonts/subset_web_fonts.py
+        fonts.AddFont("fonts/NotoColorEmoji-Subset.ttf", "FontEmoji");
 
-static string BuildAssetUrl(Uri baseUri, string relativePath)
-{
-    return new Uri(baseUri, relativePath).ToString();
-}
+        // Text / UI font
+        fonts.AddFont("fonts/ZenMaruGothic-Bold-Subset.ttf", AppFonts.Default);
+
+        // Game fonts
+        fonts.AddFont("fonts/DelaGothicOne-Regular-Subset.ttf", AppFonts.Game);
+        fonts.AddFont("fonts/BlackHanSans-Regular-Subset.ttf", AppFonts.GameKo);
+        fonts.AddFont("fonts/MaShanZheng-Regular-Subset.ttf", AppFonts.GameZh);
+        fonts.AddFont("fonts/amstrad_cpc464.ttf", "FontSystem");
+    })
+    .ConfigureStyles(styles =>
+    {
+        // browsers have no system fonts: glyphs the UI font lacks (simplified hanzi, hangul) come from these
+        styles.AddStyle(new Style()
+        {
+            ApplyToDerivedTypes = true,
+            TargetType = typeof(SkiaLabel),
+            Setters =
+            {
+                new Setter()
+                {
+                    Property = SkiaLabel.FontFamilyFallbackProperty,
+                    Value = $"{AppFonts.GameZh}, {AppFonts.GameKo}, FontEmoji"
+                }
+            }
+        });
+    })
+    .PreloadAssets(assets =>
+    {
+        assets.AddImage("Images/glass.jpg", "Images/glass.jpg");
+        assets.AddImage("Images/back.jpg", "Images/back.jpg");
+    })
+    .BuildAndRunAsync();

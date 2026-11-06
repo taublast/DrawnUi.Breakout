@@ -367,6 +367,7 @@ namespace Breakout.Game.Dialogs
                     //shape B = backdrop
                     new SkiaShape()
                     {
+                        UseCache = SkiaCacheType.None, //live backdrop, picture cache would freeze it
                         CornerRadius = gameRadius,
                         HorizontalOptions = LayoutOptions.Fill,
                         VerticalOptions = LayoutOptions.Fill,

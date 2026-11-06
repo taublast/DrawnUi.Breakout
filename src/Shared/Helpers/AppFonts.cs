@@ -36,7 +36,7 @@ public static class AppFonts
         _adjustGameFont = scale;
     }
 
-#if !BROWSER
+#if !BROWSER && !DESKTOP
     public static MauiAppBuilder AddAppFonts(this MauiAppBuilder builder)
     {
         builder.ConfigureFonts(fonts =>

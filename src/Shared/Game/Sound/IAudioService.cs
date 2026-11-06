@@ -22,7 +22,7 @@ public interface IAudioService : IDisposable
     /// </summary>
     bool IsBackgroundMusicPlaying { get; }
 
-    void StartBackgroundMusicFromFile(string filePath, float volume = 1.0f);
+    void StartBackgroundMusicFromFile(string filePath, float volume);
 
     /// <summary>
     /// Preloads a sound file into memory for immediate playback

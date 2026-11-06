@@ -196,7 +196,7 @@ namespace Breakout.Game
                                                 Type = LayoutType.Row,
                                                 Spacing = 3,
                                                 Margin = new(16, 60, 16, 0),
-                                                ItemTemplateType = typeof(LifeSprite)
+                                                ItemTemplate = new DataTemplate(() => new LifeSprite())
                                             }
                                             .ObserveProperties(this, [nameof(Lives), nameof(State)], me =>
                                             {
@@ -240,6 +240,9 @@ namespace Breakout.Game
                                     VerticalOptions = LayoutOptions.Fill,
                                     UseCache = SkiaCacheType.Operations,
                                     ColumnSpacing = 20,
+                                    ColumnDefinitions = new ColumnDefinitionCollection(
+                                        new ColumnDefinition(new GridLength(50, GridUnitType.Star)),
+                                        new ColumnDefinition(new GridLength(50, GridUnitType.Star))),
                                     Children =
                                     {
                                         new SkiaSvg()
@@ -265,7 +268,7 @@ namespace Breakout.Game
                                             VerticalOptions = LayoutOptions.Center,
                                         }.Initialize(me => SetColumn(me, 1)),
                                     }
-                                }.WithColumnDefinitions("50*, 50*"),
+                                },
                             }
                         }
                     }

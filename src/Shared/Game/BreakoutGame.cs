@@ -71,11 +71,6 @@ namespace Breakout.Game
         {
             CreateUi();
 
-#if ANDROID //|| BROWSER
-            //prefer skipping frames than go smooth because this game is dynamic
-            DrawnGame.FrameInterpolatorDisabled = true;
-#endif
-
             BindingContext = this;
 
             Instance = this;
@@ -88,11 +83,6 @@ namespace Breakout.Game
 
 #if BROWSER
             BeginStartupAssetLoading();
-#else
-            if (USE_SOUND)
-            {
-                _ = InitializeAudioAsync();
-            }
 #endif
 
             _aiController = new AIPaddleController(this, AIDifficulty.Hard);
@@ -171,6 +161,11 @@ namespace Breakout.Game
                     await Task.Delay(30);
                 }
 
+#if !BROWSER
+                if (USE_SOUND)
+                    _ = InitializeAudioAsync();
+#endif
+
                 //we have some GPU cache used so we need the canvas to be fully created before we would start
                 Prepare(); //game loop will be started inside
             }).ConfigureAwait(false);
@@ -204,7 +199,7 @@ namespace Breakout.Game
             IgnoreChildrenInvalidations = true;
 
             // in case we implement key press
-#if !BROWSER
+#if !BROWSER && !DESKTOP
             Focus();
 #endif
 

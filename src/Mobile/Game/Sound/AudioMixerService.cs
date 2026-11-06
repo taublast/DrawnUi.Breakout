@@ -198,7 +198,7 @@ public class AudioMixerService : IAudioService
 
     #region BACKGROUND MUSIC
 
-    public async void StartBackgroundMusicFromFile(string filePath, float volume = 1.0f)
+    public async void StartBackgroundMusicFromFile(string filePath, float volume)
     {
         StopBackgroundMusic(); // Stop any existing background music
 
