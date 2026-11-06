@@ -34,9 +34,10 @@ https://github.com/user-attachments/assets/0bd6e340-a895-42e6-83f4-558f2323d37d
 
 ### What's New
 
-* Phisical Keyboard support is back!
-* Controller support got better
-* Bug fixes and optimizations
+* Desktop version for Windows and Linux
+* Browser version loads much faster
+* Ready for Android 16
+* Physical keyboard and controller support
 
 ## How To Play
 
@@ -73,11 +74,15 @@ Discover game content on your own, no sploilers here!
 ## Development Features
 * Compatible with .NET HotReload, built with Fluent C#
 * All game field content is built with vector shapes and scalable to infinity
-* Windows: x64 can run both MSIX-packaged and "Steam-friendly" unpackaged mode
+* One shared game project compiled into every head: .NET MAUI (iOS, MacCatalyst, Android, Windows), Blazor WebAssembly (browser) and OpenTK (Windows and Linux desktop)
+* Windows: x64 can run both MSIX-packaged and "Steam-friendly" unpackaged mode, or as a single-file OpenTK exe with an installer
 * Uses [Hot Preview](https://github.com/BretJohnson/hot-preview) to dynamically preview levels/states/languages/sprites and much more
 * Uses [Soundflow](https://github.com/LSXPrime/SoundFlow) for sound on Android
-* Uses [Plugin.Maui.Audio](https://github.com/jfversluis/Plugin.Maui.Audio) for sound on all other platforms
-* Uses [DrawnUI for .NET MAUI](https://github.com/taublast/DrawnUi) for layout/gestures/fluent/bindings/rendering pipeline
+* Uses [Plugin.Maui.Audio](https://github.com/jfversluis/Plugin.Maui.Audio) for sound on iOS, MacCatalyst and Windows (MAUI)
+* Uses the browser Web Audio API for sound in the browser
+* Uses [Miniaudio.Net](https://www.nuget.org/packages/Miniaudio.Net) for sound on desktop (OpenTK)
+* Uses [OpenTK](https://github.com/opentk/opentk) for the desktop window and OpenGL on Windows and Linux
+* Uses [DrawnUI for .NET](https://github.com/DrawnUi/DrawnUi.Net) for layout/gestures/fluent/bindings/rendering pipeline
 * Uses [SkiaSharp](https://github.com/mono/SkiaSharp) to make this all possible
 
 ## Development Notes
@@ -147,7 +152,7 @@ Output: `src/Desktop/bin/Release/net10.0/publish/win-x64/BricksBreaker.exe`. Com
 * On Blazor startup, `src/Web/App.razor` compares the current version with the last version stored in browser local storage via shared `AppSettings`.
 * If versions mismatch, the app stores the new version and forces a hard browser reload with `NavigateTo(..., forceLoad: true)` so stale WASM/runtime state is dropped and fresh assets are loaded.
 * When shipping a new web build, bump `AppConstants.Version`.
-* Fonts are served as subsets that contain only the characters the game draws (`src/Web/wwwroot/fonts/*-Subset.ttf`, about 630 KB instead of 37 MB). After changing localized strings or emoji, rebuild them with `python dev/fonts/subset_web_fonts.py` (needs `pip install fonttools`).
+* Fonts are served as subsets that contain only the characters the game draws (`src/Web/wwwroot/fonts/*-Subset.ttf`, 0.6 MB instead of 35 MB). After changing localized strings or emoji, rebuild them with `python dev/fonts/subset_web_fonts.py` (needs `pip install fonttools`).
 
 ## Credits
 
