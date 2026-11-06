@@ -1852,10 +1852,11 @@ namespace Breakout.Game
                 {
                     bullet.IsActive = true;
 
-                    // Position bullet at center of paddle, above it
-                    bullet.Left = Paddle.Left + (Paddle.Width - bullet.Width) / 2;
-                    bullet.Top = Paddle.Top - bullet.Height;
-
+                    // Bullet and paddle are both Center/End aligned: Left/Top are offsets from that anchor,
+                    // so equal offsets put the bullet centered right above the paddle.
+                    // Never use bullet.Width/Height here: a pooled bullet not laid out yet reports -1.
+                    bullet.Left = Paddle.Left;
+                    bullet.Top = Paddle.Top - (float)bullet.HeightRequest;
                     bullet.ResetAnimationState();
                     _spritesToBeAdded.Add(bullet);
                 }
