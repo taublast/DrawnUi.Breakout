@@ -54,7 +54,8 @@ def code_text():
 def build(source, target, text):
     font = TTFont(source)
     cmap = font.getBestCmap()
-    wanted = sorted(set(text) - set("\r\n\t"))
+    # the game upper/lowercases strings at runtime (buttons, HUD): keep both forms of every character
+    wanted = sorted(set(text + text.upper() + text.lower()) - set("\r\n\t"))
     missing = [c for c in wanted if ord(c) not in cmap and ord(c) > 0x7E]
 
     options = subset.Options()
