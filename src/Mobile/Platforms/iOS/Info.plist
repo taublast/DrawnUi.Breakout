@@ -2,8 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+  <key>CFBundleShortVersionString</key>
+  <string>1.3</string>
   <key>CFBundleVersion</key>
-  <string>100102</string>
+  <string>103001</string>
   <key>XSAppIconAssets</key>
   <string>Assets.xcassets/icon.appiconset</string>
   <key>ITSAppUsesNonExemptEncryption</key>
