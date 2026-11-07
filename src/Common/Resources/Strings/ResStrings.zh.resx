@@ -568,7 +568,7 @@
     <value>音乐</value>
   </data>
   <data name="Sounds" xml:space="preserve">
-    <value>听起来</value>
+    <value>音效</value>
   </data>
   <data name="NewGame" xml:space="preserve">
     <value>新游戏</value>
@@ -577,7 +577,7 @@
     <value>按下模式</value>
   </data>
   <data name="PressHud" xml:space="preserve">
-    <value>新闻哈德</value>
+    <value>按压HUD</value>
   </data>
   <data name="Fullscreen" xml:space="preserve">
     <value>全屏</value>
